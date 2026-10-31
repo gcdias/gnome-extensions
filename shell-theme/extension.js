@@ -83,17 +83,24 @@ export function getWallpaperAverageColor() {
 }
 
 function getYaruThemeName(hue) {
+    hue = ((hue + 15 + 360) % 360).toFixed(0); // Normalize hue to [0, 360)
     const yaruNames = [
         'Yaru-red',
         'Yaru',
         'Yaru-yellow',
         'Yaru-olive',
+        'Yaru-olive',
+        'Yaru-prussiangreen',
         'Yaru-prussiangreen',
         'Yaru-blue',
+        'Yaru-blue',
         'Yaru-purple',
+        'Yaru-magenta',
         'Yaru-magenta'
     ];
     const index = Math.floor((hue / 360) * yaruNames.length) % yaruNames.length;
+    const name = yaruNames[index];
+    console.log(`Yaru theme: ${name} (hue: ${hue}, index: ${index})`);
     return yaruNames[index];
 }
 
@@ -125,12 +132,19 @@ _update() {
         const yaruThemeName = getYaruThemeName(h);
         [color.r, color.g, color.b] = hslToRgb(h, this._settings.get_int('saturation') / 100, 0.5);
         const accentHex = rgbToHex(color.r, color.g, color.b);
-        console.log(`avg-out: rgb(${color.r}, ${color.g}, ${color.b}), hue: ${h}, accent: ${accentHex}, theme: ${yaruThemeName}`);
+        console.log(`avg-out: rgb(${color.r}, ${color.g}, ${color.b}), hue: ${h}, accent: ${accentHex}`);
         
+        const interfaceSettings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
+        
+        interfaceSettings.set_string('icon-theme', yaruThemeName);
+        interfaceSettings.set_string('gtk-theme', yaruThemeName);
+        interfaceSettings.set_string('accent-color', accentHex);
+
         const stylesheetPath = GLib.build_filenamev([this.path, 'stylesheet.css']);
         const [success, contents] = Gio.File.new_for_path(stylesheetPath).load_contents(null);
         if (!success)
             throw new Error('Gnome Theme Color: could not read stylesheet.css');
+
 
         const stylesheet = new TextDecoder().decode(contents).replaceAll('-st-accent-color', accentHex);
         const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), extname]);
@@ -141,9 +155,7 @@ _update() {
 
         this._customStylesheet = Gio.File.new_for_path(this._customStylesheetPath);
         this._theme.load_stylesheet(this._customStylesheet);
-        let interfaceSettings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
-        interfaceSettings.set_string('icon-theme', yaruThemeName);
-        interfaceSettings.set_string('gtk-theme', yaruThemeName);
+
     }
 }
 }
