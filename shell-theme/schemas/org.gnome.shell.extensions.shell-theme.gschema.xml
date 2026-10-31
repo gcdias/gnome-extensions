@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.shell-theme" path="/org/gnome/shell/extensions/shell-theme/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Enable the theme colour tint</summary>
+      <description>Apply the accent colour derived from the current wallpaper.</description>
+    </key>
+    <key name="highlight-mode" type="b">
+      <default>false</default>
+      <summary>Use highlight colour</summary>
+      <description>When enabled, use the wallpaper highlight colour instead of the dominant colour.</description>
+    </key>
+    <key name="saturation" type="i">
+      <range min="0" max="100"/>
+      <default>50</default>
+      <summary>Accent colour saturation</summary>
+      <description>Set the saturation of the wallpaper accent colour.</description>
+    </key>
+  </schema>
+</schemalist>
