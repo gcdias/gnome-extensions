@@ -93,12 +93,15 @@ const wallpaper = {
         const [r, g, b] = one.get_pixels();
         return {r, g, b};
     },
+    getScreenResolution: function() {
+        const mon = Gdk.Display.get_default()?.get_primary_monitor();
+        const g = mon?.get_geometry();
+        const s = mon?.get_scale_factor();
+        console.log(`Screen resolution: ${g?.width}x${g?.height}, scale: ${s}`);
+        return g && s ? [g.width * s, g.height * s] : [1920, 1080];
+    },
     getBingWallpaper: function(callback) {
-        const d = global.display.get_current_monitor()?.getGeometry();
-        const [width, height] = d ? [d.width, d.height] : [1920, 1080];
-        //const res = Gdk.Display.get_default().get_monitor(0).get_geometry();
-        //const width = 1920; //res.width;
-        //const height = 1080; //res.height;
+        const [width, height] = wallpaper.getScreenResolution();
         const url = `https://bing.biturl.top/?resolution=${width}x${height}&format=json&index=0&mkt=en-US`;
         download(url, (bytes) => {
             const json = JSON.parse(new TextDecoder().decode(bytes.get_data()));
@@ -130,7 +133,7 @@ const color = {
         else if (max === b) h = (r - g) / d + 4;
         let l = (min + max) / 2;
         let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
-        return [h * 60, s, l];
+        return [Math.round(h * 60), s, l];
     },
     hslToRgb: function(h, s, l) {
         let c = (1 - Math.abs(2 * l - 1)) * s;

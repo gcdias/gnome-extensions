@@ -34,10 +34,9 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
         });
         group.add(highlightRow);
 
-        const saturationRow = new Adw.ActionRow({
+        const saturationRow = new Adw.SpinRow({
             title: _('Saturation'),
-        });
-        const saturationSpinButton = new Gtk.SpinButton({
+            subtitle: _('Adjust the saturation of the accent colour.'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
                 upper: 100,
@@ -48,14 +47,11 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
             digits: 0,
             numeric: true,
         });
-        saturationRow.add_suffix(saturationSpinButton);
-        saturationRow.activatable_widget = saturationSpinButton;
         group.add(saturationRow);
 
-        const shellHueShiftRow = new Adw.ActionRow({
+        const shellHueShiftRow = new Adw.SpinRow({
             title: _('Shell hue shift'),
-        });
-        const shellHueShiftSpinButton = new Gtk.SpinButton({
+            subtitle: _('Adjust the hue of the shell colour.'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
                 upper: 360,
@@ -66,14 +62,11 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
             digits: 0,
             numeric: true,
         });
-        shellHueShiftRow.add_suffix(shellHueShiftSpinButton);
-        shellHueShiftRow.activatable_widget = shellHueShiftSpinButton;
         group.add(shellHueShiftRow);
 
-        const accentHueShiftRow = new Adw.ActionRow({
+        const accentHueShiftRow = new Adw.SpinRow({
             title: _('Accent hue shift'),
-        });
-        const accentHueShiftSpinButton = new Gtk.SpinButton({
+            subtitle: _('Adjust the hue of the accent colour.'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
                 upper: 360,
@@ -84,14 +77,12 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
             digits: 0,
             numeric: true,
         });
-        accentHueShiftRow.add_suffix(accentHueShiftSpinButton);
-        accentHueShiftRow.activatable_widget = accentHueShiftSpinButton;
         group.add(accentHueShiftRow);
 
         settings.bind('enabled', enableRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind('highlight-mode', highlightRow, 'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('saturation', saturationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('hue-shell-shift', shellHueShiftSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('hue-accent-shift', accentHueShiftSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('saturation', saturationRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('hue-shell-shift', shellHueShiftRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('hue-accent-shift', accentHueShiftRow, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
 }
