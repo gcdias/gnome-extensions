@@ -193,19 +193,11 @@ export default class ShellTheme extends Extension {
         const hue_accent_shift = this._settings.get_int('hue-accent-shift');
         const sat = this._settings.get_int('saturation')/100;
 
-        //const rgbShell = color.hslToRgb((h + hue_shell_shift + 360) % 360, sat, 0.5);
-        //gnomeDesktop.settings.set_string('gtk-theme', `base_color:#${color.rgbToHex(rgbShell[0], rgbShell[1], rgbShell[2]).substring(1)}`);
-
-        //const rgbAccent = color.hslToRgb((h + hue_accent_shift + 360) % 360, sat, 0.5);
-        //gnomeDesktop.settings.set_string('accent-color', color.rgbToHex(rgbAccent[0], rgbAccent[1], rgbAccent[2]));
-
         const yaruThemeName = gnomeDesktop.getThemeName(h + hue_shell_shift);
         gnomeDesktop.settings.set_string('icon-theme', yaruThemeName);
         gnomeDesktop.settings.set_string('gtk-theme', yaruThemeName);
 
         let accentName = gnomeDesktop.getColorName(h + hue_accent_shift);
-        if (!accentName || accentName === '')
-            accentName = 'orange'; // fallback to orange if accentName is empty
         gnomeDesktop.settings.set_string('accent-color', accentName);
 
         let accentHex = color.hslToRgb(h + hue_accent_shift, sat, 0.5);
