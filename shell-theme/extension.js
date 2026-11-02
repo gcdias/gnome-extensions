@@ -1,12 +1,17 @@
+// https://gjs-docs.gnome.org/gjs/
+
 import Gio from 'gi://Gio';
+import Gdk from 'gi://Gdk';
 import GLib from 'gi://GLib';
-import GdkPixbuf from 'gi://GdkPixbuf';
+import Soup from 'gi://Soup?version=3.0';
+import GdkPixbuf from 'gi://GdkPixbuf'; 
 import St from 'gi://St';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const extname = 'shell-theme';
 
-//const ifaceSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
+Gio._promisify(Soup.Session.prototype, 'send_and_read_async', 'send_and_read_finish');
+const loop = new GLib.MainLoop(null, false);
 
 const gnomeDesktop = {
     settings: new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}),
@@ -40,10 +45,22 @@ const gnomeDesktop = {
         const l = gnomeDesktop.yaruNames.length;
         hue = ((hue + 180/l + 360) % 360).toFixed(0); // Normalize hue to [0, 360) middle point
         const index = Math.floor((hue / 360) * l % l);
-        const name = gnomeDesktop.yaruNames[index].replaceAll('-dark', '').replaceAll('Yaru', '').replaceAll('-', '');
+        let name = gnomeDesktop.yaruNames[index].replaceAll('-dark', '').replaceAll('Yaru', '').replaceAll('-', '');
+        if (!name || name === '')
+            name = 'orange'; // fallback to orange if accentName is empty
         console.log(`Yaru accent: ${name} (hue: ${hue}, index: ${index})`);
         return name;
     }
+}
+
+async function download(url, callback) {
+    const session = new Soup.Session();
+    const msg = Soup.Message.new('GET', url);
+    const bytes = await session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+    if (msg.get_status() !== Soup.Status.OK)
+        throw new Error(`HTTP ${msg.get_status()}: ${msg.get_reason_phrase()}`);
+    if (callback)
+        callback(bytes);
 }
 
 const wallpaper = {
@@ -76,7 +93,27 @@ const wallpaper = {
         const [r, g, b] = one.get_pixels();
         return {r, g, b};
     },
-
+    getBingWallpaper: function(callback) {
+        const d = global.display.get_current_monitor()?.getGeometry();
+        const [width, height] = d ? [d.width, d.height] : [1920, 1080];
+        //const res = Gdk.Display.get_default().get_monitor(0).get_geometry();
+        //const width = 1920; //res.width;
+        //const height = 1080; //res.height;
+        const url = `https://bing.biturl.top/?resolution=${width}x${height}&format=json&index=0&mkt=en-US`;
+        download(url, (bytes) => {
+            const json = JSON.parse(new TextDecoder().decode(bytes.get_data()));
+            const uri = json.url;
+            download(uri, (bytes) => {
+                const path = GLib.build_filenamev([GLib.get_user_cache_dir(), extname, 'bing-wallpaper.jpg']);
+                GLib.mkdir_with_parents(GLib.build_filenamev([GLib.get_user_cache_dir(), extname]), 0o755);
+                GLib.file_set_contents(path, bytes.get_data());
+                const dark = gnomeDesktop.isDarkMode();
+                wallpaper.settings.set_string(dark ? 'picture-uri-dark' : 'picture-uri', `file://${path}`);
+                if (callback)
+                    callback();
+            });
+        });
+    }
 }
 
 const color = {
@@ -124,8 +161,12 @@ export default class ShellTheme extends Extension {
             [wallpaper.settings, wallpaper.settings.connect('changed', () => this._update())],
             [gnomeDesktop.settings, gnomeDesktop.settings.connect('changed::color-scheme', () => this._update())],
             [this._settings, this._settings.connect('changed::saturation', () => this._update())],
+            [this._settings, this._settings.connect('changed::hue-shell-shift', () => this._update())],
+            [this._settings, this._settings.connect('changed::hue-accent-shift', () => this._update())],
         ];
-        this._update();
+        wallpaper.getBingWallpaper(() => {
+            this._update();
+        }); // Download Bing wallpaper if no wallpaper is set
     }
 
     disable() {
@@ -140,10 +181,9 @@ export default class ShellTheme extends Extension {
 
     _update() {
         // debug with journalctl -f -o cat /usr/bin/gnome-shell
-        let wpColor = wallpaper.getWallpaperAverageColor();
+        let wpColor = wallpaper.getAverageColor();
         if (!wpColor)
             return;
-        console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b})`);
 
         const [h, s, l] = color.rgbToHsl(wpColor.r, wpColor.g, wpColor.b);    
         const hue_shell_shift = this._settings.get_int('hue-shell-shift');
@@ -160,16 +200,15 @@ export default class ShellTheme extends Extension {
         gnomeDesktop.settings.set_string('icon-theme', yaruThemeName);
         gnomeDesktop.settings.set_string('gtk-theme', yaruThemeName);
 
-        const accentName = this.getColorName(h + hue_accent_shift);
+        let accentName = gnomeDesktop.getColorName(h + hue_accent_shift);
+        if (!accentName || accentName === '')
+            accentName = 'orange'; // fallback to orange if accentName is empty
         gnomeDesktop.settings.set_string('accent-color', accentName);
 
-        //[wpColor.r, wpColor.g, wpColor.b] = color.hslToRgb(h, this._settings.get_int('saturation') / 100, 0.5);
-        //const accentHex = color.rgbToHex(wpColor.r, wpColor.g, wpColor.b);
-        //console.log(`avg-out: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}), hue: ${h}, accent: ${accentHex}`);
-        
-        
-        //gnomeDesktop.settings.set_string('gtk-theme', yaruThemeName);
-        
+        let accentHex = color.hslToRgb(h + hue_accent_shift, sat, 0.5);
+        accentHex = color.rgbToHex(accentHex[0], accentHex[1], accentHex[2]);
+
+        console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}) hue: ${h}, bkShift: ${hue_shell_shift}, acShift: ${hue_accent_shift}, shell: ${yaruThemeName}, accent: ${accentName}, accentHex: ${accentHex}`);      
 
         const stylesheetPath = GLib.build_filenamev([this.path, 'stylesheet.css']);
         const [success, contents] = Gio.File.new_for_path(stylesheetPath).load_contents(null);

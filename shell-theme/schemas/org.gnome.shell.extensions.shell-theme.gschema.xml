@@ -17,5 +17,17 @@
       <summary>Accent colour saturation</summary>
       <description>Set the saturation of the wallpaper accent colour.</description>
     </key>
+    <key name="hue-shell-shift" type="i">
+      <range min="0" max="360"/>
+      <default>0</default>
+      <summary>Shell hue shift</summary>
+      <description>Shift the wallpaper hue used for the shell theme.</description>
+    </key>
+    <key name="hue-accent-shift" type="i">
+      <range min="0" max="360"/>
+      <default>0</default>
+      <summary>Accent hue shift</summary>
+      <description>Shift the wallpaper hue used for the accent colour.</description>
+    </key>
   </schema>
 </schemalist>

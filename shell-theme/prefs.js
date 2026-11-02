@@ -52,8 +52,46 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
         saturationRow.activatable_widget = saturationSpinButton;
         group.add(saturationRow);
 
+        const shellHueShiftRow = new Adw.ActionRow({
+            title: _('Shell hue shift'),
+        });
+        const shellHueShiftSpinButton = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 360,
+                step_increment: 1,
+                page_increment: 10,
+            }),
+            climb_rate: 1,
+            digits: 0,
+            numeric: true,
+        });
+        shellHueShiftRow.add_suffix(shellHueShiftSpinButton);
+        shellHueShiftRow.activatable_widget = shellHueShiftSpinButton;
+        group.add(shellHueShiftRow);
+
+        const accentHueShiftRow = new Adw.ActionRow({
+            title: _('Accent hue shift'),
+        });
+        const accentHueShiftSpinButton = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 360,
+                step_increment: 1,
+                page_increment: 10,
+            }),
+            climb_rate: 1,
+            digits: 0,
+            numeric: true,
+        });
+        accentHueShiftRow.add_suffix(accentHueShiftSpinButton);
+        accentHueShiftRow.activatable_widget = accentHueShiftSpinButton;
+        group.add(accentHueShiftRow);
+
         settings.bind('enabled', enableRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind('highlight-mode', highlightRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind('saturation', saturationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('hue-shell-shift', shellHueShiftSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('hue-accent-shift', accentHueShiftSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
 }
