@@ -1,7 +1,7 @@
 // https://gjs-docs.gnome.org/gjs/
 
 import Gio from 'gi://Gio';
-import Gdk from 'gi://Gdk';
+import Gdk from 'gi://Gdk?version=4.0';
 import GLib from 'gi://GLib';
 import Soup from 'gi://Soup?version=3.0';
 import GdkPixbuf from 'gi://GdkPixbuf'; 
@@ -54,16 +54,6 @@ const gnomeDesktop = {
     }
 }
 
-async function download(url, callback) {
-    const session = new Soup.Session();
-    const msg = Soup.Message.new('GET', url);
-    const bytes = await session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
-    if (msg.get_status() !== Soup.Status.OK)
-        throw new Error(`HTTP ${msg.get_status()}: ${msg.get_reason_phrase()}`);
-    if (callback)
-        callback(bytes);
-}
-
 const wallpaper = {
     settings: new Gio.Settings({schema_id: 'org.gnome.desktop.background'}),
     getPath: function() {
@@ -95,65 +85,30 @@ const wallpaper = {
         return {r, g, b};
     },
     getScreenResolution: function() {
-        const mon = Gdk.Display.get_default()?.get_primary_monitor();
+        const monitors = Gdk.Display.get_default()?.get_monitors();
+        const mon = monitors?.get_item(0);
         const g = mon?.get_geometry();
         const s = mon?.get_scale_factor();
         console.log(`Screen resolution: ${g?.width}x${g?.height}, scale: ${s}`);
         return g && s ? [g.width * s, g.height * s] : [1920, 1080];
     },
-    getBingWallpaper: function(callback) {
+    getBingWallpaper: async function() {
         const [width, height] = wallpaper.getScreenResolution();
         const url = `https://bing.biturl.top/?resolution=${width}x${height}&format=json&index=0&mkt=en-US`;
-        download(url, (bytes) => {
-            const json = JSON.parse(new TextDecoder().decode(bytes.get_data()));
-            const uri = json.url;
-            download(uri, (bytes) => {
-                const path = GLib.build_filenamev([GLib.get_user_cache_dir(), extname, 'bing-wallpaper.jpg']);
-                GLib.mkdir_with_parents(GLib.build_filenamev([GLib.get_user_cache_dir(), extname]), 0o755);
-                GLib.file_set_contents(path, bytes.get_data());
-                const dark = gnomeDesktop.isDarkMode();
-                wallpaper.settings.set_string(dark ? 'picture-uri-dark' : 'picture-uri', `file://${path}`);
-                if (callback)
-                    callback();
-            });
-        });
+        const metadata = await utils.download(url);
+        const {url: imageUrl} = JSON.parse(new TextDecoder().decode(metadata.get_data()));
+        const bytes = await utils.download(imageUrl);
+        const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), extname]);
+        const path = GLib.build_filenamev([cacheDirectory, 'bing-wallpaper.jpg']);
+        GLib.mkdir_with_parents(cacheDirectory, 0o755);
+        GLib.file_set_contents(path, bytes.get_data());
+        const dark = gnomeDesktop.isDarkMode();
+        wallpaper.settings.set_string(dark ? 'picture-uri-dark' : 'picture-uri', `file://${path}`);
     }
 }
 
-const color = {
+const utils = {
     rgbToHex: (r, g, b) => '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join(''),
-    rgbToHsl: function(r, g, b) {
-        r /= 255; g /= 255; b /= 255;
-        let max = Math.max(r, g, b);
-        let min = Math.min(r, g, b);
-        let d = max - min;
-        let h;
-        if (d === 0) h = 0;
-        else if (max === r) h = (g - b) / d % 6;
-        else if (max === g) h = (b - r) / d + 2;
-        else if (max === b) h = (r - g) / d + 4;
-        let l = (min + max) / 2;
-        let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
-        return [Math.round(h * 60), s, l];
-    },
-    hslToRgb: function(h, s, l) {
-        let c = (1 - Math.abs(2 * l - 1)) * s;
-        let hp = h / 60.0;
-        let x = c * (1 - Math.abs((hp % 2) - 1));
-        let rgb1;
-        if (isNaN(h)) rgb1 = [0, 0, 0];
-        else if (hp <= 1) rgb1 = [c, x, 0];
-        else if (hp <= 2) rgb1 = [x, c, 0];
-        else if (hp <= 3) rgb1 = [0, c, x];
-        else if (hp <= 4) rgb1 = [0, x, c];
-        else if (hp <= 5) rgb1 = [x, 0, c];
-        else if (hp <= 6) rgb1 = [c, 0, x];
-        let m = l - c * 0.5;
-        return [
-            Math.round(255 * (rgb1[0] + m)),
-            Math.round(255 * (rgb1[1] + m)),
-            Math.round(255 * (rgb1[2] + m))];
-    },
     normHue: function(h, round = true) {
         const hue = ((h % 360) + 360) % 360;
         return round ? Math.round(hue) : hue;
@@ -175,57 +130,35 @@ const color = {
     hsl2rgb: function(h, s, l) {
         const invalidHue = isNaN(h);
         const a = invalidHue ? 0 : s * Math.min(l, 1 - l);
-        const hue = invalidHue ? 0 : color.normHue(h, false) / 30;
+        const hue = invalidHue ? 0 : utils.normHue(h, false) / 30;
         const channel = n => {
             const k = (n + hue) % 12;
             return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
         };
         return [channel(0), channel(8), channel(4)];
+    },
+    download: async function (url) {
+        const session = new Soup.Session();
+        const msg = Soup.Message.new('GET', url);
+        const bytes = await session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+        if (msg.get_status() !== Soup.Status.OK)
+            throw new Error(`HTTP ${msg.get_status()}: ${msg.get_reason_phrase()}`);
+        return bytes;
     }
 }
 
-export default class ShellTheme extends Extension {
-
-    enable() {
-        this._theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
-        this._settings = this.getSettings();
-        this._ids = [
-            [wallpaper.settings, wallpaper.settings.connect('changed', () => this._update())],
-            [gnomeDesktop.settings, gnomeDesktop.settings.connect('changed::color-scheme', () => this._update())],
-            [this._settings, this._settings.connect('changed::saturation', () => this._update())],
-            [this._settings, this._settings.connect('changed::hue-shell-shift', () => this._update())],
-            [this._settings, this._settings.connect('changed::hue-accent-shift', () => this._update())],
-            [this._settings, this._settings.connect('changed::wp-source', () => this._loadWallpaper())],
-            [this._settings, this._settings.connect('changed::icon-theme-src', () => this._update())],
-            [this._settings, this._settings.connect('changed::gtk-theme-src', () => this._update())],
-            [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
-        ];
-        this._originalThemeSettings = {
-            'icon-theme': gnomeDesktop.settings.get_string('icon-theme'),
-            'gtk-theme': gnomeDesktop.settings.get_string('gtk-theme'),
-            'accent-color': gnomeDesktop.settings.get_string('accent-color'),
-        };
-        this._lastThemeSettings = {};
-        this._loadWallpaper();
-    }
+export default class BingNTint extends Extension {
 
     _loadWallpaper() {
         if (this._settings.get_string('wp-source') === 'bing')
-            wallpaper.getBingWallpaper(() => this._update());
+            wallpaper.getBingWallpaper()
+                .then(() => this._update())
+                .catch(error => {
+                    console.error(`Failed to load Bing wallpaper: ${error}`);
+                    this._update();
+                });
         else
             this._update();
-    }
-
-    disable() {
-        if (this._customStylesheet)
-            this._theme.unload_stylesheet(this._customStylesheet);
-        this._ids.forEach(([obj, id]) => obj.disconnect(id));
-        this._ids = null;
-        this._customStylesheet = null;
-        this._theme = null;
-        this._settings = null;
-        this._originalThemeSettings = null;
-        this._lastThemeSettings = null;
     }
 
     _applyThemeSetting(setting, sourceKey, hue, shift, getName) {
@@ -251,37 +184,96 @@ export default class ShellTheme extends Extension {
         delete this._lastThemeSettings[setting];
     }
 
+    _loadExtensionFile(fname) {
+        const filePath = GLib.build_filenamev([this.path, fname]);
+        const [success, contents] = Gio.File.new_for_path(filePath).load_contents(null);
+        if (!success)
+            throw new Error(`Gnome Theme Color: could not read ${fname}`);
+        return new TextDecoder().decode(contents);
+    }
+
+    _saveFile(dir, fname, contents) {
+        GLib.mkdir_with_parents(dir, 0o755);
+        const path = GLib.build_filenamev([dir, fname]);
+        const [success, bytesWritten] = GLib.file_set_contents(path, contents);
+        if (!success)
+            throw new Error(`Gnome Theme Color: could not write ${path}`);
+        return [path, bytesWritten];
+    }
+
+    enable() {
+        this._theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
+        this._settings = this.getSettings();
+        this._ids = [
+            [wallpaper.settings, wallpaper.settings.connect('changed', () => this._update())],
+            [gnomeDesktop.settings, gnomeDesktop.settings.connect('changed::color-scheme', () => this._update())],
+            [this._settings, this._settings.connect('changed::saturation',       () => this._update())],
+            [this._settings, this._settings.connect('changed::hue-shell-shift',  () => this._update())],
+            [this._settings, this._settings.connect('changed::hue-accent-shift', () => this._update())],
+            [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWallpaper())],
+            [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
+            [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],
+            [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
+        ];
+        this._originalThemeSettings = {
+            'icon-theme':   gnomeDesktop.settings.get_string('icon-theme'),
+            'gtk-theme':    gnomeDesktop.settings.get_string('gtk-theme'),
+            'accent-color': gnomeDesktop.settings.get_string('accent-color'),
+        };
+        this._lastThemeSettings = {};
+        this._loadWallpaper();
+    }
+
+    disable() {
+        if (this._customStylesheet)
+            this._theme.unload_stylesheet(this._customStylesheet);
+        this._ids.forEach(([obj, id]) => obj.disconnect(id));
+        this._ids = null;
+        this._customStylesheet = null;
+        this._theme = null;
+        this._settings = null;
+        this._originalThemeSettings = null;
+        this._lastThemeSettings = null;
+    }
+
     _update() {
         // debug with journalctl -f -o cat /usr/bin/gnome-shell
         let wpColor = wallpaper.getAverageColor();
         if (!wpColor) {
-            this._restoreUserThemeSetting('icon-theme', 'icon-theme-src');
-            this._restoreUserThemeSetting('gtk-theme', 'gtk-theme-src');
+            this._restoreUserThemeSetting('icon-theme',   'icon-theme-src');
+            this._restoreUserThemeSetting('gtk-theme',    'gtk-theme-src');
             this._restoreUserThemeSetting('accent-color', 'accent-color-src');
             return;
         }
 
-        const [h, s, l] = color.rgb2hsl(wpColor.r, wpColor.g, wpColor.b);    
-        const hue_shell_shift = this._settings.get_int('hue-shell-shift');
+        const [h, s, l] = utils.rgb2hsl(wpColor.r, wpColor.g, wpColor.b);    
+        const hue_shell_shift  = this._settings.get_int('hue-shell-shift');
         const hue_accent_shift = this._settings.get_int('hue-accent-shift');
         const sat = this._settings.get_int('saturation')/100;
 
-        this._applyThemeSetting('icon-theme', 'icon-theme-src', h, hue_shell_shift, gnomeDesktop.getThemeName);
-        this._applyThemeSetting('gtk-theme', 'gtk-theme-src', h, hue_shell_shift, gnomeDesktop.getThemeName);
+        this._applyThemeSetting('icon-theme',   'icon-theme-src',   h, hue_shell_shift,  gnomeDesktop.getThemeName);
+        this._applyThemeSetting('gtk-theme',    'gtk-theme-src',    h, hue_shell_shift,  gnomeDesktop.getThemeName);
         this._applyThemeSetting('accent-color', 'accent-color-src', h, hue_accent_shift, gnomeDesktop.getColorName);
         const yaruThemeName = gnomeDesktop.settings.get_string('icon-theme');
         const accentName = gnomeDesktop.settings.get_string('accent-color');
 
-        let accentHex = color.hsl2rgb(h + hue_accent_shift, sat, 0.5);
-        accentHex = color.rgbToHex(accentHex[0], accentHex[1], accentHex[2]);
+        let accentHex = utils.hsl2rgb(h + hue_accent_shift, sat, 0.5);
+        accentHex = utils.rgbToHex(accentHex[0], accentHex[1], accentHex[2]);
 
         console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}) hue: ${h}, bkShift: ${hue_shell_shift}, acShift: ${hue_accent_shift}, shell: ${yaruThemeName}, accent: ${accentName}, accentHex: ${accentHex}`);      
+
+        //const stylesheetPath = GLib.build_filenamev([this.path, 'stylesheet.css']);
+        //const [success, contents] = Gio.File.new_for_path(stylesheetPath).load_contents(null);
+        //if (!success)
+        //    throw new Error('Gnome Theme Color: could not read stylesheet.css');
+
+
+        //const stylesheet = new TextDecoder().decode(contents).replaceAll('-st-accent-color', accentHex);
 
         const stylesheetPath = GLib.build_filenamev([this.path, 'stylesheet.css']);
         const [success, contents] = Gio.File.new_for_path(stylesheetPath).load_contents(null);
         if (!success)
             throw new Error('Gnome Theme Color: could not read stylesheet.css');
-
 
         const stylesheet = new TextDecoder().decode(contents).replaceAll('-st-accent-color', accentHex);
         const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), extname]);
@@ -296,5 +288,20 @@ export default class ShellTheme extends Extension {
         this._customStylesheet = Gio.File.new_for_path(this._customStylesheetPath);
         this._theme.load_stylesheet(this._customStylesheet);
 
+
+
+        const cssPath = GLib.build_filenamev([this.path, 'gtk.css']);
+        const [cssSuccess, cssContents] = Gio.File.new_for_path(cssPath).load_contents(null);
+        if (!cssSuccess)
+            throw new Error('Gnome Theme Color: could not read gtk.css');
+
+
+        const gtkcss = new TextDecoder().decode(cssContents);
+
+        const gtkCssDirectory = GLib.build_filenamev([GLib.get_user_config_dir(), 'gtk-4.0']);
+        const gtkCssPath = GLib.build_filenamev([gtkCssDirectory, 'gtk.css']);
+        GLib.mkdir_with_parents(gtkCssDirectory, 0o755);
+        GLib.file_set_contents(gtkCssPath, gtkcss);
+        console.log(`GTK CSS written to ${gtkCssPath}`);
     }
 }

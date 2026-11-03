@@ -1,7 +1,7 @@
 EXTNAME = bing-n-tint
 EXTENSION_UUID = $(EXTNAME)@gcdias
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
-FILES = extension.js metadata.json stylesheet.css prefs.js
+FILES = extension.js metadata.json stylesheet.css gtk.css prefs.js
 SCHEMA = schemas/org.gnome.shell.extensions.$(EXTNAME).gschema.xml
 
 install:
