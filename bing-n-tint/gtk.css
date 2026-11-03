@@ -1,0 +1,24 @@
+/*:root {
+  --window-bg-color: #1e1e2e;
+  --window-fg-color: #cdd6f4;
+  --popover-bg-color: #1e1e2e;
+  --popover-fg-color: #cdd6f4;
+  --view-bg-color: #181825;
+  --view-fg-color: #cdd6f4;
+  --headerbar-bg-color: #11111b;
+  --headerbar-fg-color: #cdd6f4;
+  --sidebar-bg-color: #181825;
+  --sidebar-fg-color: #cdd6f4;
+}*/
+
+window.nautilus-window {
+  font-family: 'Ubuntu Sans';
+  font-weight: 700;
+  font-size: 10pt;
+}
+
+window.nautilus-window popover.menu {
+  font-family: 'Ubuntu Sans';
+  font-weight: 700;
+  font-size: 10pt;
+}
