@@ -1,0 +1,9 @@
+{
+  "name": "Shell Theme",
+  "description": "Set the GNOME accent colour from the current wallpaper and tint the shell stylesheet.",
+  "uuid": "shell-theme@gcdias",
+  "shell-version": ["48", "49", "50"],
+  "settings-schema": "org.gnome.shell.extensions.shell-theme",
+  "url": "https://github.com/gcdias/gnome-extensions/shell-theme",
+  "version": 1
+}
