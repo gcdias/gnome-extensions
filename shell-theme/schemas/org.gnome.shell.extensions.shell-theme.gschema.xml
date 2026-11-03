@@ -11,6 +11,15 @@
       <summary>Use highlight colour</summary>
       <description>When enabled, use the wallpaper highlight colour instead of the dominant colour.</description>
     </key>
+    <key name="wp-source" type="s">
+      <choices>
+        <choice value="user"/>
+        <choice value="bing"/>
+      </choices>
+      <default>'bing'</default>
+      <summary>Wallpaper source</summary>
+      <description>Choose between the current wallpaper and a Bing wallpaper.</description>
+    </key>
     <key name="saturation" type="i">
       <range min="0" max="100"/>
       <default>50</default>
