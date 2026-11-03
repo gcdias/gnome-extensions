@@ -260,7 +260,7 @@ export default class BingNTint extends Extension {
         let accentHex = utils.hsl2rgb(h + hue_accent_shift, sat, 0.5);
         accentHex = utils.rgbToHex(accentHex[0], accentHex[1], accentHex[2]);
 
-        console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}) hue: ${h}, bkShift: ${hue_shell_shift}, acShift: ${hue_accent_shift}, shell: ${yaruThemeName}, accent: ${accentName}, accentHex: ${accentHex}`);      
+        console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}) hue: ${h}, sat: ${sat}, bkShift: ${hue_shell_shift}, acShift: ${hue_accent_shift}, shell: ${yaruThemeName}, accent: ${accentName}, accentHex: ${accentHex}`);      
 
         const stylesheetPath = GLib.build_filenamev([this.path, 'stylesheet.css']);
         const [success, contents] = Gio.File.new_for_path(stylesheetPath).load_contents(null);
@@ -286,7 +286,7 @@ export default class BingNTint extends Extension {
             throw new Error('Gnome Theme Color: could not read gtk.css');
 
 
-        const gtkcss = new TextDecoder().decode(cssContents).replaceAll('@accent_bg_color', accentHex);
+        const gtkcss = new TextDecoder().decode(cssContents).replaceAll('@base_color', accentHex);
 
         const gtkCssDirectory = GLib.build_filenamev([GLib.get_user_config_dir(), 'gtk-4.0']);
         const gtkCssPath = GLib.build_filenamev([gtkCssDirectory, 'gtk.css']);
