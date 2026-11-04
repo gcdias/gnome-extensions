@@ -275,12 +275,16 @@ export default class BingNTint extends Extension {
 
         let baseColorHex = utils.hsl2rgb(h + hue_shell_shift, sat, 0.5);
         baseColorHex = utils.rgbToHex(baseColorHex[0], baseColorHex[1], baseColorHex[2]);
-        let styleSheetSat = sat * 100 + "%";
+        let cssSat = [ sat * 100 + "%", sat * 20 + "%", sat * 10 + "%" ];
         let gtkSat = sat / 5;
 
         console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}) hue: ${h}, sat: ${sat}, bkShift: ${hue_shell_shift}, acShift: ${hue_accent_shift}, accentHex: ${baseColorHex}`);
 
-        const stylesheet = this._decodeCss('stylesheet.css').replaceAll('-st-accent-color', baseColorHex).replaceAll('-st-saturation',styleSheetSat);
+        const stylesheet = this._decodeCss('stylesheet.css')
+            .replaceAll('-st-accent-color', baseColorHex)
+            .replaceAll('-st-sat0', cssSat[0])
+            .replaceAll('-st-sat1', cssSat[1])
+            .replaceAll('-st-sat2', cssSat[2]);
         const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), extname]);
         GLib.mkdir_with_parents(cacheDirectory, 0o755);
 
