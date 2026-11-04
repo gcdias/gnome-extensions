@@ -149,24 +149,26 @@ const utils = {
         if (msg.get_status() !== Soup.Status.OK)
             throw new Error(`HTTP ${msg.get_status()}: ${msg.get_reason_phrase()}`);
         return bytes;
+    },
+    pct: function(value) {
+        return (value * 100).toFixed(0) + '%';
     }
 }
 
 export default class BingNTint extends Extension {
 
     _loadWallpaper() {
-        if (this._settings.get_string('wp-source') === 'bing')
+        if (this._settings.get_string('wp-source') === 'bing'){
             wallpaper.getBingWallpaper(this._bingIndex)
                 .then(() => {
-                    this._update();
+                    console.log(`Bing wallpaper loaded successfully at index ${this._bingIndex}, updating theme settings...`);
                     this._lastBingDownloadTime = Date.now();
+                    this._update();
                 })
                 .catch(error => {
                     console.error(`Failed to load Bing wallpaper: ${error}`);
-                    this._update();
                 });
-        else
-            this._update();
+            }
     }
 
     _applyThemeSetting(setting, sourceKey, hue, shift, getName) {
@@ -222,6 +224,13 @@ export default class BingNTint extends Extension {
         this._theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
         this._settings = this.getSettings();
         this._bingIndex = 0;
+        this._prefersDark = gnomeDesktop.isDarkMode();
+
+        this._cacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), extname]);
+        GLib.mkdir_with_parents(this._cacheDir, 0o755);
+
+        this._customStylesheet = null;
+
         this._ids = [
             [wallpaper.settings, wallpaper.settings.connect('changed', () => this._update())],
             [gnomeDesktop.settings, gnomeDesktop.settings.connect('changed::color-scheme', () => this._update())],
@@ -239,6 +248,7 @@ export default class BingNTint extends Extension {
             'accent-color': gnomeDesktop.settings.get_string('accent-color'),
         };
         this._lastThemeSettings = {};
+        this._update();
         this._loadWallpaper();
     }
 
@@ -252,6 +262,13 @@ export default class BingNTint extends Extension {
         this._settings = null;
         this._originalThemeSettings = null;
         this._lastThemeSettings = null;
+    }
+
+    _applyPalette(css, palette) {
+        for (const [key, value] of Object.entries(palette)) {
+            css = css.replaceAll(key, value);
+        }
+        return css;
     }
 
     _update() {
@@ -275,27 +292,28 @@ export default class BingNTint extends Extension {
 
         let baseColorHex = utils.hsl2rgb(h + hue_shell_shift, sat, 0.5);
         baseColorHex = utils.rgbToHex(baseColorHex[0], baseColorHex[1], baseColorHex[2]);
-        let cssSat = [ sat * 100 + "%", sat * 20 + "%", sat * 10 + "%" ];
+        let cssSat = [ utils.pct(0.2 + sat * 0.8), utils.pct(sat * 0.4), utils.pct(sat * 0.2) ];
         let gtkSat = sat / 5;
 
         console.log(`avg-in: rgb(${wpColor.r}, ${wpColor.g}, ${wpColor.b}) hue: ${h}, sat: ${sat}, bkShift: ${hue_shell_shift}, acShift: ${hue_accent_shift}, accentHex: ${baseColorHex}`);
 
-        const stylesheet = this._decodeCss('stylesheet.css')
-            .replaceAll('-st-accent-color', baseColorHex)
-            .replaceAll('-st-sat0', cssSat[0])
-            .replaceAll('-st-sat1', cssSat[1])
-            .replaceAll('-st-sat2', cssSat[2]);
-        const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), extname]);
-        GLib.mkdir_with_parents(cacheDirectory, 0o755);
+        const cssPalette = {
+            "-st-accent-color": baseColorHex,
+            "-st-sat0": cssSat[0],
+            "-st-sat1": cssSat[1],
+            "-st-sat2": cssSat[2]
+        }
+
+        const stylesheet = this._applyPalette(this._decodeCss('stylesheet.src'), cssPalette);
 
         if (this._customStylesheet)
             this._theme.unload_stylesheet(this._customStylesheet);
-        this._customStylesheetPath = GLib.build_filenamev([cacheDirectory, 'theme-color.css']);
-        GLib.file_set_contents(this._customStylesheetPath, stylesheet);
-        this._customStylesheet = Gio.File.new_for_path(this._customStylesheetPath);
+        const customStylesheetPath = GLib.build_filenamev([this._cacheDir, 'theme-color.css']);
+        GLib.file_set_contents(customStylesheetPath, stylesheet);
+        this._customStylesheet = Gio.File.new_for_path(customStylesheetPath);
         this._theme.load_stylesheet(this._customStylesheet);
 
-        const gtkcss = this._decodeCss('gtk.css').replaceAll('@base_color', baseColorHex).replaceAll('@base-sat', gtkSat);
+        const gtkcss = this._applyPalette(this._decodeCss('gtk.css'), { '@base_color': baseColorHex, '@base-sat': gtkSat });
         const gtkCssDirectory = GLib.build_filenamev([GLib.get_user_config_dir(), 'gtk-4.0']);
         const gtkCssPath = GLib.build_filenamev([gtkCssDirectory, 'gtk.css']);
         GLib.mkdir_with_parents(gtkCssDirectory, 0o755);

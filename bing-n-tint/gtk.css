@@ -1,4 +1,7 @@
+/* @see https://docs.gtk.org/gtk4/css-properties.html */
+
 @define-color accent_bg_color @base_color;
+
 /* =========================================
  * Light Mode Implementation
  * ========================================= */
@@ -76,6 +79,26 @@ toggle:checked {
 
 .inline {
   background-color: rgba(0, 0, 0, 0);
+}
+
+placessidebar {
+  background-color: @sidebar_bg_color;
+}
+
+.navigation-sidebar {
+  background-color: @sidebar_bg_color;
+}
+
+placesheaderbar {
+  background-color: @headerbar_bg_color;
+}
+
+headerbar {
+  background-color: @headerbar_bg_color;
+}
+
+window {
+  background-color: @window_bg_color;
 }
 
 window.nautilus-window {

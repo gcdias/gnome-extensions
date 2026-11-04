@@ -1,5 +1,3 @@
-/* stylelint-disable */
-
 .icon-button,
 .login-dialog-button.a11y-button,
 .login-dialog-button.cancel-button,
@@ -25,8 +23,8 @@
 .message-notification-group .message-collapse-button:focus,
 .calendar .calendar-month-header .pager-button:focus,
 .button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#ffffff, #36363a, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#ffffff, #36363a, 9%), -st-sat2);
 }
 
 .icon-button:focus:hover,
@@ -40,7 +38,7 @@
 .message-notification-group .message-collapse-button:focus:hover,
 .calendar .calendar-month-header .pager-button:focus:hover,
 .button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
 }
 
 .icon-button:hover,
@@ -143,7 +141,7 @@
 .message-notification-group .message-collapse-button:active:focus,
 .calendar .calendar-month-header .pager-button:active:focus,
 .button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #36363a, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #36363a, 9%), 9%), -st-sat2);
 }
 
 .icon-button:checked,
@@ -204,8 +202,8 @@
 .calendar .calendar-month-header .pager-button:focus,
 .button.flat:focus {
   color: #ffffff;
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(54, 54, 58, 0.25), -st-sat1);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(54, 54, 58, 0.25), -st-sat1);
 }
 
 .calendar .calendar-day-heading:focus:hover,
@@ -214,7 +212,7 @@
 .icon-button.flat:focus:hover,
 .calendar .calendar-month-header .pager-button:focus:hover,
 .button.flat:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#36363a, 7%), -st-sat1);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#36363a, 7%), -st-sat1);
 }
 
 .calendar .calendar-day-heading:hover,
@@ -280,7 +278,7 @@
 .icon-button.flat:active:focus,
 .calendar .calendar-month-header .pager-button:active:focus,
 .button.flat:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#36363a, 9%), -st-sat1);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#36363a, 9%), -st-sat1);
 }
 
 .calendar .calendar-day-heading:checked,
@@ -326,9 +324,9 @@
 .icon-button.default:focus,
 .button.default:focus {
   color: -st-accent-fg-color;
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
   box-shadow: inset 0 0 0 2px st-transparentize(st-lighten(-st-accent-color, 30%), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), -st-accent-color, -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), -st-accent-color, -st-sat2);
 }
 
 .keyboard-brightness-level .button:focus:hover:checked,
@@ -336,7 +334,7 @@
 .calendar .calendar-day.calendar-today:focus:hover,
 .icon-button.default:focus:hover,
 .button.default:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(-st-accent-color, 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(-st-accent-color, 4%), -st-sat2);
 }
 
 .keyboard-brightness-level .button:hover:checked,
@@ -379,7 +377,7 @@
 .calendar .calendar-day.calendar-today:active:focus,
 .icon-button.default:active:focus,
 .button.default:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(-st-accent-color, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(-st-accent-color, 9%), -st-sat2);
 }
 
 #LookingGlassExtensions .lg-extension,
@@ -431,7 +429,7 @@
 .events-button:active:focus,
 .world-clocks-button:active:focus,
 .weather-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#47474c, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#47474c, 9%), -st-sat2);
 }
 
 .quick-toggle-menu:focus,
@@ -439,8 +437,8 @@
 .events-button:focus,
 .world-clocks-button:focus,
 .weather-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), #47474c, -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #47474c, -st-sat2);
 }
 
 .quick-toggle-menu:focus:hover,
@@ -448,7 +446,7 @@
 .events-button:focus:hover,
 .world-clocks-button:focus:hover,
 .weather-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#47474c, 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#47474c, 4%), -st-sat2);
 }
 
 .message:insensitive,
@@ -471,7 +469,7 @@
 .datemenu-today-button:insensitive {
   background-color: st-mix(-st-accent-color, transparent !important, -st-sat1);
 }
-,,
+
 .calendar:hover,
 .datemenu-today-button:hover {
   background-color: st-mix(-st-accent-color, st-lighten(#36363a, 7%), -st-sat1);
@@ -489,18 +487,18 @@
 
 .calendar:active:focus,
 .datemenu-today-button:active:focus {
-  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#36363a, 9%), -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#36363a, 9%), 5%), -st-sat1);
 }
 
 .calendar:focus,
 .datemenu-today-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), #47474c, -st-sat2), -st-sat1);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, 60%), #47474c, 5%), -st-sat1);
 }
 
 .calendar:focus:hover,
 .datemenu-today-button:focus:hover {
-  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#47474c, 4%), -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#47474c, 4%), 5%), -st-sat1);
 }
 
 .calendar:insensitive,
@@ -528,8 +526,8 @@ StEntry:hover {
 }
 
 StEntry:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), #48484c, -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #48484c, -st-sat2);
 }
 
 StEntry:insensitive {
@@ -550,14 +548,14 @@ StEntry StLabel.hint-text {
 .notification-button:focus,
 .message .message-header .message-expand-button:focus,
 .message .message-header .message-close-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(255, 255, 255, 0.15), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(255, 255, 255, 0.15), -st-sat2);
 }
 
 .notification-button:focus:hover,
 .message .message-header .message-expand-button:focus:hover,
 .message .message-header .message-close-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(255, 255, 255, 0.3), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(255, 255, 255, 0.3), -st-sat2);
 }
 
 .notification-button:hover,
@@ -581,7 +579,7 @@ StEntry StLabel.hint-text {
 .notification-button:active:focus,
 .message .message-header .message-expand-button:active:focus,
 .message .message-header .message-close-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(255, 255, 255, 0.2), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(255, 255, 255, 0.2), -st-sat2);
 }
 
 .notification-button:checked,
@@ -614,12 +612,12 @@ StEntry StLabel.hint-text {
 }
 
 .modal-dialog .modal-dialog-button-box .modal-dialog-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(255, 255, 255, 0.1), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(255, 255, 255, 0.1), -st-sat2);
 }
 
 .modal-dialog .modal-dialog-button-box .modal-dialog-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(255, 255, 255, 0.13), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(255, 255, 255, 0.13), -st-sat2);
 }
 
 .modal-dialog .modal-dialog-button-box .modal-dialog-button:hover {
@@ -637,7 +635,7 @@ StEntry StLabel.hint-text {
 }
 
 .modal-dialog .modal-dialog-button-box .modal-dialog-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(255, 255, 255, 0.16), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(255, 255, 255, 0.16), -st-sat2);
 }
 
 .modal-dialog .modal-dialog-button-box .modal-dialog-button:checked {
@@ -684,8 +682,8 @@ StEntry StLabel.hint-text {
 }
 
 .lg-dialog StEntry:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), #414146, -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #414146, -st-sat2);
 
 }
 
@@ -704,15 +702,15 @@ StEntry StLabel.hint-text {
 #LookingGlassPropertyInspector .lg-obj-inspector-close-button:focus,
 #LookingGlassPropertyInspector .lg-obj-inspector-button:focus,
 #LookingGlassDialog>#Toolbar .lg-toolbar-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#ffffff, #2e2e33, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#ffffff, #2e2e33, 9%), -st-sat2);
 }
 
 #LookingGlassDebugFlags .lg-debug-flag-button:focus:hover,
 #LookingGlassPropertyInspector .lg-obj-inspector-close-button:focus:hover,
 #LookingGlassPropertyInspector .lg-obj-inspector-button:focus:hover,
 #LookingGlassDialog>#Toolbar .lg-toolbar-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #2e2e33, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #2e2e33, 9%), 4%), -st-sat2);
 }
 
 #LookingGlassDebugFlags .lg-debug-flag-button:hover,
@@ -740,7 +738,7 @@ StEntry StLabel.hint-text {
 #LookingGlassPropertyInspector .lg-obj-inspector-close-button:active:focus,
 #LookingGlassPropertyInspector .lg-obj-inspector-button:active:focus,
 #LookingGlassDialog>#Toolbar .lg-toolbar-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #2e2e33, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #2e2e33, 9%), 9%), -st-sat2);
 }
 
 #LookingGlassDebugFlags .lg-debug-flag-button:checked,
@@ -781,14 +779,14 @@ StEntry StLabel.hint-text {
 #LookingGlassDialog .notebook-tab:focus,
 .screenshot-ui-show-pointer-button:focus,
 .screenshot-ui-type-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(46, 46, 51, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(46, 46, 51, 0.25), -st-sat2);
 }
 
 #LookingGlassDialog .notebook-tab:focus:hover,
 .screenshot-ui-show-pointer-button:focus:hover,
 .screenshot-ui-type-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#2e2e33, 7%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#2e2e33, 7%), -st-sat2);
 }
 
 #LookingGlassDialog .notebook-tab:hover,
@@ -812,7 +810,7 @@ StEntry StLabel.hint-text {
 #LookingGlassDialog .notebook-tab:active:focus,
 .screenshot-ui-show-pointer-button:active:focus,
 .screenshot-ui-type-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#2e2e33, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#2e2e33, 9%), -st-sat2);
 }
 
 #LookingGlassDialog .notebook-tab:checked,
@@ -857,8 +855,8 @@ StEntry StLabel.hint-text {
 .login-dialog .login-dialog-prompt-entry:focus,
 .app-folder-dialog .folder-name-container .folder-name-entry:focus,
 .search-entry:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), #404045, -st-sat2), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, 60%), #404045, 5%), -st-sat2);
 }
 
 .login-dialog .login-dialog-prompt-entry:insensitive,
@@ -886,15 +884,15 @@ StEntry StLabel.hint-text {
 .login-dialog-button.cancel-button:focus,
 .login-dialog-button.switch-user-button:focus,
 .login-dialog-button.login-dialog-session-list-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#fafafb, #2e2e33, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#fafafb, #2e2e33, 9%), -st-sat2);
 }
 
 .login-dialog-button.a11y-button:focus:hover,
 .login-dialog-button.cancel-button:focus:hover,
 .login-dialog-button.switch-user-button:focus:hover,
 .login-dialog-button.login-dialog-session-list-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #2e2e33, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #2e2e33, 9%), 4%), -st-sat2);
 }
 
 .login-dialog-button.a11y-button:hover,
@@ -922,7 +920,7 @@ StEntry StLabel.hint-text {
 .login-dialog-button.cancel-button:active:focus,
 .login-dialog-button.switch-user-button:active:focus,
 .login-dialog-button.login-dialog-session-list-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #2e2e33, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #2e2e33, 9%), 9%), -st-sat2);
 }
 
 .login-dialog-button.a11y-button:checked,
@@ -952,12 +950,12 @@ StEntry StLabel.hint-text {
 }
 
 .unlock-dialog-notifications-container .message StButton:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(250, 250, 251, 0.1), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(250, 250, 251, 0.1), -st-sat2);
 }
 
 .unlock-dialog-notifications-container .message StButton:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(250, 250, 251, 0.13), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(250, 250, 251, 0.13), -st-sat2);
 }
 
 .unlock-dialog-notifications-container .message StButton:hover {
@@ -973,7 +971,7 @@ StEntry StLabel.hint-text {
 }
 
 .unlock-dialog-notifications-container .message StButton:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(250, 250, 251, 0.16), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(250, 250, 251, 0.16), -st-sat2);
 }
 
 .unlock-dialog-notifications-container .message StButton:checked {
@@ -1004,7 +1002,7 @@ StEntry StLabel.hint-text {
 
 .unlock-dialog .login-dialog-prompt-entry:focus {
   box-shadow: inset 0 0 0 2px st-transparentize(rgba(250, 250, 251, 0.4), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(250, 250, 251, 0.1), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(250, 250, 251, 0.1), -st-sat2);
   box-shadow: inset 0 0 0 2px st-transparentize(rgba(250, 250, 251, 0.4), 0.2) !important;
   background-color: st-mix(rgba(250, 250, 251, 0.4), rgba(250, 250, 251, 0.1), -st-sat2);
 }
@@ -1039,7 +1037,7 @@ StEntry StLabel.hint-text {
 }
 
 .check-box:checked:hover StIcon {
-  background-color: st-mix(-st-accent-color, st-lighten(-st-accent-color, -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-lighten(-st-accent-color, 5%), -st-sat1);
   color: st-lighten(-st-accent-fg-color, -st-sat2);
 }
 
@@ -1054,7 +1052,7 @@ StEntry StLabel.hint-text {
 }
 
 .toggle-switch:checked:hover {
-  background-color: st-mix(-st-accent-color, st-lighten(-st-accent-color, -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-lighten(-st-accent-color, 5%), -st-sat1);
   color: st-lighten(-st-accent-fg-color, -st-sat2);
 }
 
@@ -1108,7 +1106,7 @@ StScrollBar>.hhandle:active {
 }
 
 .popup-menu-item:active:focus {
-  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#424247, 9%), -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#424247, 9%), 5%), -st-sat1);
 }
 
 .popup-menu-item:hover,
@@ -1145,7 +1143,7 @@ StScrollBar>.hhandle:active {
 }
 
 .popup-sub-menu .popup-menu-item:active:focus {
-  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#56565c, 9%), -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#56565c, 9%), 5%), -st-sat1);
 }
 
 .popup-sub-menu .popup-menu-item:hover,
@@ -1241,12 +1239,12 @@ StScrollBar>.hhandle:active {
 }
 
 .audio-device-selection-dialog .audio-selection-box .audio-selection-device:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(54, 54, 58, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(54, 54, 58, 0.25), -st-sat2);
 }
 
 .audio-device-selection-dialog .audio-selection-box .audio-selection-device:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#36363a, 7%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#36363a, 7%), -st-sat2);
 }
 
 .audio-device-selection-dialog .audio-selection-box .audio-selection-device:hover {
@@ -1262,7 +1260,7 @@ StScrollBar>.hhandle:active {
 }
 
 .audio-device-selection-dialog .audio-selection-box .audio-selection-device:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#36363a, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#36363a, 9%), -st-sat2);
 }
 
 .audio-device-selection-dialog .audio-selection-box .audio-selection-device:highlighted,
@@ -1315,12 +1313,12 @@ StScrollBar>.hhandle:active {
 }
 
 .switcher-list .item-box:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(46, 46, 51, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(46, 46, 51, 0.25), -st-sat2);
 }
 
 .switcher-list .item-box:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#2e2e33, 7%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#2e2e33, 7%), -st-sat2);
 }
 
 .switcher-list .item-box:hover {
@@ -1336,7 +1334,7 @@ StScrollBar>.hhandle:active {
 }
 
 .switcher-list .item-box:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#2e2e33, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#2e2e33, 9%), -st-sat2);
 }
 
 .switcher-list .item-box:highlighted,
@@ -1448,7 +1446,7 @@ StScrollBar>.hhandle:active {
 }
 
 .screenshot-ui-window-selector-window:hover .screenshot-ui-window-selector-window-border {
-  border-color: st-darken(-st-accent-color, 1-st-sat2);
+  border-color: st-darken(-st-accent-color, 15%);
 }
 
 .screenshot-ui-window-selector-window:checked .screenshot-ui-window-selector-window-border {
@@ -1494,12 +1492,12 @@ StScrollBar>.hhandle:active {
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#ffffff, #4a4a4f, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#ffffff, #4a4a4f, 9%), -st-sat2);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #4a4a4f, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #4a4a4f, 9%), 4%), -st-sat2);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:hover {
@@ -1515,41 +1513,41 @@ StScrollBar>.hhandle:active {
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #4a4a4f, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #4a4a4f, 9%), 9%), -st-sat2);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked {
   color: -st-accent-fg-color;
-  background-color: st-mix(-st-accent-color, #ffffff, 8-st-sat2);
+  background-color: st-mix(-st-accent-color, #ffffff, 85%);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:focus {
   color: -st-accent-fg-color;
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
   box-shadow: inset 0 0 0 2px st-transparentize(st-lighten(-st-accent-color, 30%), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(-st-accent-color, #ffffff, 8-st-sat2), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(-st-accent-color, #ffffff, 85%), -st-sat2);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(-st-accent-color, #ffffff, 8-st-sat2), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(-st-accent-color, #ffffff, 85%), 4%), -st-sat2);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:hover {
   color: -st-accent-fg-color;
-  background-color: st-mix(-st-accent-color, st-lighten(st-mix(-st-accent-color, #ffffff, 8-st-sat2), 4%), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-lighten(st-mix(-st-accent-color, #ffffff, 85%), 4%), -st-sat1);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:active {
   color: -st-accent-fg-color;
-  background-color: st-mix(-st-accent-color, st-lighten(st-mix(-st-accent-color, #ffffff, 8-st-sat2), 9%), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-lighten(st-mix(-st-accent-color, #ffffff, 85%), 9%), -st-sat1);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:active:hover {
-  background-color: st-mix(-st-accent-color, st-lighten(st-lighten(st-mix(-st-accent-color, #ffffff, 8-st-sat2), 9%), 4%), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-lighten(st-lighten(st-mix(-st-accent-color, #ffffff, 85%), 9%), 4%), -st-sat1);
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(-st-accent-color, #ffffff, 8-st-sat2), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(-st-accent-color, #ffffff, 85%), 9%), -st-sat2);
 }
 
 .quick-toggle-has-menu:checked .quick-toggle-separator {
@@ -1561,12 +1559,12 @@ StScrollBar>.hhandle:active {
 }
 
 .quick-slider .slider-bin:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#ffffff, #36363a, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#ffffff, #36363a, 9%), -st-sat2);
 }
 
 .quick-slider .slider-bin:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
 }
 
 .quick-toggle-menu:insensitive {
@@ -1641,8 +1639,8 @@ StScrollBar>.hhandle:active {
 
 .list-search-result:focus,
 .search-provider-icon:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(56, 56, 59, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(56, 56, 59, 0.25), -st-sat2);
 }
 
 .list-search-result:hover,
@@ -1664,7 +1662,7 @@ StScrollBar>.hhandle:active {
 
 .list-search-result:active:focus,
 .search-provider-icon:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#38383b, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#38383b, 9%), -st-sat2);
 }
 
 .list-search-result:highlighted,
@@ -1721,7 +1719,7 @@ StScrollBar>.hhandle:active {
 
 #dash .show-apps:focus .overview-icon,
 #dash .overview-tile:focus .overview-icon {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(56, 56, 59, 0.25), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(56, 56, 59, 0.25), -st-sat2);
 }
 
 #dash .show-apps:hover .overview-icon,
@@ -1757,13 +1755,13 @@ StScrollBar>.hhandle:active {
 
 .overview-tile:focus,
 .grid-search-result:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(34, 34, 38, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(34, 34, 38, 0.25), -st-sat2);
 }
 
 .overview-tile:focus:hover,
 .grid-search-result:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#222226, 7%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#222226, 7%), -st-sat2);
 }
 
 .overview-tile:hover,
@@ -1783,7 +1781,7 @@ StScrollBar>.hhandle:active {
 
 .overview-tile:active:focus,
 .grid-search-result:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#222226, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#222226, 9%), -st-sat2);
 }
 
 .overview-tile:highlighted,
@@ -1829,12 +1827,12 @@ StScrollBar>.hhandle:active {
 }
 
 .app-folder:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#fafafb, #222226, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#fafafb, #222226, 9%), -st-sat2);
 }
 
 .app-folder:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #222226, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #222226, 9%), 4%), -st-sat2);
 }
 
 .app-folder:hover {
@@ -1850,7 +1848,7 @@ StScrollBar>.hhandle:active {
 }
 
 .app-folder:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #222226, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #222226, 9%), 9%), -st-sat2);
 }
 
 .app-folder:highlighted,
@@ -1905,7 +1903,7 @@ StScrollBar>.hhandle:active {
 }
 
 .app-folder-dialog .icon-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #38383b, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #38383b, 9%), 9%), -st-sat2);
 }
 
 .app-folder-dialog .page-navigation-arrow {
@@ -1925,7 +1923,7 @@ StScrollBar>.hhandle:active {
 }
 
 .app-folder-dialog .page-navigation-arrow:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#38383b, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#38383b, 9%), -st-sat2);
 }
 
 .app-folder-dialog .overview-tile,
@@ -1936,13 +1934,13 @@ StScrollBar>.hhandle:active {
 
 .app-folder-dialog .overview-tile:focus,
 .app-folder-dialog .grid-search-result:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(56, 56, 59, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(56, 56, 59, 0.25), -st-sat2);
 }
 
 .app-folder-dialog .overview-tile:focus:hover,
 .app-folder-dialog .grid-search-result:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#38383b, 7%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#38383b, 7%), -st-sat2);
 }
 
 .app-folder-dialog .overview-tile:hover,
@@ -1962,7 +1960,7 @@ StScrollBar>.hhandle:active {
 
 .app-folder-dialog .overview-tile:active:focus,
 .app-folder-dialog .grid-search-result:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#38383b, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#38383b, 9%), -st-sat2);
 }
 
 .app-folder-dialog .overview-tile:highlighted,
@@ -2028,7 +2026,7 @@ StScrollBar>.hhandle:active {
 }
 
 .page-navigation-arrow:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#222226, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#222226, 9%), -st-sat2);
 }
 
 .workspace-thumbnails .workspace-thumbnail {
@@ -2079,12 +2077,12 @@ StScrollBar>.hhandle:active {
 }
 
 .keyboard-key:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#ffffff, #36363a, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#ffffff, #36363a, 9%), -st-sat2);
 }
 
 .keyboard-key:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
 }
 
 .keyboard-key:hover {
@@ -2100,7 +2098,7 @@ StScrollBar>.hhandle:active {
 }
 
 .keyboard-key:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #4d4d4d, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #4d4d4d, 9%), 9%), -st-sat2);
 }
 
 .keyboard-key:checked {
@@ -2132,7 +2130,7 @@ StScrollBar>.hhandle:active {
 }
 
 .keyboard-key.default-key:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #333333, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #333333, 9%), 9%), -st-sat2);
 }
 
 .keyboard-key.default-key:checked {
@@ -2171,12 +2169,12 @@ StScrollBar>.hhandle:active {
 }
 
 .word-suggestions StButton:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#ffffff, #36363a, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#ffffff, #36363a, 9%), -st-sat2);
 }
 
 .word-suggestions StButton:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #36363a, 9%), 4%), -st-sat2);
 }
 
 .word-suggestions StButton:hover {
@@ -2192,7 +2190,7 @@ StScrollBar>.hhandle:active {
 }
 
 .word-suggestions StButton:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #4d4d4d, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #4d4d4d, 9%), 9%), -st-sat2);
 }
 
 .word-suggestions StButton:checked {
@@ -2233,7 +2231,7 @@ StScrollBar>.hhandle:active {
 }
 
 #LookingGlassDialog .notebook-tab:selected:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#ffffff, #2e2e33, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#ffffff, #2e2e33, 9%), 9%), -st-sat2);
 }
 
 #LookingGlassPropertyInspector {
@@ -2254,7 +2252,7 @@ StScrollBar>.hhandle:active {
 }
 
 #LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked:hover {
-  background-color: st-mix(-st-accent-color, st-lighten(-st-accent-color, -st-sat2), -st-sat1);
+  background-color: st-mix(-st-accent-color, st-lighten(-st-accent-color, 5%), -st-sat1);
   color: st-lighten(-st-accent-fg-color, -st-sat2);
 }
 
@@ -2267,12 +2265,12 @@ StScrollBar>.hhandle:active {
 }
 
 .login-dialog-not-listed-button:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), rgba(34, 34, 38, 0.25), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), rgba(34, 34, 38, 0.25), -st-sat2);
 }
 
 .login-dialog-not-listed-button:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#222226, 7%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#222226, 7%), -st-sat2);
 }
 
 .login-dialog-not-listed-button:hover {
@@ -2288,7 +2286,7 @@ StScrollBar>.hhandle:active {
 }
 
 .login-dialog-not-listed-button:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(#222226, 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#222226, 9%), -st-sat2);
 }
 
 .login-dialog-auth-list-view {
@@ -2301,13 +2299,13 @@ StScrollBar>.hhandle:active {
 
 .login-dialog .login-dialog-auth-list-item:selected,
 .login-dialog .login-dialog-auth-list-item:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#fafafb, #222226, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#fafafb, #222226, 9%), -st-sat2);
 }
 
 .login-dialog .login-dialog-auth-list-item:selected:hover,
 .login-dialog .login-dialog-auth-list-item:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #222226, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #222226, 9%), 4%), -st-sat2);
 }
 
 .login-dialog .login-dialog-auth-list-item:hover {
@@ -2323,7 +2321,7 @@ StScrollBar>.hhandle:active {
 }
 
 .login-dialog .login-dialog-auth-list-item:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #222226, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #222226, 9%), 9%), -st-sat2);
 }
 
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item {
@@ -2332,13 +2330,13 @@ StScrollBar>.hhandle:active {
 
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:selected,
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:focus {
-  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, -st-sat0), 0.2) !important;
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-mix(#fafafb, #222226, 9%), -st-sat2);
+  box-shadow: inset 0 0 0 2px st-transparentize(st-mix(-st-accent-color, #ffffff, 60%), 0.2) !important;
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-mix(#fafafb, #222226, 9%), -st-sat2);
 }
 
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:selected:hover,
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:focus:hover {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #222226, 9%), 4%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #222226, 9%), 4%), -st-sat2);
 }
 
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:hover {
@@ -2354,7 +2352,7 @@ StScrollBar>.hhandle:active {
 }
 
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:active:focus {
-  background-color: st-mix(st-mix(-st-accent-color, #ffffff, -st-sat0), st-lighten(st-mix(#fafafb, #222226, 9%), 9%), -st-sat2);
+  background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(st-mix(#fafafb, #222226, 9%), 9%), -st-sat2);
 }
 
 .login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item .login-dialog-timed-login-indicator {
