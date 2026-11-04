@@ -45,11 +45,11 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
             const row = new Adw.ComboRow({
                 title,
                 subtitle,
-                model: Gtk.StringList.new([_('User'), _('Hue'), _('Shift')]),
+                model: Gtk.StringList.new([_('Disable'), _('Hue'), _('Shift')]),
             });
             group.add(row);
 
-            const sources = ['user', 'hue', 'shift'];
+            const sources = ['off', 'hue', 'shift'];
             const updateSource = () => {
                 const selectedSource = sources.indexOf(settings.get_string(key));
                 if (selectedSource >= 0 && row.selected !== selectedSource)
@@ -65,19 +65,22 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
 
         addThemeSourceRow(
             'icon-theme-src',
-            _('Icon theme source'),
-            _('Choose how the icon theme is selected.')
+            _('Tint Icon Theme'),
+            _('Disable, set to wallpaper hue or shift the hue')
         );
-        addThemeSourceRow(
-            'gtk-theme-src',
-            _('GTK theme source'),
-            _('Choose how the GTK theme is selected.')
-        );
+
         addThemeSourceRow(
             'accent-color-src',
-            _('Accent colour source'),
+            _('Tint Accent colour source'),
             _('Choose how the accent colour is selected.')
         );
+
+        addThemeSourceRow(
+            'gtk-theme-src',
+            _('Tint GTK/Shell Theme'),
+            _('Disable, set to wallpaper hue or shift the hue')
+        );
+        
 
         const enableRow = new Adw.SwitchRow({
             title: _('Enable theme tint'),
@@ -86,15 +89,6 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
         group.add(enableRow);
         settings.bind('enabled', enableRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         
-        
-        const highlightRow = new Adw.SwitchRow({
-            title: _('Use highlight colour'),
-            subtitle: _('Use the wallpaper highlight colour instead of the dominant colour.'),
-        });
-        group.add(highlightRow);
-        settings.bind('highlight-mode', highlightRow, 'active', Gio.SettingsBindFlags.DEFAULT);
-        
-
 
         const saturationRow = new Adw.SpinRow({
             title: _('Saturation'),
