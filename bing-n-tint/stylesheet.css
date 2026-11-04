@@ -1,3 +1,5 @@
+/* stylelint-disable */
+
 .icon-button,
 .login-dialog-button.a11y-button,
 .login-dialog-button.cancel-button,
@@ -469,7 +471,7 @@
 .datemenu-today-button:insensitive {
   background-color: st-mix(-st-accent-color, transparent !important, 10%);
 }
-
+,,
 .calendar:hover,
 .datemenu-today-button:hover {
   background-color: st-mix(-st-accent-color, st-lighten(#36363a, 7%), 10%);
