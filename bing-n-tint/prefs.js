@@ -1,3 +1,4 @@
+import Gdk from 'gi://Gdk';
 import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
@@ -6,8 +7,52 @@ import {
     gettext as _,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-export default class GnomeThemeColorPreferences extends ExtensionPreferences {
+
+export default class BingNTintPreferences extends ExtensionPreferences {
     
+    _addSpinRow(group, settings, key, title, subtitle, min, max, step, page){
+        const spinRow = new Adw.SpinRow({
+            title: _(title),
+            subtitle: _(subtitle),
+            adjustment: new Gtk.Adjustment({
+                lower: min,
+                upper: max,
+                step_increment: step,
+                page_increment: page,
+            }),
+            climb_rate: 1,
+            digits: 0,
+            numeric: true,
+        });
+        group.add(spinRow);
+        settings.bind(key, spinRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+    }
+
+    _addComboBox(group, settings, key, title, subtitle, kv) {
+        const values = Object.values(kv);
+        const row = new Adw.ComboRow({
+            title: _(title),
+            subtitle: _(subtitle),
+            model: Gtk.StringList.new(Object.keys(kv)),
+        });
+        group.add(row);
+
+        const updateSelection = () => {
+            const index = values.indexOf(settings.get_string(key));
+            if (index >= 0 && row.selected !== index)
+                row.selected = index;
+        };
+
+        updateSelection();
+
+        row.connect('notify::selected', () => {
+            if (row.selected < values.length)
+                settings.set_string(key, values[row.selected]);
+        });
+
+        settings.connect(`changed::${key}`, updateSelection);
+    }
+
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
 
@@ -22,65 +67,48 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
         });
         page.add(group);
 
+        this._addComboBox(group, settings,
+            'wp-source',
+            'Wallpaper',
+            'Select the source of wallpaper',
+            { "User" : "user", "Bing": "bing"}
+        )
 
-        const wallpaperSourceRow = new Adw.ComboRow({
-            title: _('Wallpaper source'),
-            subtitle: _('Select the source of the wallpaper.'),
-            model: Gtk.StringList.new([_('User'), _('Bing')]),
-        });
-        group.add(wallpaperSourceRow);
-
-        const updateWallpaperSource = () => {
-            const selectedSource = settings.get_string('wp-source') === 'bing' ? 1 : 0;
-            if (wallpaperSourceRow.selected !== selectedSource)
-                wallpaperSourceRow.selected = selectedSource;
-        };
-        wallpaperSourceRow.selected = settings.get_string('wp-source') === 'bing' ? 1 : 0;
-        wallpaperSourceRow.connect('notify::selected', () => {
-            settings.set_string('wp-source', wallpaperSourceRow.selected === 1 ? 'bing' : 'user');
-        });
-        settings.connect('changed::wp-source', updateWallpaperSource);
-
-        const addThemeSourceRow = (key, title, subtitle) => {
-            const row = new Adw.ComboRow({
-                title,
-                subtitle,
-                model: Gtk.StringList.new([_('Disable'), _('Hue'), _('Shift')]),
-            });
-            group.add(row);
-
-            const sources = ['off', 'hue', 'shift'];
-            const updateSource = () => {
-                const selectedSource = sources.indexOf(settings.get_string(key));
-                if (selectedSource >= 0 && row.selected !== selectedSource)
-                    row.selected = selectedSource;
-            };
-            updateSource();
-            row.connect('notify::selected', () => {
-                if (row.selected < sources.length)
-                    settings.set_string(key, sources[row.selected]);
-            });
-            settings.connect(`changed::${key}`, updateSource);
-        };
-
-        addThemeSourceRow(
-            'icon-theme-src',
-            _('Tint Icon Theme'),
-            _('Disable, set to wallpaper hue or shift the hue')
-        );
-
-        addThemeSourceRow(
-            'accent-color-src',
-            _('Tint Accent colour source'),
-            _('Choose how the accent colour is selected.')
-        );
-
-        addThemeSourceRow(
-            'gtk-theme-src',
-            _('Tint GTK/Shell Theme'),
-            _('Disable, set to wallpaper hue or shift the hue')
+        this._addSpinRow(group, settings,
+            'bing-index',
+            'Bing Wallpaper Index',
+            'Select the index of the Bing wallpaper to use.',
+             0, 10, 1, 2
         );
         
+        const themeOpts = {
+            "Disable": "off",
+            "Hue": "hue",
+            "Hue-shift": "shift"
+        }
+
+        this._addComboBox(group, settings,
+            'icon-theme-src',
+            'Tint Icon Theme',
+            'Disable, set to wallpaper hue or shift the hue',
+            themeOpts
+        )
+
+        this._addComboBox(group, settings,
+            'accent-color-src',
+            'Tint Accent colour source',
+            'Choose how the accent colour is selected.',
+            themeOpts
+        )
+
+        this._addComboBox(group, settings,
+            'gtk-theme-src',
+            'Tint GTK/Shell Theme',
+            'Disable, set to wallpaper hue or shift the hue',
+            themeOpts
+        )
+
+       
 
         const enableRow = new Adw.SwitchRow({
             title: _('Enable theme tint'),
@@ -90,55 +118,64 @@ export default class GnomeThemeColorPreferences extends ExtensionPreferences {
         settings.bind('enabled', enableRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         
 
-        const saturationRow = new Adw.SpinRow({
-            title: _('Saturation'),
-            subtitle: _('Adjust the saturation of the theme colour.'),
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 100,
-                step_increment: 1,
-                page_increment: 10,
-            }),
-            climb_rate: 1,
-            digits: 0,
-            numeric: true,
-        });
-        group.add(saturationRow);
-        settings.bind('saturation', saturationRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        this._addSpinRow(group, settings,
+            'saturation',
+            'Saturation',
+            'Adjust the saturation of the theme colour.',
+            0, 100, 1, 10
+        );
+        
+        this._addSpinRow(group, settings,
+            'hue-shell-shift',
+            'Shell hue shift',
+            'Adjust the hue of the shell colour.',
+            0, 360, 1, 10
+        )
+
+        this._addSpinRow(group, settings,
+            'hue-accent-shift',
+            'Accent hue shift',
+            'Adjust the hue of the accent colour.',
+            0, 360, 1, 10
+        )
         
 
-        const shellHueShiftRow = new Adw.SpinRow({
-            title: _('Shell hue shift'),
-            subtitle: _('Adjust the hue of the shell colour.'),
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 360,
-                step_increment: 1,
-                page_increment: 10,
-            }),
-            climb_rate: 1,
-            digits: 0,
-            numeric: true,
+        const debugPage = new Adw.PreferencesPage({
+            title: _('Debug'),
+            icon_name: 'utilities-terminal-symbolic',
         });
-        group.add(shellHueShiftRow);
-        settings.bind('hue-shell-shift', shellHueShiftRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        window.add(debugPage);
 
-
-        const accentHueShiftRow = new Adw.SpinRow({
-            title: _('Accent hue shift'),
-            subtitle: _('Adjust the hue of the accent colour.'),
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 360,
-                step_increment: 1,
-                page_increment: 10,
-            }),
-            climb_rate: 1,
-            digits: 0,
-            numeric: true,
+        const debugGroup = new Adw.PreferencesGroup({
+            title: _('Console output'),
         });
-        group.add(accentHueShiftRow);
-        settings.bind('hue-accent-shift', accentHueShiftRow, 'value', Gio.SettingsBindFlags.DEFAULT);
-        
+        debugPage.add(debugGroup);
+
+        const debugTextView = new Gtk.TextView({
+            editable: false,
+            cursor_visible: false,
+            monospace: true,
+            wrap_mode: Gtk.WrapMode.NONE,
+        });
+        debugTextView.add_css_class('debug-log');
+        const debugTextStyle = new Gtk.CssProvider();
+        debugTextStyle.load_from_data('.debug-log { font-family: monospace; font-size: 10px; }', -1);
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(),
+            debugTextStyle,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        );
+        const debugScroll = new Gtk.ScrolledWindow({
+            min_content_height: 300,
+            hscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
+            child: debugTextView,
+        });
+        debugGroup.add(debugScroll);
+
+        const updateDebugLog = () => {
+            debugTextView.buffer.set_text(settings.get_string('debug-log'), -1);
+        };
+        updateDebugLog();
+        settings.connect('changed::debug-log', updateDebugLog);
     }
 }

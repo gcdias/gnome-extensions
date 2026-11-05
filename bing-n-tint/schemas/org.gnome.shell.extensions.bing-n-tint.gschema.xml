@@ -6,10 +6,10 @@
       <summary>Enable the theme colour tint</summary>
       <description>Apply the accent colour derived from the current wallpaper.</description>
     </key>
-    <key name="highlight-mode" type="b">
-      <default>false</default>
-      <summary>Use highlight colour</summary>
-      <description>When enabled, use the wallpaper highlight colour instead of the dominant colour.</description>
+    <key name="debug-log" type="s">
+      <default>''</default>
+      <summary>Recent extension log messages</summary>
+      <description>Recent console output shown in the preferences debug page.</description>
     </key>
     <key name="wp-source" type="s">
       <choices>
@@ -19,6 +19,12 @@
       <default>'bing'</default>
       <summary>Wallpaper source</summary>
       <description>Choose between the current wallpaper and a Bing wallpaper.</description>
+    </key>
+    <key name="bing-index" type="i">
+      <range min="0" max="10"/>
+      <default>0</default>
+      <summary>Bing Wallpaper Index</summary>
+      <description>Select the index of the Bing wallpaper to use.</description>
     </key>
     <key name="icon-theme-src" type="s">
       <choices>
