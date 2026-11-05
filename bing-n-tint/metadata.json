@@ -1,6 +1,6 @@
 {
   "name": "Bing-n-Tint",
-  "description": "Set the GNOME accent colour from bing wallpaper of the day and tint the shell theme.",
+  "description": "Set the GNOME accent colour from the bing wallpaper of the day and tint the shell.",
   "uuid": "bing-n-tint@gcdias",
   "shell-version": ["48", "49", "50"],
   "settings-schema": "org.gnome.shell.extensions.bing-n-tint",

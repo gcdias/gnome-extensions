@@ -308,6 +308,7 @@ export default class BingNTint extends Extension {
 
         if (this._customStylesheet)
             this._theme.unload_stylesheet(this._customStylesheet);
+        this._theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
         const customStylesheetPath = GLib.build_filenamev([this._cacheDir, 'theme-color.css']);
         GLib.file_set_contents(customStylesheetPath, stylesheet);
         this._customStylesheet = Gio.File.new_for_path(customStylesheetPath);
