@@ -62,27 +62,33 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
         window.add(page);
 
-        const group = new Adw.PreferencesGroup({
+
+        const wpGroup = new Adw.PreferencesGroup({
             title: _('Wallpaper Accent'),
         });
-        page.add(group);
+        page.add(wpGroup);
 
-        this._addComboBox(group, settings,
+        this._addComboBox(wpGroup, settings,
             'wp-source',
             'Wallpaper',
             'Select the source of wallpaper',
             { "User" : "user", "Bing": "bing"}
         )
 
-        this._addSpinRow(group, settings,
+        this._addSpinRow(wpGroup, settings,
             'bing-index',
             'Bing Wallpaper Index',
             'Select the index of the Bing wallpaper to use.',
              0, 10, 1, 2
         );
         
+        const group = new Adw.PreferencesGroup({
+            title: _('Tint Options'),
+        });
+        page.add(group);
+
         const themeOpts = {
-            "Disable": "off",
+            "Disabled": "off",
             "Hue": "hue",
             "Hue-shift": "shift"
         }
@@ -108,16 +114,6 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             themeOpts
         )
 
-       
-
-        const enableRow = new Adw.SwitchRow({
-            title: _('Enable theme tint'),
-            subtitle: _('Set the theme colour from the wallpaper dominant colour.'),
-        });
-        group.add(enableRow);
-        settings.bind('enabled', enableRow, 'active', Gio.SettingsBindFlags.DEFAULT);
-        
-
         this._addSpinRow(group, settings,
             'saturation',
             'Saturation',
@@ -139,6 +135,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             0, 360, 1, 10
         )
         
+        
 
         const debugPage = new Adw.PreferencesPage({
             title: _('Debug'),
@@ -157,14 +154,16 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             monospace: true,
             wrap_mode: Gtk.WrapMode.NONE,
         });
+
         debugTextView.add_css_class('debug-log');
         const debugTextStyle = new Gtk.CssProvider();
-        debugTextStyle.load_from_data('.debug-log { font-family: monospace; font-size: 10px; }', -1);
+        debugTextStyle.load_from_data('.debug-log { font-family: monospace; font-size: 9px; }', -1);
         Gtk.StyleContext.add_provider_for_display(
             Gdk.Display.get_default(),
             debugTextStyle,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         );
+
         const debugScroll = new Gtk.ScrolledWindow({
             min_content_height: 300,
             hscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
@@ -177,5 +176,38 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         };
         updateDebugLog();
         settings.connect('changed::debug-log', updateDebugLog);
+
+        const debugOptsGroup = new Adw.PreferencesGroup({
+            title: _('Debug options'),
+        });
+        debugPage.add(debugOptsGroup);
+
+        this._addComboBox(debugOptsGroup, settings,
+            'debug-timestamp',
+            'Timestamp format',
+            'Sets absolute (ISO format) or relative (in ms) timestamp',
+            { "Absolute": "abs", "Relative": "rel" }
+        )
+
+        this._addComboBox(debugOptsGroup, settings,
+            'debug-level',
+            'Log level',
+            'Sets log level to verbose, info and error',
+            { "Verbose": "0", "Info": "1", "Error": "2" }
+        )
+
+        const clearDebugLogRow = new Adw.ActionRow({
+            title: _('Debug log'),
+            subtitle: _('Clear the debug log output.'),
+        });
+        const clearDebugLogButton = new Gtk.Button({
+            label: _('Clear'),
+            valign: Gtk.Align.CENTER,
+        });
+        clearDebugLogButton.connect('clicked', () => {
+            settings.set_string('debug-log', '');
+        });
+        clearDebugLogRow.add_suffix(clearDebugLogButton);
+        debugOptsGroup.add(clearDebugLogRow);
     }
 }
