@@ -10,6 +10,16 @@ import {
 
 export default class BingNTintPreferences extends ExtensionPreferences {
     
+    _addSwitch(group, settings, key, title, subtitle){
+        const switchRow = new Adw.SwitchRow({
+            title: _(title),
+            subtitle: _(subtitle),
+        });
+        group.add(switchRow);
+        settings.bind(key, switchRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        return switchRow;
+    }
+
     _addSpinRow(group, settings, key, title, subtitle, min, max, step, page){
         const spinRow = new Adw.SpinRow({
             title: _(title),
@@ -133,15 +143,22 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             'Accent hue shift',
             'Adjust the hue of the accent colour.',
             0, 360, 1, 10
-        )
-        
-        
+        );
 
+
+
+        this._addSwitch(group, settings,
+            'debug-enable',
+            'Debug',
+            'Enable debug log and options'
+        );
+        
         const debugPage = new Adw.PreferencesPage({
             title: _('Debug'),
             icon_name: 'utilities-terminal-symbolic',
         });
         window.add(debugPage);
+        settings.bind('debug-enable', debugPage, 'visible', Gio.SettingsBindFlags.DEFAULT);
 
         const debugGroup = new Adw.PreferencesGroup({
             title: _('Console output'),

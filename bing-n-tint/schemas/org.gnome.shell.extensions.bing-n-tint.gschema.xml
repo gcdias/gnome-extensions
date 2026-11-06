@@ -65,6 +65,11 @@
       <description>Shift the wallpaper hue used for the accent colour.</description>
     </key>
 
+    <key name="debug-enable" type="b">
+      <default>false</default>
+      <summary>Recent extension log messages</summary>
+      <description>Recent console output shown in the preferences debug page.</description>
+    </key>
     <key name="debug-log" type="s">
       <default>''</default>
       <summary>Recent extension log messages</summary>
