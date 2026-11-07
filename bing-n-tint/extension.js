@@ -189,7 +189,7 @@ const wallpaper = {
             ? [Math.round(monitor.width * scale), Math.round(monitor.height * scale)]
             : [1920, 1080];
         log.r(`${out[0]}x${out[1]}`);
-        return out;
+        return [1920, 1080];
     },
 
     getLangTag: function(){
@@ -207,7 +207,8 @@ const wallpaper = {
         const url = `https://bing.biturl.top/?resolution=${width}x${height}&format=json&index=${index}&mkt=${tag}`;
         log.r(`Fetching Bing wallpaper metadata from ${url}...`);
         const metadata = await utils.download(url);
-        const {url: imageUrl} = JSON.parse(new TextDecoder().decode(metadata.get_data()));
+        const metadataContents = new TextDecoder().decode(metadata.get_data());
+        const {url: imageUrl} = JSON.parse(metadataContents);
         const bytes = await utils.download(imageUrl);
         const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), EXTNAME]);
         const path = GLib.build_filenamev([cacheDirectory, 'bing-wallpaper.jpg']);
@@ -215,6 +216,7 @@ const wallpaper = {
         GLib.file_set_contents(path, bytes.get_data());
         log.r(`Bing wallpaper downloaded to ${path}`);
         wallpaper.settings.set_string(prefersDark ? 'picture-uri-dark' : 'picture-uri', `file://${path}`);
+        return metadataContents;
     }
 }
 
@@ -302,8 +304,10 @@ export default class BingNTint extends Extension {
         this._bingIndex = this._settings.get_int('bing-index');
         if (this._settings.get_string('wp-source') === 'bing'){
             wallpaper.getBingWallpaper(this._bingIndex, this._prefersDark)
-                .then(result => {
-                    log.i(`Bing wallpaper loaded successfully at index ${this._bingIndex}, updating theme settings...`);
+                .then((result) => {
+                    this._bingMetadata = JSON.parse(result);
+                    this._settings.set_string('bing-metadata', result);
+                    log.i(`Bing wallpaper index ${this._bingIndex}: ${this._bingMetadata.url}`);
                     this._lastBingDownloadTime = Date.now();
                     this._update();
                 })
@@ -415,8 +419,11 @@ export default class BingNTint extends Extension {
             'accent-color': gnome.settings.get_string('accent-color'),
         };
         this._lastThemeSettings = {};
+        const bingMetadata = this._settings.get_string('bing-metadata');
+        this._bingMetadata = bingMetadata ? JSON.parse(result) : null;
+
         this._update();
-        this._loadWallpaper();
+        this._loadWallpaper(); 
         log.r('done');
     }
     

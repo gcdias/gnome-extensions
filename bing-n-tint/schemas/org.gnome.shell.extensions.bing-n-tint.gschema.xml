@@ -10,6 +10,11 @@
       <summary>Wallpaper source</summary>
       <description>Choose between the current wallpaper and a Bing wallpaper.</description>
     </key>
+    <key name="bing-metadata" type="s">
+      <default>''</default>
+      <summary>Bing Metadata</summary>
+      <description>Bing Wallpaper metadata info</description>
+    </key>
     <key name="bing-index" type="i">
       <range min="0" max="10"/>
       <default>0</default>
