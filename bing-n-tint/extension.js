@@ -145,12 +145,6 @@ const wallpaper = {
 
     settings: new Gio.Settings({schema_id: 'org.gnome.desktop.background'}),
 
-    srcRes: {
-        "768": "1366x768",
-        "1080": "1920x1080",
-        "2160": "UHD"
-    },
-
     getPath: function(prefersDark=true) {
         log.s(`wallpaper.getPath(prefersDark:${prefersDark})`);
         let path = null;
@@ -210,10 +204,13 @@ const wallpaper = {
         const res = wallpaper.getScreenResolution();
         const tag = wallpaper.getLangTag();
         const url = `https://bing.biturl.top/?resolution=${res}&format=json&index=${index}&mkt=${tag}`;
-        log.r(`Fetching Bing wallpaper metadata from ${url}...`);
+        log.i(`Fetching Bing wallpaper metadata from ${url}...`);
         const metadata = await utils.download(url);
         const metadataContents = new TextDecoder().decode(metadata.get_data());
-        const {url: imageUrl} = JSON.parse(metadataContents);
+        const {url: imageUrl, copyright: cr} = JSON.parse(metadataContents);
+        wallpaper.url = imageUrl;
+        wallpaper.copyright = cr;
+        log.i(`imgUrl: ${wallpaper.url}, desc: ${wallpaper.copyright}`);
         const bytes = await utils.download(imageUrl);
         const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), EXTNAME]);
         const path = GLib.build_filenamev([cacheDirectory, 'bing-wallpaper.jpg']);
