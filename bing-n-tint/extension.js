@@ -21,7 +21,6 @@ const log = {
     IND_CHAR: '.',
     MAX: 200,
     settings: null,
-    starttime: 0,
     timestamp: 'rel',
     timestamp_ind: 8,
     timestamp_str: "",
@@ -32,15 +31,16 @@ const log = {
         'INF': 1,
         'ERR': 2
     },
+
     _getTimeStamp: function(){
-        const d = new Date();
         if (log.timestamp === 'rel'){
-            const dif = d.getMilliseconds() - log.starttime;
+            const dif = Date.now() - log.starttime;
             return `+${String(log.timestamp_str + dif).slice(-8)}ms`;
         } else {
-            return d.toISOString;
+            return new Date().toISOString;
         }
     },
+
     _post: function(tag, ...args){
         const message = args ? args.map(String).join(' ') : '';
         const timestamp = log._getTimeStamp();
@@ -63,7 +63,7 @@ const log = {
             log.IND = 0;
             log.timestamp_str = ' '.repeat(log.timestamp_ind);
             const d = new Date();
-            log.starttime = d.getMilliseconds();
+            log.starttime = Date.now();
             log.settings.set_string('debug-log',`START: ${d.toISOString()}`);
         }
     },
