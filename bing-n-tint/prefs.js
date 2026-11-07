@@ -75,16 +75,9 @@ export default class BingNTintPreferences extends ExtensionPreferences {
 
 
         const wpGroup = new Adw.PreferencesGroup({
-            title: _('Wallpaper Accent'),
+            title: _('Wallpaper'),
         });
         page.add(wpGroup);
-
-        this._addSwitch(wpGroup, settings,
-            'show-status-icon',
-            'Show status icon',
-            'Show a Bing icon in the top bar to open preferences.'
-        );
-
 
         this._addComboBox(wpGroup, settings,
             'wp-source',
@@ -107,6 +100,13 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         updateBingIndexSubtitle();
         settings.connect('changed::bing-metadata', updateBingIndexSubtitle);
         
+        this._addSwitch(wpGroup, settings,
+            'show-status-icon',
+            'Show status icon',
+            'Show a Bing icon in the top bar to open preferences.'
+        );
+
+
         const group = new Adw.PreferencesGroup({
             title: _('Tint Options'),
         });

@@ -398,6 +398,25 @@ export default class BingNTint extends Extension {
         log.updateSettings(this._settings);
     }
 
+    _createStatusIcon() {
+        const iconPath = GLib.build_filenamev([this.path, 'bing-symbolic.svg']);
+        const icon = new St.Icon({
+            gicon: new Gio.FileIcon({ file: Gio.File.new_for_path(iconPath) }),
+            style_class: 'system-status-icon',
+        });
+        this._statusIcon = new PanelMenu.Button(0.0, 'Bing-n-Tint');
+        this._statusIcon.add_child(icon);
+        const preferencesItem = new PopupMenu.PopupMenuItem('Config');
+        preferencesItem.connect('activate', () => this.openPreferences());
+        this._statusIcon.menu.addMenuItem(preferencesItem);
+        Main.panel.addToStatusArea('bing-n-tint', this._statusIcon);
+        this._updateStatusIcon();
+    }
+
+    _updateStatusIcon() {
+        this._statusIcon.visible = this._settings.get_boolean('show-status-icon');
+    }
+
     enable() {
         this._settings = this.getSettings();
         this._updateSettingsList = [ "icon-theme-src", "gtk-theme-src", "accent-theme-src", "saturation", "hue-shell-shift", "hue-accent-shift" ];
@@ -434,25 +453,6 @@ export default class BingNTint extends Extension {
         this._update();
         this._loadWallpaper(); 
         log.r('done');
-    }
-
-    _createStatusIcon() {
-        const iconPath = GLib.build_filenamev([this.path, 'bing-symbolic.svg']);
-        const icon = new St.Icon({
-            gicon: new Gio.FileIcon({ file: Gio.File.new_for_path(iconPath) }),
-            style_class: 'system-status-icon',
-        });
-        this._statusIcon = new PanelMenu.Button(0.0, 'Bing-n-Tint');
-        this._statusIcon.add_child(icon);
-        const preferencesItem = new PopupMenu.PopupMenuItem('Preferences');
-        preferencesItem.connect('activate', () => this.openPreferences());
-        this._statusIcon.menu.addMenuItem(preferencesItem);
-        Main.panel.addToStatusArea('bing-n-tint', this._statusIcon);
-        this._updateStatusIcon();
-    }
-
-    _updateStatusIcon() {
-        this._statusIcon.visible = this._settings.get_boolean('show-status-icon');
     }
     
     disable() {
