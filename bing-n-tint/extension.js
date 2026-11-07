@@ -285,7 +285,7 @@ const utils = {
             log.e(err);
             throw new Error(err);
         }
-        log.r(`read ${bytes.length}`)
+        log.r(`end download`);
         return bytes;
     },
     pct: function(value) {
@@ -322,11 +322,12 @@ export default class BingNTint extends Extension {
         } else {
             this._update();
         }
-        log.r('done');
+        log.r('end _loadWallpaper');
     }
 
     _connect(setting, fn, id){
         const callback = () => fn.call(this, `settings changed -> ${utils.funcName(fn)}`);
+        log.i(`_connect: changed${id}`)
         return [setting, setting.connect(`changed${id ? "::" + id : ''}`, callback)];
     }
     
@@ -508,6 +509,6 @@ export default class BingNTint extends Extension {
         GLib.mkdir_with_parents(gtkCssDirectory, 0o755);
         GLib.file_set_contents(gtkCssPath, gtkcss);
         log.i(`GTK CSS written to ${gtkCssPath}`);
-        log.r('done');
+        log.r('end _update');
     }
 }

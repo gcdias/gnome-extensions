@@ -174,7 +174,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
 
         debugTextView.add_css_class('debug-log');
         const debugTextStyle = new Gtk.CssProvider();
-        debugTextStyle.load_from_data('.debug-log { font-family: monospace; font-size: 9px; }', -1);
+        debugTextStyle.load_from_data('.debug-log { font-family: monospace; font-size: 10px; font-weight: 700;}', -1);
         Gtk.StyleContext.add_provider_for_display(
             Gdk.Display.get_default(),
             debugTextStyle,
