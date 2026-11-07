@@ -310,9 +310,11 @@ export default class BingNTint extends Extension {
         if (this._settings.get_string('wp-source') === 'bing'){
             wallpaper.getBingWallpaper(this._bingIndex, this._prefersDark)
                 .then((result) => {
-                    this._bingMetadata = JSON.parse(result);
-                    this._settings.set_string('bing-metadata', result);
-                    log.i(`Bing wallpaper index ${this._bingIndex}: ${this._bingMetadata.url}`);
+                    if(result){
+                        this._bingMetadata = JSON.parse(result);
+                        this._settings.set_string('bing-metadata', result);
+                        log.i(`Bing wallpaper index ${this._bingIndex}: ${this._bingMetadata.url}`);
+                    }
                     this._lastBingDownloadTime = Date.now();
                     this._update();
                 })
@@ -426,7 +428,7 @@ export default class BingNTint extends Extension {
         };
         this._lastThemeSettings = {};
         const bingMetadata = this._settings.get_string('bing-metadata');
-        this._bingMetadata = bingMetadata ? JSON.parse(result) : null;
+        this._bingMetadata = bingMetadata ? JSON.parse(bingMetadata) : null;
 
         this._update();
         this._loadWallpaper(); 
