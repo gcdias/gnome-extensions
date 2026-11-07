@@ -36,6 +36,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
         group.add(spinRow);
         settings.bind(key, spinRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        return spinRow;
     }
 
     _addComboBox(group, settings, key, title, subtitle, kv) {
@@ -85,12 +86,19 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             { "User" : "user", "Bing": "bing"}
         )
 
-        this._addSpinRow(wpGroup, settings,
+        const bingIndexRow = this._addSpinRow(wpGroup, settings,
             'bing-index',
             'Bing Wallpaper Index',
             'Select the index of the Bing wallpaper to use.',
              0, 10, 1, 2
         );
+        const updateBingIndexSubtitle = () => {
+            const metadata = settings.get_string('bing-metadata');
+            const copyright = metadata ? JSON.parse(metadata).copyright : null;
+            bingIndexRow.subtitle = copyright || _('Select the index of the Bing wallpaper to use.');
+        };
+        updateBingIndexSubtitle();
+        settings.connect('changed::bing-metadata', updateBingIndexSubtitle);
         
         const group = new Adw.PreferencesGroup({
             title: _('Tint Options'),
@@ -157,8 +165,21 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             title: _('Debug'),
             icon_name: 'utilities-terminal-symbolic',
         });
-        window.add(debugPage);
-        settings.bind('debug-enable', debugPage, 'visible', Gio.SettingsBindFlags.DEFAULT);
+        let debugPageAdded = false;
+        const updateDebugPage = () => {
+            const enabled = settings.get_boolean('debug-enable');
+            if (enabled === debugPageAdded)
+                return;
+
+            if (enabled)
+                window.add(debugPage);
+            else
+                window.remove(debugPage);
+
+            debugPageAdded = enabled;
+        };
+        updateDebugPage();
+        settings.connect('changed::debug-enable', updateDebugPage);
 
         const debugGroup = new Adw.PreferencesGroup({
             title: _('Console output'),
