@@ -79,6 +79,13 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
         page.add(wpGroup);
 
+        this._addSwitch(wpGroup, settings,
+            'show-status-icon',
+            'Show status icon',
+            'Show a Bing icon in the top bar to open preferences.'
+        );
+
+
         this._addComboBox(wpGroup, settings,
             'wp-source',
             'Wallpaper',

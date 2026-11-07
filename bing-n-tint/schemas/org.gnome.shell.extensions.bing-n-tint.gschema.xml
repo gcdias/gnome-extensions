@@ -21,6 +21,11 @@
       <summary>Bing Wallpaper Index</summary>
       <description>Select the index of the Bing wallpaper to use.</description>
     </key>
+    <key name="show-status-icon" type="b">
+      <default>true</default>
+      <summary>Show status icon</summary>
+      <description>Show a Bing icon in the top bar to open preferences.</description>
+    </key>
     <key name="icon-theme-src" type="s">
       <choices>
         <choice value="user"/>

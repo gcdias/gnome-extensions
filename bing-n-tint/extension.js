@@ -8,6 +8,8 @@ import Soup from 'gi://Soup?version=3.0';
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 Gio._promisify(Soup.Session.prototype, 'send_and_read_async', 'send_and_read_finish');
 
@@ -412,6 +414,8 @@ export default class BingNTint extends Extension {
         GLib.mkdir_with_parents(this._cacheDir, 0o755);
 
         this._ids = [];
+        this._createStatusIcon();
+        this._connectId(this._settings, this._updateStatusIcon, "show-status-icon");
         this._connectId(wallpaper.settings, this._update);
         this._connectId(gnome.settings, this._update, "color-scheme");
         this._connectId(this._settings, this._loadWallpaper, "wp-source", "bing-index");
@@ -431,9 +435,30 @@ export default class BingNTint extends Extension {
         this._loadWallpaper(); 
         log.r('done');
     }
+
+    _createStatusIcon() {
+        const iconPath = GLib.build_filenamev([this.path, 'bing-symbolic.svg']);
+        const icon = new St.Icon({
+            gicon: new Gio.FileIcon({ file: Gio.File.new_for_path(iconPath) }),
+            style_class: 'system-status-icon',
+        });
+        this._statusIcon = new PanelMenu.Button(0.0, 'Bing-n-Tint');
+        this._statusIcon.add_child(icon);
+        const preferencesItem = new PopupMenu.PopupMenuItem('Preferences');
+        preferencesItem.connect('activate', () => this.openPreferences());
+        this._statusIcon.menu.addMenuItem(preferencesItem);
+        Main.panel.addToStatusArea('bing-n-tint', this._statusIcon);
+        this._updateStatusIcon();
+    }
+
+    _updateStatusIcon() {
+        this._statusIcon.visible = this._settings.get_boolean('show-status-icon');
+    }
     
     disable() {
         log.s('BingNTint.disable()');
+        this._statusIcon.destroy();
+        this._statusIcon = null;
         if (this._customStylesheet)
             this._theme.unload_stylesheet(this._customStylesheet);
         this._ids.forEach(([obj, id]) => {

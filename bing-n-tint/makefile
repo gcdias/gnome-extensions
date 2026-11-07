@@ -1,7 +1,7 @@
 EXTNAME = bing-n-tint
 EXTENSION_UUID = $(EXTNAME)@gcdias
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
-FILES = extension.js metadata.json stylesheet.src gtk.css prefs.js
+FILES = extension.js metadata.json stylesheet.src gtk.css prefs.js bing-symbolic.svg
 SCHEMA = schemas/org.gnome.shell.extensions.$(EXTNAME).gschema.xml
 
 install:
