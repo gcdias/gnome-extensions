@@ -145,6 +145,12 @@ const wallpaper = {
 
     settings: new Gio.Settings({schema_id: 'org.gnome.desktop.background'}),
 
+    srcRes: {
+        "768": "1366x768",
+        "1080": "1920x1080",
+        "2160": "UHD"
+    },
+
     getPath: function(prefersDark=true) {
         log.s(`wallpaper.getPath(prefersDark:${prefersDark})`);
         let path = null;
@@ -185,11 +191,10 @@ const wallpaper = {
         const monitor = Main.layoutManager.primaryMonitor;
         const scale = monitor?.geometry_scale ?? 1;
         log.i(`geometry: [ ${monitor?.width}, ${monitor?.height} ], scale: ${scale}`);
-        const out = monitor
-            ? [Math.round(monitor.width * scale), Math.round(monitor.height * scale)]
-            : [1920, 1080];
-        log.r(`${out[0]}x${out[1]}`);
-        return [1920, 1080];
+        const h = monitor ? Math.round(monitor.height * scale) : 1080;
+        const out = h <= 768 ? "1366x768" : h <= 1080 ? "1920x1080" : "UHD";
+        log.r(out);
+        return out;
     },
 
     getLangTag: function(){
@@ -202,9 +207,9 @@ const wallpaper = {
 
     getBingWallpaper: async function(index = 0, prefersDark=true) {
         log.s(`wallpaper.getBingWallpaper(index:${index})`);
-        const [width, height] = wallpaper.getScreenResolution();
+        const res = wallpaper.getScreenResolution();
         const tag = wallpaper.getLangTag();
-        const url = `https://bing.biturl.top/?resolution=${width}x${height}&format=json&index=${index}&mkt=${tag}`;
+        const url = `https://bing.biturl.top/?resolution=${res}&format=json&index=${index}&mkt=${tag}`;
         log.r(`Fetching Bing wallpaper metadata from ${url}...`);
         const metadata = await utils.download(url);
         const metadataContents = new TextDecoder().decode(metadata.get_data());
