@@ -64,7 +64,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         return spinRow;
     }
 
-    _addComboBox(group, settings, key, title, subtitle, kv) {
+    _addComboBox(group, settings, key, title, subtitle, kv, callback) {
         const values = Object.values(kv);
         const row = new Adw.ComboRow({
             title: _(title),
@@ -82,15 +82,51 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         updateSelection();
 
         row.connect('notify::selected', () => {
-            if (row.selected < values.length)
+            if (row.selected < values.length){
                 settings.set_string(key, values[row.selected]);
+                if (callback)
+                    callback(key, row.selected, values[row.selected]);
+            }
         });
 
         settings.connect(`changed::${key}`, updateSelection);
+        return row;
     }
 
+    _promptString(parent, prompt, callback){
+        const dialog = new Gtk.Dialog({
+            title: _('Prompt'),
+            transient_for: parent,
+            modal: true,
+        });
+        const entry = new Gtk.Entry({
+            placeholder_text: _(prompt),
+            activates_default: true,
+        });
+
+        dialog.get_content_area().append(entry);
+        dialog.add_button(_('Cancel'), Gtk.ResponseType.CANCEL);
+        dialog.add_button(_('Save'), Gtk.ResponseType.OK);
+        dialog.set_default_response(Gtk.ResponseType.OK);
+        dialog.connect('response', (_dialog, response) => {
+            if (response === Gtk.ResponseType.OK)
+                callback(entry.text);
+
+            dialog.close();
+        });
+        dialog.present();
+    }
+
+
     fillPreferencesWindow(window) {
+
         const settings = this.getSettings();
+
+        const api_providers = {
+            'bing': {desc: 'copyright'},
+            'wiki': {prompt: 'Enter your email for accessing wiki POTD', key: 'wiki-key', desc: ''},
+            'nasa': {prompt: 'Enter your Nasa API-KEY', key: 'nasa-api-key', desc: 'alt'},
+        }
 
         const page = new Adw.PreferencesPage({
             title: _('Appearance'),
@@ -104,26 +140,34 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
         page.add(wpGroup);
 
-        this._addComboBox(wpGroup, settings,
+        const wpComboRow = this._addComboBox(wpGroup, settings,
             'wp-source',
             'Wallpaper',
             'Select the source of wallpaper',
-            { "Default" : "off", "User": "user", "Bing": "bing", "Picsum": "picsum", "Wikipedia": "wiki" }
+            { "Default" : "off", "User": "user", "Bing": "bing", "Picsum": "picsum", "Wikipedia": "wiki", "Nasa": "nasa" },
+            (key, index, value) => {
+                const api = api_providers[value];
+                if (api?.key && !settings.get_string(api.key))
+                    this._promptString(window, api.prompt, (name) => settings.set_string(api.key, name));
+            }
         )
 
-        const bingIndexRow = this._addSpinRow(wpGroup, settings,
+        this._addSpinRow(wpGroup, settings,
             'bing-index',
             'Bing Wallpaper Index',
             'Select the index of the Bing wallpaper to use.',
              0, 10, 1, 2
         );
-        const updateBingIndexSubtitle = () => {
-            const metadata = settings.get_string('bing-metadata');
-            const copyright = metadata ? JSON.parse(metadata).copyright : null;
-            bingIndexRow.subtitle = copyright || _('Select the index of the Bing wallpaper to use.');
+
+        const updateWpSubtitle = () => {
+            const metadata = JSON.parse(settings.get_string('wp-metadata'));
+            const provider = settings.get_string('wp-source');
+            let d, desc;
+            desc = metadata && (d = api_providers[provider]) && d.desc ? metadata[d.desc] : null;
+            wpComboRow.subtitle = desc || _('No description provided.');
         };
-        updateBingIndexSubtitle();
-        settings.connect('changed::bing-metadata', updateBingIndexSubtitle);
+        updateWpSubtitle();
+        settings.connect('changed::wp-metadata', updateWpSubtitle);
         
         this._addSwitch(wpGroup, settings,
             'show-status-icon',

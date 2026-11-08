@@ -289,7 +289,7 @@ const wallpaper = {
     }
 }
 
-const bingWallpaper = {
+const BING = {
     url: '',
     lastUpdated: 0,
     metadata: '',
@@ -302,7 +302,7 @@ const bingWallpaper = {
     },
     download: async function(index=0){
         log.s(`bingWallpaper.download(index:${index})`);
-        bingWallpaper.index = index;
+        BING.index = index;
         const metaUrl = `https://bing.biturl.top/?resolution=${this.res}&format=json&index=${index}&mkt=${this.lang}`;
         const metadata = await utils.download(metaUrl);
         const metaStr = new TextDecoder().decode(metadata.get_data());
@@ -315,11 +315,11 @@ const bingWallpaper = {
         GLib.file_set_contents(path, bytes.get_data());
         log.r(`Bing wallpaper downloaded to ${path}`);
         wallpaper.setBackground(path);
-        return metaStr;
+        return this.metadata;
     }
 }
 
-const picsumPhotos = {
+const PICSUM = {
     url: 'https://picsum.photos/',
     lastUpdated: 0,
     metadata: '',
@@ -340,30 +340,65 @@ const picsumPhotos = {
         GLib.file_set_contents(path, bytes.get_data());
         log.r(`Picsum wallpaper downloaded to ${path}`);
         wallpaper.setBackground(path);
+        return {};
     }
 }
 
-const wikiPOTD = {
-    url: 'https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/2026-11-07&prop=imageinfo&iiprop=url&format=json&origin=*',
+const WIKI = {
+    url: '',
     lastUpdated: 0,
     metadata: '',
+    userAgent: 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0', //'potd-script/1.0 (you@example.com)'
     download: async function(){
-        log.s(`picsum.download()`);
+        log.s(`wikiPOTD.download()`);
         const dt = new Date().toISOString().slice(0, 10);
         const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/${dt}&prop=imageinfo&iiprop=url&format=json&origin=*`
-        const meta = await utils.download(metaUrl);
-        let metadata = new TextDecoder().decode(meta.get_data());
-        log.i(metadata);
+        const meta = await utils.download(metaUrl, WIKI.userAgent);
+        WIKI.metadata = new TextDecoder().decode(meta.get_data());
         let url;
-        if (metadata && (metadata = JSON.parse(metadata)) && (url = metadata["query"]["pages"][0]["imageinfo"][0].url)){
-            const bytes = await utils.download(url,'potd-script/1.0 (you@example.com)');
+        if (WIKI.metadata && (WIKI.metadata = JSON.parse(WIKI.metadata)) && (url = utils.findFirst(WIKI.metadata,'url'))){
+            const bytes = await utils.download(url, WIKI.userAgent);
             this.lastUpdated = Date.now();
             const path = GLib.build_filenamev([wallpaper.cacheDir, 'wiki-wallpaper.jpg']);
             GLib.file_set_contents(path, bytes.get_data());
             log.r(`Wiki POTD wallpaper downloaded to ${path}`);
             wallpaper.setBackground(path);
         }
-        return metadata;
+        return WIKI.metadata;
+    }
+}
+
+const NASA = {
+    url: '',
+    lastUpdated: 0,
+    metadata: '',
+    api_key: '',
+    init: function(api_key){
+        NASA.api_key = api_key
+    },
+    download: async function(){
+        log.s(`NASA.download()`);
+        if (!NASA.api_key){
+            log.r('No API_KEY set for NASA, aborting...');
+            return undefined;
+        }
+        const today = new Date().toISOString().slice(0, 10);
+        const metaUrl = `https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key=${NASA.api_key}&date=${today}`
+        const meta = await utils.download(metaUrl);
+        NASA.metadata = new TextDecoder().decode(meta.get_data());
+        if (NASA.metadata && (NASA.metadata = JSON.parse(NASA.metadata))){
+            if (Array.isArray(NASA.metadata))
+                NASA.metadata = NASA.metadata[0];
+            log.i(`NASA metadata: ${NASA.metadata}`);
+            let url = NASA.metadata.hdurl;
+            const bytes = await utils.download(url);
+            this.lastUpdated = Date.now();
+            const path = GLib.build_filenamev([wallpaper.cacheDir, 'nasa-wallpaper.jpg']);
+            GLib.file_set_contents(path, bytes.get_data());
+            log.r(`Nasa wallpaper downloaded to ${path}`);
+            wallpaper.setBackground(path);
+        }
+        return NASA.metadata;
     }
 }
 
@@ -445,6 +480,17 @@ const utils = {
         log.r(`${out}`);
         return out;
     },
+    findFirst(obj, key) {
+        if (obj === null || typeof obj !== 'object') return undefined;
+
+        if (Object.hasOwn(obj, key)) return obj[key];
+
+        for (const child of Object.values(obj)) {
+            const found = utils.findFirst(child, key);
+            if (found !== undefined) return found;
+        }
+        return undefined;
+    },
     funcName: function(fun){
         var ret = fun.toString();
         ret = ret.substr('function '.length);
@@ -454,6 +500,52 @@ const utils = {
 }
 
 export default class BingNTint extends Extension {
+
+    
+    _saveMetadataAndUpdate(metadata){
+        this._settings.set_string('wp-metadata', JSON.stringify(metadata));
+        this._update();
+    }
+
+    _loadWallpaper() {
+        log.s(`BingNTint._loadWallpaper()`);
+        const src = this._settings.get_string('wp-source');
+        log.i(`from source: ${src}`);
+        if (src === 'bing'){
+            this._bingIndex = this._settings.get_int('bing-index');
+            BING.init();
+            BING.download(this._bingIndex)
+                .then(meta => this._saveMetadataAndUpdate(meta))
+                .catch(error => log.e(`BingNTint._loadWallpaper.catch (bing) ${error}`));
+        } else if (src === 'picsum'){
+            PICSUM.init();
+            PICSUM.download()
+                .then(meta => this._saveMetadataAndUpdate(meta))
+                .catch(error => log.e(`BingNTint._loadWallpaper.catch (picsum) ${error}`));
+        } else if (src === 'wiki'){
+            WIKI.download()
+                .then(meta => this._saveMetadataAndUpdate(meta))
+                .catch(error => log.e(`BingNTint._loadWallpaper.catch (wiki) ${error}`));
+        } else if (src === 'nasa'){
+            NASA.init(this._settings.get_string('nasa-api-key'));
+            NASA.download()
+                .then(meta => this._saveMetadataAndUpdate(meta))
+                .catch(error => log.e(`BingNTint._loadWallpaper.catch (nasa) ${error}`));
+        } else {
+            this._update();
+        }
+        log.r('end _loadWallpaper');
+    }
+
+    _newBingWallpaper(meta){
+        if(meta){
+            this._bingMetadata = JSON.parse(meta);
+            this._settings.set_string('wp-metadata', meta);
+            log.i(`Bing wallpaper index ${this._bingIndex}: ${this._bingMetadata.url}`);
+        }
+        this._lastWpDownloadTime = Date.now();
+        this._update();
+    }
 
     _apply(key, mode, fn, hue){
         this._lastSettings[key] = mode !== 'user' ? fn(key, hue) : this._defaultSettings[key];
@@ -483,41 +575,6 @@ export default class BingNTint extends Extension {
         GLib.mkdir_with_parents(gtkCssDirectory, 0o755);
         GLib.file_set_contents(gtkCssPath, gtkcss);
         log.i(`GTK CSS written to ${gtkCssPath}`);
-    }
-
-    _loadWallpaper(id) {
-        log.s(`BingNTint._loadWallpaper(${id ? id : ''})`);
-        this._bingIndex = this._settings.get_int('bing-index');
-        const src = this._settings.get_string('wp-source');
-        log.i(`from source: ${src}`);
-        if (src === 'bing'){
-            bingWallpaper.init();
-            bingWallpaper.download(this._bingIndex)
-                .then(meta => this._newBingWallpaper(meta))
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (bing) ${error}`));
-        } else if (src === 'picsum'){
-            picsumPhotos.init();
-            picsumPhotos.download()
-                .then(result => this._update())
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (picsum) ${error}`));
-        } else if (src === 'wiki'){
-            wikiPOTD.download()
-                .then(result => this._update())
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (wiki) ${error}`));
-        } else {
-            this._update();
-        }
-        log.r('end _loadWallpaper');
-    }
-
-    _newBingWallpaper(meta){
-        if(meta){
-            this._bingMetadata = JSON.parse(meta);
-            this._settings.set_string('bing-metadata', meta);
-            log.i(`Bing wallpaper index ${this._bingIndex}: ${this._bingMetadata.url}`);
-        }
-        this._lastBingDownloadTime = Date.now();
-        this._update();
     }
 
     _connect(setting, fn, id){
@@ -635,7 +692,7 @@ export default class BingNTint extends Extension {
             
         ];
         
-        const bingMetadata = this._settings.get_string('bing-metadata');
+        const bingMetadata = this._settings.get_string('wp-metadata');
         this._bingMetadata = bingMetadata ? JSON.parse(bingMetadata) : null;
 
         this._update();

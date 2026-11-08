@@ -7,15 +7,26 @@
         <choice value="bing"/>
         <choice value="picsum"/>
         <choice value="wiki"/>
+        <choice value="nasa"/>
       </choices>
       <default>'bing'</default>
       <summary>Wallpaper source</summary>
       <description>Choose between the current wallpaper and a Bing wallpaper.</description>
     </key>
-    <key name="bing-metadata" type="s">
+    <key name="wp-metadata" type="s">
       <default>''</default>
-      <summary>Bing Metadata</summary>
-      <description>Bing Wallpaper metadata info</description>
+      <summary>Metadata</summary>
+      <description>Wallpaper metadata info</description>
+    </key>
+    <key name="nasa-api-key" type="s">
+      <default>''</default>
+      <summary>NASA API KEY</summary>
+      <description>API key for auth access</description>
+    </key>
+    <key name="wiki-key" type="s">
+      <default>''</default>
+      <summary>User Agent</summary>
+      <description>Auth email for wikipedia POTD API.</description>
     </key>
     <key name="bing-index" type="i">
       <range min="0" max="10"/>
@@ -87,6 +98,7 @@
       <summary>Recent extension log messages</summary>
       <description>Recent console output shown in the preferences debug page.</description>
     </key>
+
     <key name="debug-timestamp" type="s">
       <default>'rel'</default>
       <summary>Timestamp format</summary>
