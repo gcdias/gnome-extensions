@@ -70,7 +70,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
 
     _promptString(parent, prompt, callback){
         const dialog = new Gtk.Dialog({
-            title: _('Prompt'),
+            title: _(prompt),
             transient_for: parent,
             modal: true,
         });
@@ -80,10 +80,10 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
 
         const contentArea = dialog.get_content_area();
-        contentArea.set_margin_top(12);
-        contentArea.set_margin_bottom(12);
-        contentArea.set_margin_start(18);
-        contentArea.set_margin_end(18);
+        contentArea.set_margin_top(20);
+        contentArea.set_margin_bottom(20);
+        contentArea.set_margin_start(20);
+        contentArea.set_margin_end(20);
         contentArea.append(entry);
         dialog.add_button(_('Cancel'), Gtk.ResponseType.CANCEL);
         dialog.add_button(_('Save'), Gtk.ResponseType.OK);
