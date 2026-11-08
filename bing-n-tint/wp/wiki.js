@@ -1,9 +1,10 @@
 import { WpEngine } from './wp-engine.js';
 import { Logger as log } from '../utils/logger.js';
+import { Utils as utils } from '../utils/utils.js';
 
 export class Wiki extends WpEngine {
-    constructor(wallpaper, utils) {
-        super(wallpaper, utils, 'wiki-wallpaper.jpg');
+    constructor(wallpaper) {
+        super(wallpaper, 'wiki-wallpaper.jpg');
         this.userAgent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0';
     }
 
@@ -14,7 +15,7 @@ export class Wiki extends WpEngine {
         const meta = await this._download(metaUrl, this.userAgent);
         this.metadata = new TextDecoder().decode(meta.get_data());
         let url;
-        if (this.metadata && (this.metadata = JSON.parse(this.metadata)) && (url = this.utils.findFirst(this.metadata, 'url'))) {
+        if (this.metadata && (this.metadata = JSON.parse(this.metadata)) && (url = utils.findFirst(this.metadata, 'url'))) {
             this.url = url;
             const bytes = await this._download(url, this.userAgent);
             const path = this._saveWallpaper(bytes);

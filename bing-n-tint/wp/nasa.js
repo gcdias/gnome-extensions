@@ -2,8 +2,8 @@ import { WpEngine } from './wp-engine.js';
 import { Logger as log } from '../utils/logger.js';
 
 export class Nasa extends WpEngine {
-    constructor(wallpaper, utils) {
-        super(wallpaper, utils, 'nasa-wallpaper.jpg');
+    constructor(wallpaper) {
+        super(wallpaper, 'nasa-wallpaper.jpg');
         this.api_key = '';
     }
 

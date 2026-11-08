@@ -1,9 +1,10 @@
 import { WpEngine } from './wp-engine.js';
 import { Logger as log } from '../utils/logger.js';
+import { Utils as utils } from '../utils/utils.js';
 
 export class Picsum extends WpEngine {
-    constructor(wallpaper, utils) {
-        super(wallpaper, utils, 'picsum-wallpaper.jpg');
+    constructor(wallpaper) {
+        super(wallpaper, 'picsum-wallpaper.jpg');
         this.url = 'https://picsum.photos/';
         this.index = 0;
         this.lang = 'en-US';
@@ -12,7 +13,7 @@ export class Picsum extends WpEngine {
 
     init(width = this.wallpaper.width, height = this.wallpaper.height) {
         this.res = `${width}/${height}`;
-        this.lang = this.utils.getLangTag();
+        this.lang = utils.getLangTag();
     }
 
     async download() {

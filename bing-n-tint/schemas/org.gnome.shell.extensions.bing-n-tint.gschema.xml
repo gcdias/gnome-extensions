@@ -28,7 +28,7 @@
       <summary>User Agent</summary>
       <description>Auth email for wikipedia POTD API.</description>
     </key>
-    <key name="bing-index" type="i">
+    <key name="wp-index" type="i">
       <range min="0" max="10"/>
       <default>0</default>
       <summary>Bing Wallpaper Index</summary>

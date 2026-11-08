@@ -1,9 +1,10 @@
 import { WpEngine } from './wp-engine.js';
 import { Logger as log } from '../utils/logger.js';
+import { Utils as utils } from '../utils/utils.js';
 
 export class Bing extends WpEngine {
-    constructor(wallpaper, utils) {
-        super(wallpaper, utils, 'bing-wallpaper.jpg');
+    constructor(wallpaper) {
+        super(wallpaper, 'bing-wallpaper.jpg');
         this.index = 0;
         this.lang = 'en-US';
         this.res = '1920x1080';
@@ -11,7 +12,7 @@ export class Bing extends WpEngine {
 
     init(width = this.wallpaper.width, height = this.wallpaper.height) {
         this.res = height <= 768 ? '1366x768' : height <= 1080 ? '1920x1080' : 'UHD';
-        this.lang = this.utils.getLangTag();
+        this.lang = utils.getLangTag();
     }
 
     async download(index = 0) {

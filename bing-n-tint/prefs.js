@@ -133,7 +133,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         )
 
         this._addSpinRow(wpGroup, settings,
-            'bing-index',
+            'wp-index',
             'Bing Wallpaper Index',
             'Select the index of the Bing wallpaper to use.',
              0, 10, 1, 2

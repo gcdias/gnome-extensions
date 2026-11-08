@@ -1,11 +1,11 @@
 import GLib from 'gi://GLib';
 
 import { Logger as log } from '../utils/logger.js';
+import { Utils as utils } from '../utils/utils.js';
 
 export class WpEngine {
-    constructor(wallpaper, utils, filename) {
+    constructor(wallpaper, filename) {
         this.wallpaper = wallpaper;
-        this.utils = utils;
         this.filename = filename;
         this.url = '';
         this.lastUpdated = 0;
@@ -13,7 +13,7 @@ export class WpEngine {
     }
 
     async _download(url, userAgent) {
-        return this.utils.download(url, userAgent);
+        return utils.download(url, userAgent);
     }
 
     _saveWallpaper(bytes) {

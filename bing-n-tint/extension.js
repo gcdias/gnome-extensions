@@ -174,10 +174,10 @@ const wallpaper = {
 
 }
 
-const BING   = new Bing(wallpaper, utils);
-const PICSUM = new Picsum(wallpaper, utils);
-const WIKI   = new Wiki(wallpaper, utils);
-const NASA   = new Nasa(wallpaper, utils);
+const BING   = new Bing(wallpaper);
+const PICSUM = new Picsum(wallpaper);
+const WIKI   = new Wiki(wallpaper);
+const NASA   = new Nasa(wallpaper);
 
 export default class BingNTint extends Extension {
 
@@ -192,7 +192,7 @@ export default class BingNTint extends Extension {
         const src = this._settings.get_string('wp-source');
         log.i(`from source: ${src}`);
         if (src === 'bing'){
-            this._bingIndex = this._settings.get_int('bing-index');
+            this._bingIndex = this._settings.get_int('wp-index');
             BING.init();
             BING.download(this._bingIndex)
                 .then(meta => this._saveMetadataAndUpdate(meta))
@@ -252,8 +252,8 @@ export default class BingNTint extends Extension {
     _nextWallpaper() {
         const src = this._settings.get_string('wp-source');
         if (src === 'bing'){
-            this._bingIndex = this._settings.get_int('bing-index') + 1 % 7;
-            this._settings.set_int('bing-index', this._bingIndex);
+            this._bingIndex = this._settings.get_int('wp-index') + 1 % 7;
+            this._settings.set_int('wp-index', this._bingIndex);
         } else if (src === 'picsum'){
             this._loadWallpaper();
         }
@@ -328,7 +328,7 @@ export default class BingNTint extends Extension {
             [wallpaper.settings, wallpaper.settings.connect('changed',           () => this._update())],
             [IGnome.settings, IGnome.settings.connect('changed::color-scheme',     () => this._update())],
             [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWallpaper())],
-            [this._settings, this._settings.connect('changed::bing-index',       () => this._loadWallpaper())],
+            [this._settings, this._settings.connect('changed::wp-index',       () => this._loadWallpaper())],
             [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
             [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],
             [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
