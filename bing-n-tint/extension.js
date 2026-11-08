@@ -467,6 +467,14 @@ const utils = {
         log.r(`end download`);
         return bytes;
     },
+    loadText: function(dir, filename){
+        const path = GLib.build_filenamev([dir, filename]);
+        const [ok, contents] = Gio.File.new_for_path(path).load_contents(null);
+        if (!ok){
+            return null;
+        }
+        return new TextDecoder().decode(contents);
+    },
     getLangTag: function(){
         log.s('utils.getLangTag()');
         const locale = GLib.get_language_names()[0];
