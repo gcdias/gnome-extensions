@@ -579,8 +579,8 @@ export default class BingNTint extends Extension {
 
     _loadGtkCss(gtkcss){
         const gtkCssDirectory = GLib.build_filenamev([GLib.get_user_config_dir(), 'gtk-4.0']);
-        const gtkCssPath = GLib.build_filenamev([gtkCssDirectory, 'gtk.css']);
         GLib.mkdir_with_parents(gtkCssDirectory, 0o755);
+        const gtkCssPath = GLib.build_filenamev([gtkCssDirectory, 'gtk.css']);
         GLib.file_set_contents(gtkCssPath, gtkcss);
         log.i(`GTK CSS written to ${gtkCssPath}`);
     }
