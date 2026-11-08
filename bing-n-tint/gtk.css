@@ -81,11 +81,19 @@ toggle:checked {
   background-color: rgba(0, 0, 0, 0);
 }
 
-placessidebar, .navigation-sidebar {
+placessidebar {
   background-color: @sidebar_bg_color;
 }
 
-placesheaderbar, headerbar {
+.navigation-sidebar {
+  background-color: @sidebar_bg_color;
+}
+
+placesheaderbar {
+  background-color: @headerbar_bg_color;
+}
+
+headerbar {
   background-color: @headerbar_bg_color;
 }
 

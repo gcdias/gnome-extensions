@@ -487,6 +487,7 @@ export default class BingNTint extends Extension {
         log.s(`BingNTint._loadWallpaper(${id ? id : ''})`);
         this._bingIndex = this._settings.get_int('bing-index');
         const src = this._settings.get_string('wp-source');
+        log.i(`from source: ${src}`);
         if (src === 'bing'){
             bingWallpaper.init();
             bingWallpaper.download(this._bingIndex)
@@ -615,14 +616,22 @@ export default class BingNTint extends Extension {
         
         wallpaper.init(this._prefersDark, this._cacheDir);
 
-        this._ids = [];
-        this._ids.push(gnome.connect(this._update));
-        this._connectId(wallpaper.settings, this._update);
-        
-        this._connectId(this._settings, this._loadWallpaper, "wp-source", "bing-index");
-        this._connectId(this._settings, this._update, "icon-theme-src", "gtk-theme-src", "accent-theme-src", "saturation", "hue-shell-shift", "hue-accent-shift");
-        this._connectId(this._settings, this._logUpdate, "debug-timestamp", "debug-level");
-        this._connectId(this._settings, this._updateStatusIcon, "show-status-icon");
+        this._ids = [
+            [wallpaper.settings, wallpaper.settings.connect('changed',           () => this._update())],
+            [gnome.settings, gnome.settings.connect('changed::color-scheme',     () => this._update())],
+            [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWallpaper())],
+            [this._settings, this._settings.connect('changed::bing-index',       () => this._loadWallpaper())],
+            [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
+            [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],
+            [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
+            [this._settings, this._settings.connect('changed::saturation',       () => this._update())],
+            [this._settings, this._settings.connect('changed::hue-shell-shift',  () => this._update())],
+            [this._settings, this._settings.connect('changed::hue-accent-shift', () => this._update())],
+            [this._settings, this._settings.connect('changed::debug-timestamp',  () => this._logUpdate())],
+            [this._settings, this._settings.connect('changed::debug-level',      () => this._logUpdate())],
+            [this._settings, this._settings.connect('changed::show-status-icon', () => this._updateStatusIcon())],
+            
+        ];
         
         const bingMetadata = this._settings.get_string('bing-metadata');
         this._bingMetadata = bingMetadata ? JSON.parse(bingMetadata) : null;
@@ -680,7 +689,7 @@ export default class BingNTint extends Extension {
 
         let hex = utils.hsl2rgb(hue_shell, sat, 0.5);
         hex = utils.rgbToHex(hex[0], hex[1], hex[2]);
-        let cssSat = [ utils.pct(0.2 + sat * 0.8), utils.pct(sat * 0.4), utils.pct(sat * 0.2) ];
+        let cssSat = [ utils.pct(0.2 + sat * 0.8), utils.pct(sat * 0.4), utils.pct(sat * 0.2), utils.pct(0.6) ];
         let gtkSat = sat / 5;
 
         log.i(`avg-in: rgb(${avgRGB.r}, ${avgRGB.g}, ${avgRGB.b}) hue: ${h}, sat: ${sat}, hueShell: ${hue_shell}, hueAccent: ${hue_accent}, accentHex: ${hex}`);
@@ -689,12 +698,13 @@ export default class BingNTint extends Extension {
             '-st-accent-color': hex,
             '-st-sat0': cssSat[0],
             '-st-sat1': cssSat[1],
-            '-st-sat2': cssSat[2]
+            '-st-sat2': cssSat[2],
+            '-st-w6'  : cssSat[3]
         }
 
         const gtkPalette = {
             '@base_color': hex,
-            '@base-sat': gtkSat
+            '@base-sat'  : gtkSat
         }
 
         const stylesheet = this._setPalette(this._decodeCss('stylesheet.src'), styleSheetPalette);

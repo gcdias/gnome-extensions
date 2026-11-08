@@ -5,6 +5,7 @@
       <choices>
         <choice value="user"/>
         <choice value="bing"/>
+        <choice value="picsum"/>
       </choices>
       <default>'bing'</default>
       <summary>Wallpaper source</summary>
