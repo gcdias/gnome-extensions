@@ -7,6 +7,31 @@ import {
     gettext as _,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+/* TODO: other picture-of-the-day API include:
+/ -NASA APOD: https://github.com/nasa/apod-api (requires AUTH-KEY)
+/ -Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/2026-11-07&prop=imageinfo&iiprop=url|extmetadata&format=json&origin=*
+/   -JSON: {
+  "batchcomplete": "",
+  "query": {
+    "pages": {
+      "44507575": {
+        "pageid": 44507575,
+        "ns": 6,
+        "title": "File:Grüngelbes Gallertkäppchen Leotia lubrica.JPG",
+        "imagerepository": "shared",
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Gr%C3%BCngelbes_Gallertk%C3%A4ppchen_Leotia_lubrica.JPG?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Gr%C3%BCngelbes_Gallertk%C3%A4ppchen_Leotia_lubrica.JPG",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=35657775",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2014-09-26 07:15:05",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },   
+    ...
+*/
 
 export default class BingNTintPreferences extends ExtensionPreferences {
     
@@ -50,7 +75,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
 
         const updateSelection = () => {
             const index = values.indexOf(settings.get_string(key));
-            if (index >= 0 && row.selected !== index)
+            if (row.selected !== index && index >= 0)
                 row.selected = index;
         };
 
@@ -83,7 +108,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             'wp-source',
             'Wallpaper',
             'Select the source of wallpaper',
-            { "User" : "user", "Bing": "bing"}
+            { "Default" : "off", "User": "user", "Bing": "bing", "Picsum": "picsum" }
         )
 
         const bingIndexRow = this._addSpinRow(wpGroup, settings,
