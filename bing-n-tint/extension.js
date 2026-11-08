@@ -11,94 +11,20 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Logger as log } from './utils/logger.js';
+import { Utils as utils } from './utils/utils.js';
+
+import { Bing } from './wp/bing.js';
+import { Picsum } from './wp/picsum.js';
+import { Wiki } from './wp/wiki.js';
+import { Nasa } from './wp/nasa.js';
+
 
 Gio._promisify(Soup.Session.prototype, 'send_and_read_async', 'send_and_read_finish');
 
 const EXTNAME = 'bing-n-tint';
 
-const log = {
-    
-    IND: 0,
-    IND_STEP: 2,
-    IND_CHAR: '.',
-    TIME_IND: 8,
-    TIME_STR: '',
-    MAX: 200,
-    START: 0,
-
-    settings: null,
-    timestamp: 'rel',
-    level: 1,
-    levels: {
-        'fun': 0,
-        'ret': 0,
-        'INF': 1,
-        'ERR': 2
-    },
-
-    _getTimeStamp: function(){
-        if (log.timestamp === 'rel'){
-            const dif = Date.now() - log.starttime;
-            return `+${String(log.TIME_STR + dif).slice(-8)}ms`;
-        } else {
-            return new Date().toISOString;
-        }
-    },
-
-    _post: function(tag, ...args){
-        const message = args ? args.map(String).join(' ') : '';
-        const timestamp = log._getTimeStamp();
-        const line = `${timestamp}:${log.IND_CHAR.repeat(log.IND)}${tag}: ${message}` 
-        console.log(line);
-        if (log.settings) {
-            const lines = log.settings.get_string('debug-log').split('\n').filter(Boolean);
-            lines.push(line);
-            log.settings.set_string('debug-log', lines.slice(-log.MAX).join('\n'));
-        }
-    },
-    updateSettings: function(settings){
-        log.settings = settings;
-        log.level = parseInt(settings.get_string('debug-level'));
-        log.timestamp = settings.get_string('debug-timestamp');
-    },
-    init: function(settings) {
-        if (settings){
-            log.updateSettings(settings);
-            log.IND = 0;
-            log.TIME_STR = ' '.repeat(log.TIME_IND);
-            const d = new Date();
-            log.START = d.getMilliseconds();
-            log.starttime = Date.now();
-            log.settings.set_string('debug-log',`START: ${d.toISOString()}`);
-        }
-    },
-    dismiss: function(){
-        log.IND = 0;
-        log.settings = null;
-    },
-    s: function(args) {
-        if (log.level < 1){
-            log._post("fun", args);
-            log.IND += log.IND_STEP;
-        }
-    },
-    r: function(args) {
-        if (log.level < 1){
-            log.IND = Math.max(0, log.IND - log.IND_STEP);
-            log._post("ret", args);
-        }
-    },
-    i: function(args) {
-        if (log.level < 2)
-            log._post("INF", args);
-    },
-    e: function(args) {
-        if (log.level < 3)
-            log._post("ERR",args);
-    }
-}
-
-const gnome = {
+const IGnome = {
     
     settings: new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}),
     
@@ -116,46 +42,46 @@ const gnome = {
     CIDX: [ 0, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7 ],
 
     connect: function(fn){
-        return [gnome.settings, gnome.settings.connect('changed::color-scheme', () => {
-            gnome.prefersDark = gnome.settings.get_string('color-scheme') === 'prefer-dark';
+        return [IGnome.settings, IGnome.settings.connect('changed::color-scheme', () => {
+            IGnome.prefersDark = IGnome.settings.get_string('color-scheme') === 'prefer-dark';
             fn();
         })];
     },
     isDarkMode: function() {
         log.s('gnome.isDarkMode()');
-        gnome.prefersDark = gnome.settings.get_string('color-scheme') === 'prefer-dark';
-        log.r(`Dark mode: ${gnome.prefersDark}`);
-        return gnome.prefersDark;
+        IGnome.prefersDark = IGnome.settings.get_string('color-scheme') === 'prefer-dark';
+        log.r(`Dark mode: ${IGnome.prefersDark}`);
+        return IGnome.prefersDark;
     },
     
     setTheme: function(setting, hue){
         log.s(`gnome.setTheme(setting:${setting}, hue:${hue}`);
-        const value = gnome.getThemeName(hue);
-        gnome.settings.set_string(setting, value);
+        const value = IGnome.getThemeName(hue);
+        IGnome.settings.set_string(setting, value);
         log.r(`set ${setting} to ${value}`);
         return value;
     },
     setColor: function(setting, hue){
         log.s(`gnome.setColor(setting:${setting}, hue:${hue}`);
-        const value = gnome.getColorName(hue);
-        gnome.settings.set_string(setting, value);
+        const value = IGnome.getColorName(hue);
+        IGnome.settings.set_string(setting, value);
         log.r(`set ${setting} to ${value}`);
         return value;
     },
 
     getDefaultSettings: function(){
         return {
-            'icon-theme':   gnome.settings.get_string('icon-theme'),
-            'gtk-theme':    gnome.settings.get_string('gtk-theme'),
-            'accent-color': gnome.settings.get_string('accent-color'),
+            'icon-theme':   IGnome.settings.get_string('icon-theme'),
+            'gtk-theme':    IGnome.settings.get_string('gtk-theme'),
+            'accent-color': IGnome.settings.get_string('accent-color'),
         };
     },
     getColor: function(hue){
         log.s(`gnome.getColor(hue:${hue})`);
-        const len = gnome.CIDX.length;
-        const colors = Object.entries(gnome.COLORS);
+        const len = IGnome.CIDX.length;
+        const colors = Object.entries(IGnome.COLORS);
         const i = Math.max(0, Math.floor(utils.normHue(hue + 180 / len) / 360 * len) % len);
-        const index = gnome.CIDX[i];
+        const index = IGnome.CIDX[i];
         const out = colors[index];
         log.r(`Color: ${out} (index: ${index})`);
         return out;
@@ -163,14 +89,14 @@ const gnome = {
     
     getThemeName: function(hue) {
         log.s(`gnome.getThemeName(hue:${hue})`);
-        const name = gnome.getColor(hue)[0] + (gnome.prefersDark ? '-dark' : '');
+        const name = IGnome.getColor(hue)[0] + (IGnome.prefersDark ? '-dark' : '');
         log.r(`getThemeName: ${name}`);
         return name;
     },
 
     getColorName: function(hue) {
         log.s(`gnome.getColorName(hue:${hue})`);
-        const name = gnome.getColor(hue)[1];
+        const name = IGnome.getColor(hue)[1];
         log.r(`getColorName: ${name}`);
         return name;
     },
@@ -246,266 +172,12 @@ const wallpaper = {
         return {r, g, b};
     },
 
-    getScreenResolution: function() {
-        log.s('wallpaper.getScreenResolution()');
-        const monitor = Main.layoutManager.primaryMonitor;
-        const scale = monitor?.geometry_scale ?? 1;
-        log.i(`geometry: [ ${monitor?.width}, ${monitor?.height} ], scale: ${scale}`);
-        const h = monitor ? Math.round(monitor.height * scale) : 1080;
-        const out = h <= 768 ? "1366x768" : h <= 1080 ? "1920x1080" : "UHD";
-        log.r(out);
-        return out;
-    },
-
-    getLangTag: function(){
-        log.s('wallpaper.getLangTag()');
-        const locale = GLib.get_language_names()[0];
-        const languageTag = locale.split(/[.@]/, 1)[0].replace(/_/g, '-');
-        log.r(languageTag);
-        return languageTag;
-    },
-
-    getBingWallpaper: async function(index = 0) {
-        log.s(`wallpaper.getBingWallpaper(index:${index})`);
-        const res = wallpaper.height <= 768 ? "1366x768" : wallpaper.height <= 1080 ? "1920x1080" : "UHD";
-        const lang = utils.getLangTag();
-        const url = `https://bing.biturl.top/?resolution=${res}&format=json&index=${index}&mkt=${lang}`;
-        log.i(`Fetching Bing wallpaper metadata from ${url}...`);
-        const metadata = await utils.download(url);
-        const metaStr = new TextDecoder().decode(metadata.get_data());
-        const {url: imageUrl, copyright: cr} = JSON.parse(metaStr);
-        wallpaper.url = imageUrl;
-        wallpaper.copyright = cr;
-        log.i(`imgUrl: ${wallpaper.url}, desc: ${wallpaper.copyright}`);
-        const bytes = await utils.download(imageUrl);
-        //const cacheDirectory = GLib.build_filenamev([GLib.get_user_cache_dir(), EXTNAME]);
-        //const path = GLib.build_filenamev([cacheDirectory, 'bing-wallpaper.jpg']);
-        //GLib.mkdir_with_parents(cacheDirectory, 0o755);
-        const path = GLib.build_filenamev([wallpaper.cacheDir, 'bing-wallpaper.jpg']);
-        GLib.file_set_contents(path, bytes.get_data());
-        log.r(`Bing wallpaper downloaded to ${path}`);
-        wallpaper.setBackground(path);
-        return metaStr;
-    }
 }
 
-const BING = {
-    url: '',
-    lastUpdated: 0,
-    metadata: '',
-    index: 0,
-    lang: 'en-US',
-    res: '1920x1080',
-    init: function(width=wallpaper.width, height=wallpaper.height){
-        this.res = height <= 768 ? "1366x768" : height <= 1080 ? "1920x1080" : "UHD";
-        this.lang = utils.getLangTag();
-    },
-    download: async function(index=0){
-        log.s(`bingWallpaper.download(index:${index})`);
-        BING.index = index;
-        const metaUrl = `https://bing.biturl.top/?resolution=${this.res}&format=json&index=${index}&mkt=${this.lang}`;
-        const metadata = await utils.download(metaUrl);
-        const metaStr = new TextDecoder().decode(metadata.get_data());
-        this.metadata = JSON.parse(metaStr);
-        this.url = this.metadata.url;
-        log.i(`imgUrl: ${this.url}, desc: ${this.metadata.copyright}`);
-        const bytes = await utils.download(this.url);
-        this.lastUpdated = Date.now();
-        const path = GLib.build_filenamev([wallpaper.cacheDir, 'bing-wallpaper.jpg']);
-        GLib.file_set_contents(path, bytes.get_data());
-        log.r(`Bing wallpaper downloaded to ${path}`);
-        wallpaper.setBackground(path);
-        return this.metadata;
-    }
-}
-
-const PICSUM = {
-    url: 'https://picsum.photos/',
-    lastUpdated: 0,
-    metadata: '',
-    index: 0,
-    lang: 'en-US',
-    res: '1920/1080',
-    init: function(width=wallpaper.width, height=wallpaper.height){
-        this.res = `${width}/${height}`;
-        this.lang = utils.getLangTag();
-    },
-    download: async function(){
-        log.s(`picsum.download()`);
-        this.url = `https://picsum.photos/${this.res}`;
-        log.i(`url: ${this.url}`);
-        const bytes = await utils.download(this.url);
-        this.lastUpdated = Date.now();
-        const path = GLib.build_filenamev([wallpaper.cacheDir, 'picsum-wallpaper.jpg']);
-        GLib.file_set_contents(path, bytes.get_data());
-        log.r(`Picsum wallpaper downloaded to ${path}`);
-        wallpaper.setBackground(path);
-        return {};
-    }
-}
-
-const WIKI = {
-    url: '',
-    lastUpdated: 0,
-    metadata: '',
-    userAgent: 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0', //'potd-script/1.0 (you@example.com)'
-    download: async function(){
-        log.s(`wikiPOTD.download()`);
-        const dt = new Date().toISOString().slice(0, 10);
-        const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/${dt}&prop=imageinfo&iiprop=url&format=json&origin=*`
-        const meta = await utils.download(metaUrl, WIKI.userAgent);
-        WIKI.metadata = new TextDecoder().decode(meta.get_data());
-        let url;
-        if (WIKI.metadata && (WIKI.metadata = JSON.parse(WIKI.metadata)) && (url = utils.findFirst(WIKI.metadata,'url'))){
-            const bytes = await utils.download(url, WIKI.userAgent);
-            this.lastUpdated = Date.now();
-            const path = GLib.build_filenamev([wallpaper.cacheDir, 'wiki-wallpaper.jpg']);
-            GLib.file_set_contents(path, bytes.get_data());
-            log.r(`Wiki POTD wallpaper downloaded to ${path}`);
-            wallpaper.setBackground(path);
-        }
-        return WIKI.metadata;
-    }
-}
-
-const NASA = {
-    url: '',
-    lastUpdated: 0,
-    metadata: '',
-    api_key: '',
-    init: function(api_key){
-        NASA.api_key = api_key
-    },
-    download: async function(){
-        log.s(`NASA.download()`);
-        if (!NASA.api_key){
-            log.r('No API_KEY set for NASA, aborting...');
-            return undefined;
-        }
-        const today = new Date().toISOString().slice(0, 10);
-        const metaUrl = `https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key=${NASA.api_key}&date=${today}`
-        const meta = await utils.download(metaUrl);
-        NASA.metadata = new TextDecoder().decode(meta.get_data());
-        if (NASA.metadata && (NASA.metadata = JSON.parse(NASA.metadata))){
-            if (Array.isArray(NASA.metadata))
-                NASA.metadata = NASA.metadata[0];
-            log.i(`NASA metadata: ${NASA.metadata}`);
-            let url = NASA.metadata.hdurl;
-            const bytes = await utils.download(url);
-            this.lastUpdated = Date.now();
-            const path = GLib.build_filenamev([wallpaper.cacheDir, 'nasa-wallpaper.jpg']);
-            GLib.file_set_contents(path, bytes.get_data());
-            log.r(`Nasa wallpaper downloaded to ${path}`);
-            wallpaper.setBackground(path);
-        }
-        return NASA.metadata;
-    }
-}
-
-const utils = {
-    rgbToHex: (r, g, b) => {
-        log.s(`utils.rgbToHex(r:${r}, g:${g}, b:${b})`);
-        const out = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-        log.r(`Hex color: ${out}`);
-        return out;
-    },
-    hexToRgb: (hex) => {
-        log.s(`utils.hexToRgb(hex:${hex})`);
-        const [r, g, b] = hex.slice(1).match(/../g).map(x => parseInt(x, 16));
-        log.r(`RGB color: rgb(${r}, ${g}, ${b})`);
-        return [r, g, b];
-    },
-    normHue: function(h, round = true) {
-        log.s(`utils.normHue(hue:${h}, round? ${round})`);
-        const hue = ((h % 360) + 360) % 360;
-        const out = round ? Math.round(hue) : hue;
-        log.r(`Normalized hue: ${out}`);
-        return out;
-    },
-    rgb2hsl: function(r, g, b) {
-        log.s(`utils.rgb2hsl(r:${r}, g:${g}, b:${b})`);
-        r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const d = max - min;
-        const l = (max + min) / 2;
-        if (!d)
-            return [0, 0, l];
-        const h = max === r ? (g - b) / d % 6
-                : max === g ? (b - r) / d + 2
-                : (r - g) / d + 4;
-        const s = d / (1 - Math.abs(2 * l - 1));
-        const out = [utils.normHue(h * 60, true), s.toFixed(2), l.toFixed(2)];
-        log.r(`HSL color: hsl(${out[0]}, ${out[1]}, ${out[2]})`);
-        return out;
-    },
-    hsl2rgb: function(h, s, l) {
-        log.s(`utils.hsl2rgb(h:${h}, s:${s}, l:${l})`);
-        const invalidHue = isNaN(h);
-        const a = invalidHue ? 0 : s * Math.min(l, 1 - l);
-        const hue = invalidHue ? 0 : utils.normHue(h, false) / 30;
-        const channel = n => {
-            const k = (n + hue) % 12;
-            return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
-        };
-        const out = [channel(0), channel(8), channel(4)];
-        log.r(`RGB color: rgb(${out[0]}, ${out[1]}, ${out[2]})`);
-        return out;
-    },
-    download: async function (url, userAgent) {
-        log.s(`utils.download(url:${url}`);
-        const session = new Soup.Session();
-        if (userAgent)
-            session.userAgent = userAgent;
-        const msg = Soup.Message.new('GET', url);
-        const bytes = await session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
-        if (msg.get_status() !== Soup.Status.OK){
-            const err = `HTTP ${msg.get_status()}: ${msg.get_reason_phrase()}`;
-            log.e(err);
-            //throw new Error(err);
-        }
-        log.r(`end download`);
-        return bytes;
-    },
-    loadText: function(dir, filename){
-        const path = GLib.build_filenamev([dir, filename]);
-        const [ok, contents] = Gio.File.new_for_path(path).load_contents(null);
-        if (!ok){
-            return null;
-        }
-        return new TextDecoder().decode(contents);
-    },
-    getLangTag: function(){
-        log.s('utils.getLangTag()');
-        const locale = GLib.get_language_names()[0];
-        const languageTag = locale.split(/[.@]/, 1)[0].replace(/_/g, '-');
-        log.r(languageTag);
-        return languageTag;
-    },
-    pct: function(value) {
-        log.s(`utils.pct(value:${value})`);
-        const out = (value * 100).toFixed(0) + '%';
-        log.r(`${out}`);
-        return out;
-    },
-    findFirst(obj, key) {
-        if (obj === null || typeof obj !== 'object') return undefined;
-
-        if (Object.hasOwn(obj, key)) return obj[key];
-
-        for (const child of Object.values(obj)) {
-            const found = utils.findFirst(child, key);
-            if (found !== undefined) return found;
-        }
-        return undefined;
-    },
-    funcName: function(fun){
-        var ret = fun.toString();
-        ret = ret.substr('function '.length);
-        ret = ret.substr(0, ret.indexOf('('));
-        return ret;
-    }
-}
+const BING   = new Bing(wallpaper, utils);
+const PICSUM = new Picsum(wallpaper, utils);
+const WIKI   = new Wiki(wallpaper, utils);
+const NASA   = new Nasa(wallpaper, utils);
 
 export default class BingNTint extends Extension {
 
@@ -545,16 +217,6 @@ export default class BingNTint extends Extension {
         log.r('end _loadWallpaper');
     }
 
-    _newBingWallpaper(meta){
-        if(meta){
-            this._bingMetadata = JSON.parse(meta);
-            this._settings.set_string('wp-metadata', meta);
-            log.i(`Bing wallpaper index ${this._bingIndex}: ${this._bingMetadata.url}`);
-        }
-        this._lastWpDownloadTime = Date.now();
-        this._update();
-    }
-
     _apply(key, mode, fn, hue){
         this._lastSettings[key] = mode !== 'user' ? fn(key, hue) : this._defaultSettings[key];
     }
@@ -574,34 +236,10 @@ export default class BingNTint extends Extension {
         GLib.file_set_contents(path, stylesheet);
         this._customStylesheet = Gio.File.new_for_path(path);
         this._theme.load_stylesheet(this._customStylesheet);
-        log.i(`Custom Stylesheet written to ${path}`);
+        log.i(`Custom Stylesheet written to ${path} and loaded`);
     }
 
-    _loadGtkCss(gtkcss){
-        const gtkCssDirectory = GLib.build_filenamev([GLib.get_user_config_dir(), 'gtk-4.0']);
-        GLib.mkdir_with_parents(gtkCssDirectory, 0o755);
-        const gtkCssPath = GLib.build_filenamev([gtkCssDirectory, 'gtk.css']);
-        GLib.file_set_contents(gtkCssPath, gtkcss);
-        log.i(`GTK CSS written to ${gtkCssPath}`);
-    }
-
-    _connect(setting, fn, id){
-        const callback = () => fn.call(this);
-        const c = `changed${id ? "::" + id : ''}`
-        log.i(`_connect: ${c}`)
-        return [setting, setting.connect(c, callback)];
-    }
-    
-    _connectId(setting, fn, ...ids){
-        if (ids.length > 0){
-            for (const id of ids)
-                this._ids.push(this._connect(setting, fn, id));
-        } else {
-            this._ids.push(this._connect(setting, fn));
-        }
-    }
-
-    _setPalette(css, palette) {
+    _replace(css, palette) {
         log.s(`BingNTint._applyPalette(<css>, palette:${palette})`);
         let c = `${css}`;
         for (const [key, value] of Object.entries(palette)) {
@@ -609,20 +247,6 @@ export default class BingNTint extends Extension {
         }
         log.r(`done`);
         return c;
-    }
-
-    _decodeCss(filename) {
-        log.s(`BingNTint._decodeCss(filename:${filename})`);
-        const filePath = GLib.build_filenamev([this.path, filename]);
-        const [success, contents] = Gio.File.new_for_path(filePath).load_contents(null);
-        if (!success){
-            log.e(`Gnome Theme Color: could not read ${filename}`)
-            log.r();
-            throw new Error(`Gnome Theme Color: could not read ${filename}`);
-        }
-        const out = new TextDecoder().decode(contents)
-        log.r(`(${out.length} chars)`);
-        return out;
     }
 
     _nextWallpaper() {
@@ -661,7 +285,19 @@ export default class BingNTint extends Extension {
         log.updateSettings(this._settings);
     }
 
-
+    _loadAuthConfig(){
+        let auth_config = utils.loadText(this._cacheDir,'user.cfg');
+        if (auth_config && (auth_config = JSON.parse(auth_config))){
+            const wiki_auth = auth_config.auth?.wiki;
+            const nasa_auth = auth_config.auth?.nasa;
+            log.i(`found auth-config: wiki=${wiki_auth}, nasa=${nasa_auth}`);
+            this._settings.set_string('wiki-key', wiki_auth);
+            this._settings.set_string('nasa-api-key', nasa_auth);
+        } else {
+            const cfg_file = utils.loadText(this.path,'user.src');
+            utils.saveText(this._cacheDir, 'user.cfg', cfg_file);
+        }
+    }
 
 
     enable() {
@@ -674,18 +310,23 @@ export default class BingNTint extends Extension {
         
         this._bingIndex = 0;
         this._customStylesheet = null;
-        this._defaultSettings = gnome.getDefaultSettings();
+        this._defaultSettings = IGnome.getDefaultSettings();
         this._lastSettings = {};
 
-        this._prefersDark = gnome.isDarkMode();
+        this._prefersDark = IGnome.isDarkMode();
         this._cacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), EXTNAME]);
         GLib.mkdir_with_parents(this._cacheDir, 0o755);
-        
+        this._gtkDir = GLib.build_filenamev([GLib.get_user_config_dir(), 'gtk-4.0']);
+        GLib.mkdir_with_parents(this._gtkDir, 0o755);
+
+        this._loadAuthConfig();
+
+
         wallpaper.init(this._prefersDark, this._cacheDir);
 
         this._ids = [
             [wallpaper.settings, wallpaper.settings.connect('changed',           () => this._update())],
-            [gnome.settings, gnome.settings.connect('changed::color-scheme',     () => this._update())],
+            [IGnome.settings, IGnome.settings.connect('changed::color-scheme',     () => this._update())],
             [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWallpaper())],
             [this._settings, this._settings.connect('changed::bing-index',       () => this._loadWallpaper())],
             [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
@@ -729,7 +370,7 @@ export default class BingNTint extends Extension {
 
     _update(id) {
         log.s(`BingNTint._update(${id ? id : ''})`);
-        this._prefersDark = gnome.isDarkMode();
+        this._prefersDark = IGnome.isDarkMode();
 
         const config = {
             iconMode:    this._settings.get_string('icon-theme-src'),
@@ -746,9 +387,9 @@ export default class BingNTint extends Extension {
         const hue_shell  = config.gtkMode    === 'shift' ? h + config.shellShift  : h;       
         const sat = this._settings.get_int('saturation') / 100;
 
-        this._apply('icon-theme',   config.iconMode,   gnome.setTheme, hue_accent);
-        this._apply('gtk-theme',    config.gtkMode,    gnome.setTheme, hue_shell);
-        this._apply('accent-color', config.accentMode, gnome.setColor, hue_accent);
+        this._apply('icon-theme',   config.iconMode,   IGnome.setTheme, hue_accent);
+        this._apply('gtk-theme',    config.gtkMode,    IGnome.setTheme, hue_shell);
+        this._apply('accent-color', config.accentMode, IGnome.setColor, hue_accent);
         
         //this._applyTheme('icon-theme','icon-theme-src', hue_accent, gnome.getThemeName);
         //this._applyTheme('accent-color','accent-color-src', hue_accent, gnome.getColorName);
@@ -774,12 +415,12 @@ export default class BingNTint extends Extension {
             '@base-sat'  : gtkSat
         }
 
-        const stylesheet = this._setPalette(this._decodeCss('stylesheet.src'), styleSheetPalette);
+        const stylesheet = this._replace(utils.loadText(this.path,'stylesheet.src'), styleSheetPalette);
         this._unloadStylesheet();
         this._loadStylesheet(stylesheet);
 
-        const gtkcss = this._setPalette(this._decodeCss('gtk.css'), gtkPalette);
-        this._loadGtkCss(gtkcss);
+        const gtkcss = this._replace(utils.loadText(this.path,'gtk.css'), gtkPalette);
+        utils.saveText(this._gtkDir, 'gtk.css', gtkcss);
         log.r('end _update()');
     }
 }
