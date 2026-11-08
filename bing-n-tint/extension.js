@@ -356,7 +356,7 @@ const wikiPOTD = {
         log.i(metadata);
         let url;
         if (metadata && (metadata = JSON.parse(metadata)) && (url = metadata["query"]["pages"][0]["imageinfo"][0].url)){
-            const bytes = await utils.download(url);
+            const bytes = await utils.download(url,'potd-script/1.0 (you@example.com)');
             this.lastUpdated = Date.now();
             const path = GLib.build_filenamev([wallpaper.cacheDir, 'wiki-wallpaper.jpg']);
             GLib.file_set_contents(path, bytes.get_data());
@@ -417,9 +417,11 @@ const utils = {
         log.r(`RGB color: rgb(${out[0]}, ${out[1]}, ${out[2]})`);
         return out;
     },
-    download: async function (url) {
+    download: async function (url, userAgent) {
         log.s(`utils.download(url:${url}`);
         const session = new Soup.Session();
+        if (userAgent)
+            session.userAgent = userAgent;
         const msg = Soup.Message.new('GET', url);
         const bytes = await session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
         if (msg.get_status() !== Soup.Status.OK){

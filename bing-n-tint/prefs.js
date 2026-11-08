@@ -108,7 +108,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             'wp-source',
             'Wallpaper',
             'Select the source of wallpaper',
-            { "Default" : "off", "User": "user", "Bing": "bing", "Picsum": "picsum" }
+            { "Default" : "off", "User": "user", "Bing": "bing", "Picsum": "picsum", "Wikipedia": "wiki" }
         )
 
         const bingIndexRow = this._addSpinRow(wpGroup, settings,
