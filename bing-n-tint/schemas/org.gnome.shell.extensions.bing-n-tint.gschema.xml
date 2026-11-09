@@ -56,7 +56,7 @@
         <choice value="hue"/>
         <choice value="shift"/>
       </choices>
-      <default>'shift'</default>
+      <default>'hue'</default>
       <summary>Icon theme source</summary>
       <description>Choose whether to use the user's icon theme, the wallpaper hue, or the shifted wallpaper hue.</description>
     </key>
@@ -66,7 +66,7 @@
         <choice value="hue"/>
         <choice value="shift"/>
       </choices>
-      <default>'shift'</default>
+      <default>'hue'</default>
       <summary>GTK theme source</summary>
       <description>Choose whether to use the user's GTK theme, the wallpaper hue, or the shifted wallpaper hue.</description>
     </key>
@@ -76,8 +76,18 @@
         <choice value="hue"/>
         <choice value="shift"/>
       </choices>
-      <default>'shift'</default>
+      <default>'hue'</default>
       <summary>Accent colour source</summary>
+      <description>Choose whether to use the user's accent colour, the wallpaper hue, or the shifted wallpaper hue.</description>
+    </key>
+    <key name="ptyxis-theme-src" type="s">
+      <choices>
+        <choice value="user"/>
+        <choice value="hue"/>
+        <choice value="shift"/>
+      </choices>
+      <default>'hue'</default>
+      <summary>Terminal/Ptyxis colour source</summary>
       <description>Choose whether to use the user's accent colour, the wallpaper hue, or the shifted wallpaper hue.</description>
     </key>
     <key name="saturation" type="i">

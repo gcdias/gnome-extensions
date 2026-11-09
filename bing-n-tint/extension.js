@@ -345,6 +345,7 @@ export default class BingNTint extends Extension {
             [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
             [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],
             [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
+            [this._settings, this._settings.connect('changed::ptyxis-theme-src', () => this._update())],
             [this._settings, this._settings.connect('changed::saturation',       () => this._update())],
             [this._settings, this._settings.connect('changed::hue-shell-shift',  () => this._update())],
             [this._settings, this._settings.connect('changed::hue-accent-shift', () => this._update())],
@@ -390,6 +391,7 @@ export default class BingNTint extends Extension {
             iconMode:    this._settings.get_string('icon-theme-src'),
             accentMode:  this._settings.get_string('accent-color-src'),
             gtkMode:     this._settings.get_string('gtk-theme-src'),
+            ptyxisMode:  this._settings.get_string('ptyxis-theme-src'),
             accentShift: this._settings.get_string('hue-accent-shift'),
             shellShift:  this._settings.get_string('hue-shell-shift'),
         }
@@ -398,7 +400,7 @@ export default class BingNTint extends Extension {
         
         const [h, s, l] = utils.rgb2hsl(avgRGB.r, avgRGB.g, avgRGB.b);  
         const hue_accent = config.accentMode === 'shift' ? h + config.accentShift : h;
-        const hue_shell  = config.gtkMode    === 'shift' ? h + config.shellShift  : h;       
+        const hue_shell  = config.gtkMode    === 'shift' ? h + config.shellShift  : h;
         const sat = this._settings.get_int('saturation') / 100;
 
         this._apply('icon-theme',   config.iconMode,   IGnome.setTheme, hue_accent);
@@ -436,7 +438,8 @@ export default class BingNTint extends Extension {
         const gtkcss = this._replace(utils.loadText(this.path,'gtk.css'), gtkPalette);
         utils.saveText(this._gtkDir, 'gtk.css', gtkcss);
 
-        IGnome.setPtyxis(hue_shell);
+        if (config.ptyxisMode !== 'user')
+            IGnome.setPtyxis(hue_shell);
         
         log.r('end _update()');
     }

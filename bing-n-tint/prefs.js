@@ -89,7 +89,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             }
             if (auth_config.auth.wall){
                 log.i('prefs._loadAuthConfig: found wall-key');
-                this._settings.set_string('wall-key', auth_config.auth.wiki);
+                this._settings.set_string('wall-key', auth_config.auth.wall);
                 this._authProviders["Wallhaven"] = 'wall';
             }
         } else {
@@ -188,6 +188,13 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         this._addComboBox(group, this._settings,
             'gtk-theme-src',
             'Tint GTK/Shell Theme',
+            'Disable, set to wallpaper hue or shift the hue',
+            themeOpts
+        )
+        
+        this._addComboBox(group, this._settings,
+            'ptyxis-theme-src',
+            'Tint Terminal/Ptyxis Theme',
             'Disable, set to wallpaper hue or shift the hue',
             themeOpts
         )
