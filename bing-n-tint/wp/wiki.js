@@ -15,11 +15,13 @@ export class Wiki extends WpEngine {
     }
 
     next(index){
-        this.date = new Date().toISOString.slice(0,10);
+        const date = new Date();
+        date.setUTCDate(date.getUTCDate() - index);
+        this.date = date.toISOString().slice(0, 10);
     }
 
     async download() {
-        log.s('wikiPOTD.download()');
+        log.s('wiki.download()');
         const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/${this.date}&prop=imageinfo&iiprop=url&format=json&origin=*`;
         const meta = await this._download(metaUrl, this.userAgent);
         const metaStr = new TextDecoder().decode(meta.get_data());
