@@ -101,6 +101,11 @@ window {
   background-color: @window_bg_color;
 }
 
+menu,
+popover.menu > contents {
+  background-color: @popover_bg_color;
+}
+
 window.nautilus-window {
   font-family: 'Ubuntu Sans';
   font-weight: 700;

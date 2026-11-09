@@ -6,7 +6,9 @@ export class Nasa extends WpEngine {
         super(wallpaper, 'nasa-wallpaper.jpg');
         this.api_key = '';
         this.index = 0;
+        this.date = new Date().toISOString().slice(0, 10);
         this.IDX_MAX = 7;
+        this.id = 'nasa';
     }
 
     init(settings) {
@@ -16,6 +18,9 @@ export class Nasa extends WpEngine {
 
     next(){
         this.index = (this.index + 1) % this.IDX_MAX;
+        const date = new Date();
+        date.setUTCDate(date.getUTCDate() - this.index);
+        this.date = date.toISOString().slice(0, 10);
     }
 
     async download() {
@@ -24,8 +29,7 @@ export class Nasa extends WpEngine {
             log.r('No API_KEY set for NASA, aborting...');
             return undefined;
         }
-        const today = new Date().toISOString().slice(0, 10);
-        const metaUrl = `https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key=${this.api_key}&date=${today}`;
+        const metaUrl = `https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key=${this.api_key}&date=${this.date}`;
         const meta = await this._download(metaUrl);
         const metaStr = new TextDecoder().decode(meta.get_data());
         if (metaStr && (this.metadata = JSON.parse(metaStr))) {

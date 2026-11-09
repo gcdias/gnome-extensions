@@ -1,0 +1,9 @@
+{
+  "name": "RebootOpts",
+  "description": "Reboot system Options",
+  "license": "GPLv3",
+  "uuid": "reboot-opts@gcdias",
+  "url": "https://github.com/gcdias/gnome-extensions/reboottouefi",
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "gettext-domain": "reboot-opts@gcdias"
+}

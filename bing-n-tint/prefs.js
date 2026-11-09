@@ -74,35 +74,6 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         return row;
     }
 
-    _promptString(parent, prompt, callback){
-        const dialog = new Gtk.Dialog({
-            title: _(prompt),
-            transient_for: parent,
-            modal: true,
-        });
-        const entry = new Gtk.Entry({
-            placeholder_text: _(prompt),
-            activates_default: true,
-        });
-
-        const contentArea = dialog.get_content_area();
-        contentArea.set_margin_top(20);
-        contentArea.set_margin_bottom(20);
-        contentArea.set_margin_start(20);
-        contentArea.set_margin_end(20);
-        contentArea.append(entry);
-        dialog.add_button(_('Cancel'), Gtk.ResponseType.CANCEL);
-        dialog.add_button(_('Save'), Gtk.ResponseType.OK);
-        dialog.set_default_response(Gtk.ResponseType.OK);
-        dialog.connect('response', (_dialog, response) => {
-            if (callback && response === Gtk.ResponseType.OK)
-                callback(entry.text);
-
-            dialog.close();
-        });
-        dialog.present();
-    }
-
     _loadAuthConfig(){
         let auth_config = utils.loadText(this._cacheDir,'user.cfg');
         if (auth_config && (auth_config = JSON.parse(auth_config)) && (auth_config.auth)){
@@ -128,11 +99,27 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         }
     }
 
+    _connect(connection, callback){
+        if (connection && callback){
+            callback();
+            this._settings.connect(connection, callback);
+        }
+    }
+
     fillPreferencesWindow(window) {
 
         this._settings = this.getSettings();
         this._cacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), EXTNAME]);
         GLib.mkdir_with_parents(this._cacheDir, 0o755);
+
+        this._authProviders = {
+            "Default": "off",
+            "User": "user",
+            "Bing": "bing",
+            "Picsum": "picsum"
+        }
+
+        this._loadAuthConfig();
 
         this._wpPage = new Adw.PreferencesPage({
             title: _('Appearance'),
@@ -146,46 +133,25 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
         this._wpPage.add(this._wpGroup);
 
-        this._authProviders = {
-            "Default": "off",
-            "User": "user",
-            "Bing": "bing",
-            "Picsum": "picsum"
-        }
-
-        this._loadAuthConfig();
-
-
-        const api_providers = {
-            'bing': {desc: 'copyright'},
-            'wiki': {prompt: 'Enter your email for accessing wiki POTD', key: 'wiki-key', desc: ''},
-            'nasa': {prompt: 'Enter your Nasa API-KEY', key: 'nasa-api-key', desc: 'alt'},
-        }
-
         const wpComboRow = this._addComboBox(this._wpGroup, this._settings,
             'wp-source',
             'Wallpaper',
             'Select the source of wallpaper',
             this._authProviders
         )
+        this._connect('changed::wp-metadata', () => {
+            const desc = this._settings.get_string('wp-desc');
+            wpComboRow.subtitle = desc || _('No description provided.');
+        })
 
+        /*
         this._addSpinRow(this._wpGroup, this._settings,
             'wp-index',
             'Bing Wallpaper Index',
             'Select the index of the Bing wallpaper to use.',
              0, 10, 1, 2
         );
-
-        const updateWpSubtitle = () => {
-            const metadata = JSON.parse(this._settings.get_string('wp-metadata'));
-            const desc = this._settings.get_string('wp-desc');
-            //const provider = this._settings.get_string('wp-source');
-            //let d, desc;
-            //desc = metadata && (d = api_providers[provider]) && d.desc ? metadata[d.desc] : null;
-            wpComboRow.subtitle = desc || _('No description provided.');
-        };
-        updateWpSubtitle();
-        this._settings.connect('changed::wp-metadata', updateWpSubtitle);
+        */
         
         this._addSwitch(this._wpGroup, this._settings,
             'show-status-icon',
@@ -259,8 +225,9 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             title: _('Debug'),
             icon_name: 'utilities-terminal-symbolic',
         });
+
         let debugPageAdded = false;
-        const updateDebugPage = () => {
+        this._connect('changed::debug-enable', () => {
             const enabled = this._settings.get_boolean('debug-enable');
             if (enabled === debugPageAdded)
                 return;
@@ -271,10 +238,8 @@ export default class BingNTintPreferences extends ExtensionPreferences {
                 window.remove(debugPage);
 
             debugPageAdded = enabled;
-        };
-        updateDebugPage();
-        this._settings.connect('changed::debug-enable', updateDebugPage);
-
+        });
+        
         const debugGroup = new Adw.PreferencesGroup({
             title: _('Console output'),
         });
@@ -302,12 +267,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             child: debugTextView,
         });
         debugGroup.add(debugScroll);
-
-        const updateDebugLog = () => {
-            debugTextView.buffer.set_text(this._settings.get_string('debug-log'), -1);
-        };
-        updateDebugLog();
-        this._settings.connect('changed::debug-log', updateDebugLog);
+        this._connect('changed::debug-log',() => debugTextView.buffer.set_text(this._settings.get_string('debug-log'), -1));
 
         const debugOptsGroup = new Adw.PreferencesGroup({
             title: _('Debug options'),

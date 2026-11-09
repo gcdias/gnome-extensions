@@ -7,9 +7,9 @@ export class Picsum extends WpEngine {
         super(wallpaper, 'picsum-wallpaper.jpg');
         this.url = 'https://picsum.photos/';
         this.index = 0;
-        this.lang = 'en-US';
         this.res = '1920/1080';
         this.desc = "No description provided.";
+        this.id = 'picsum';
     }
 
     init(settings) {
@@ -18,13 +18,17 @@ export class Picsum extends WpEngine {
         this.lang = utils.getLangTag();
     }
 
+    next(){
+        this.index++;
+    }
+
     async download() {
         log.s('picsum.download()');
         this.url = `https://picsum.photos/${this.res}`;
         log.i(`url: ${this.url}`);
         const bytes = await this._download(this.url);
         const path = this._saveWallpaper(bytes);
-        log.r(`PicSum wallpaper downloaded to ${path} (${bytes.getData().length} bytes))`);
+        log.r(`PicSum wallpaper downloaded to ${path}`);
         return {};
     }
 

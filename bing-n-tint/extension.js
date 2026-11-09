@@ -40,6 +40,19 @@ const IGnome = {
         'Yaru-magenta': 'pink'
     },
 
+    PTYXIS: [
+        'Omni',
+        'Birds Of Paradise',
+        'Elic',
+        'Pali',
+        'Dracula',
+        'Catppuccin Mocha',
+        'Gogh',
+        'Elemental'
+    ],
+
+    ptyxis_key: "org.gnome.Ptyxis.Profiles.cfa43bfa4955e5b9ba3abc556ac39d35.palette",
+
     CIDX: [ 0, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7 ],
 
     connect: function(fn){
@@ -68,6 +81,20 @@ const IGnome = {
         IGnome.settings.set_string(setting, value);
         log.r(`set ${setting} to ${value}`);
         return value;
+    },
+    
+    setPtyxis: function(hue){
+        log.s(`gnome.setPtyxis(hue:${hue}`);
+        const len = IGnome.CIDX.length;
+        const colors = Object.entries(IGnome.PTYXIS);
+        const i = Math.max(0, Math.floor(utils.normHue(hue + 180 / len) / 360 * len) % len);
+        const index = IGnome.CIDX[i];
+        const out = this.PTYXIS[index];
+        const a = new Gio.Settings({schema_id: 'org.gnome.Ptyxis'});
+        const b = a.get_string('default-profile-uuid');
+        const c = new Gio.Settings({ schema_id: 'org.gnome.Ptyxis.Profile', path: `/org/gnome/Ptyxis/Profiles/${b}/`,});
+        const d = c.set_string('palette', out);
+        log.r(`ptyxis theme: ${out}`);
     },
 
     getDefaultSettings: function(){
@@ -186,11 +213,7 @@ export default class BingNTint extends Extension {
         if (engine){
             engine.init(this._settings);
             engine.download()
-                .then(meta => {
-                    this._settings.set_string('wp-metadata', JSON.stringify(meta));
-                    this._settings.set_string('wp-desc', engine.getDesc());
-                    this._update();
-                })
+                .then(meta => this._update())
                 .catch(error => log.e(`BingNTint._loadWp.catch ${error}`));
         }
         log.r('end _loadWp');
@@ -229,13 +252,9 @@ export default class BingNTint extends Extension {
     }
 
     _nextWallpaper() {
-        const src = this._settings.get_string('wp-source');
-        if (src === 'bing'){
-            this._bingIndex = this._settings.get_int('wp-index') + 1 % 7;
-            this._settings.set_int('wp-index', this._bingIndex);
-        } else if (src === 'picsum'){
-            this._loadWp();
-        }
+        const engine = this._getEngine();
+        engine.next();
+        this._loadWp();
     }
 
     _createStatusIcon() {
@@ -320,9 +339,9 @@ export default class BingNTint extends Extension {
 
         this._ids = [
             [wallpaper.settings, wallpaper.settings.connect('changed',           () => this._update())],
-            [IGnome.settings, IGnome.settings.connect('changed::color-scheme',     () => this._update())],
+            [IGnome.settings, IGnome.settings.connect('changed::color-scheme',   () => this._update())],
             [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWp())],
-            [this._settings, this._settings.connect('changed::wp-index',       () => this._loadWp())],
+            [this._settings, this._settings.connect('changed::wp-index',         () => this._loadWp())],
             [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
             [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],
             [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
@@ -416,6 +435,9 @@ export default class BingNTint extends Extension {
 
         const gtkcss = this._replace(utils.loadText(this.path,'gtk.css'), gtkPalette);
         utils.saveText(this._gtkDir, 'gtk.css', gtkcss);
+
+        IGnome.setPtyxis(hue_shell);
+        
         log.r('end _update()');
     }
 }
