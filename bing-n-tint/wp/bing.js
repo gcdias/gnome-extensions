@@ -16,6 +16,10 @@ export class Bing extends WpEngine {
         this.lang = utils.getLangTag();
     }
 
+    next(index){
+        this.index = index;
+    }
+
     async download(index = 0) {
         log.s(`Bing.download(index:${index})`);
         this.index = index;

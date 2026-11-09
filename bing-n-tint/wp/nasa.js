@@ -5,11 +5,17 @@ export class Nasa extends WpEngine {
     constructor(wallpaper) {
         super(wallpaper, 'nasa-wallpaper.jpg');
         this.api_key = '';
+        this.index = 0;
+        this.IDX_MAX = 7;
     }
 
     init(settings) {
         this._settings = settings;
         this.api_key = settings.get_string('nasa-key');
+    }
+
+    next(){
+        this.index = (this.index + 1) % this.IDX_MAX;
     }
 
     async download() {
@@ -23,9 +29,11 @@ export class Nasa extends WpEngine {
         const meta = await this._download(metaUrl);
         const metaStr = new TextDecoder().decode(meta.get_data());
         if (metaStr && (this.metadata = JSON.parse(metaStr))) {
-            if (Array.isArray(this.metadata))
-                this.metadata = this.metadata[0];
-            log.i(`NASA metadata: ${this.metadata}`);
+            if (Array.isArray(this.metadata)){
+                this.index = this.index % this.metadata.length;
+                this.metadata = this.metadata[this.index];
+            }
+            log.i(`NASA metadata: ${this.metadata} at index ${this.index}`);
             this.url = this.metadata.hdurl;
             this.desc = this.metadata.alt || "No description provided.";
             const bytes = await this._download(this.url);
