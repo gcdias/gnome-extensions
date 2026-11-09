@@ -8,18 +8,26 @@ export class Wiki extends WpEngine {
         this.userAgent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0';
     }
 
+    init(settings) {
+        this._settings = settings;
+        this.api_key = settings.get_string('wiki-key');
+    }
+
     async download() {
         log.s('wikiPOTD.download()');
         const date = new Date().toISOString().slice(0, 10);
         const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/${date}&prop=imageinfo&iiprop=url&format=json&origin=*`;
         const meta = await this._download(metaUrl, this.userAgent);
-        this.metadata = new TextDecoder().decode(meta.get_data());
+        const metaStr = new TextDecoder().decode(meta.get_data());
         let url;
-        if (this.metadata && (this.metadata = JSON.parse(this.metadata)) && (url = utils.findFirst(this.metadata, 'url'))) {
+        if (metaStr && (this.metadata = JSON.parse(metaStr)) && (url = utils.findFirst(this.metadata, 'url'))) {
             this.url = url;
+            this.desc = utils.findFirst(this.metadata, 'title')?.replaceAll('File:','');
             const bytes = await this._download(url, this.userAgent);
             const path = this._saveWallpaper(bytes);
-            this._logDownloaded(path, 'Wiki POTD wallpaper downloaded to');
+            this._settings.set_string('wp-metadata', metaStr);
+            this._settings.set_string('wp-desc', this.desc);
+            log.r(`Wikipedia wallpaper downloaded to ${path}`);
         }
         return this.metadata;
     }

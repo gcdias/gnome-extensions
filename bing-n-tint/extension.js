@@ -18,6 +18,7 @@ import { Bing } from './wp/bing.js';
 import { Picsum } from './wp/picsum.js';
 import { Wiki } from './wp/wiki.js';
 import { Nasa } from './wp/nasa.js';
+import { Wall } from './wp/wall.js';
 
 
 Gio._promisify(Soup.Session.prototype, 'send_and_read_async', 'send_and_read_finish');
@@ -183,10 +184,11 @@ export default class BingNTint extends Extension {
         log.s(`BingNTint._loadWp()`);
         const engine = this._getEngine();
         if (engine){
-            engine.init();
+            engine.init(this._settings);
             engine.download()
                 .then(meta => {
                     this._settings.set_string('wp-metadata', JSON.stringify(meta));
+                    this._settings.set_string('wp-desc', engine.getDesc());
                     this._update();
                 })
                 .catch(error => log.e(`BingNTint._loadWp.catch ${error}`));
@@ -269,7 +271,7 @@ export default class BingNTint extends Extension {
             const nasa_auth = auth_config.auth?.nasa;
             log.i(`found auth-config: wiki=${wiki_auth}, nasa=${nasa_auth}`);
             this._settings.set_string('wiki-key', wiki_auth);
-            this._settings.set_string('nasa-api-key', nasa_auth);
+            this._settings.set_string('nasa-key', nasa_auth);
         } else {
             const cfg_file = utils.loadText(this.path,'user.src');
             utils.saveText(this._cacheDir, 'user.cfg', cfg_file);
@@ -286,11 +288,13 @@ export default class BingNTint extends Extension {
 
     enable() {
         this._settings = this.getSettings();
+
         this._engines = {
             'bing': new Bing(wallpaper),
             'picsum': new Picsum(wallpaper),
             'wiki': new Wiki(wallpaper),
             'nasa': new Nasa(wallpaper),
+            'wall': new Wall(wallpaper)
         }
 
         log.init(this._settings);
@@ -311,8 +315,6 @@ export default class BingNTint extends Extension {
         GLib.mkdir_with_parents(this._gtkDir, 0o755);
 
         this._loadAuthConfig();
-
-
 
         wallpaper.init(this._prefersDark, this._cacheDir);
 

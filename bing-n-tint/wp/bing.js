@@ -10,23 +10,28 @@ export class Bing extends WpEngine {
         this.res = '1920x1080';
     }
 
-    init(width = this.wallpaper.width, height = this.wallpaper.height) {
-        this.res = height <= 768 ? '1366x768' : height <= 1080 ? '1920x1080' : 'UHD';
+    init(settings) {
+        this._settings = settings;
+        this.res = this.wallpaper.width <= 768 ? '1366x768' : this.wallpaper.height <= 1080 ? '1920x1080' : 'UHD';
         this.lang = utils.getLangTag();
     }
 
     async download(index = 0) {
-        log.s(`bingWallpaper.download(index:${index})`);
+        log.s(`Bing.download(index:${index})`);
         this.index = index;
         const metaUrl = `https://bing.biturl.top/?resolution=${this.res}&format=json&index=${index}&mkt=${this.lang}`;
         const metadata = await this._download(metaUrl);
         const metaStr = new TextDecoder().decode(metadata.get_data());
         this.metadata = JSON.parse(metaStr);
         this.url = this.metadata.url;
-        log.i(`imgUrl: ${this.url}, desc: ${this.metadata.copyright}`);
-        const bytes = await this._download(this.url);
+        this.desc = this.metadata?.copyright || "No description provided.";
+        log.i(`imgUrl: ${this.url}, desc: ${this.desc}`);
         const path = this._saveWallpaper(bytes);
-        this._logDownloaded(path, 'Bing wallpaper downloaded to');
+        const bytes = await this._download(this.url);
+        this._settings.set_string('wp-metadata', metaStr);
+        this._settings.set_string('wp-desc', this.desc);
+        log.r(`Bing wallpaper downloaded to ${path}`);
         return this.metadata;
     }
+
 }

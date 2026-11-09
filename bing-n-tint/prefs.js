@@ -2,11 +2,17 @@ import Gdk from 'gi://Gdk';
 import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
+import GLib from 'gi://GLib';
+
+import { Logger as log } from './utils/logger.js';
+import { Utils as utils } from './utils/utils.js';
+
 import {
     ExtensionPreferences,
     gettext as _,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+const EXTNAME = 'bing-n-tint';
 
 export default class BingNTintPreferences extends ExtensionPreferences {
     
@@ -97,10 +103,58 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         dialog.present();
     }
 
+    _loadAuthConfig(){
+        let auth_config = utils.loadText(this._cacheDir,'user.cfg');
+        if (auth_config && (auth_config = JSON.parse(auth_config)) && (auth_config.auth)){
+            if (auth_config.auth.wiki){
+                log.i('prefs._loadAuthConfig: found wiki-key');
+                this._settings.set_string('wiki-key', auth_config.auth.wiki);
+                this._authProviders["Wikipedia"] = 'wiki';
+            }
+            if (auth_config.auth.nasa){
+                log.i('prefs._loadAuthConfig: found nasa-key');
+                this._settings.set_string('nasa-key', auth_config.auth.wiki);
+                this._authProviders["Nasa"] = 'nasa';
+            }
+            if (auth_config.auth.wall){
+                log.i('prefs._loadAuthConfig: found wall-key');
+                this._settings.set_string('wall-key', auth_config.auth.wiki);
+                this._authProviders["Wallhaven"] = 'wall';
+            }
+        } else {
+            const cfg_file = utils.loadText(this.path,'user.src');
+            utils.saveText(this._cacheDir, 'user.cfg', cfg_file);
+            log.i('prefs._loadAuthConfig: user config not found. Create new user.cfg in cachedir');
+        }
+    }
 
     fillPreferencesWindow(window) {
 
-        const settings = this.getSettings();
+        this._settings = this.getSettings();
+        this._cacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), EXTNAME]);
+        GLib.mkdir_with_parents(this._cacheDir, 0o755);
+
+        this._wpPage = new Adw.PreferencesPage({
+            title: _('Appearance'),
+            icon_name: 'applications-graphics-symbolic',
+        });
+        window.add(this._wpPage);
+
+
+        this._wpGroup = new Adw.PreferencesGroup({
+            title: _('Wallpaper'),
+        });
+        this._wpPage.add(this._wpGroup);
+
+        this._authProviders = {
+            "Default": "off",
+            "User": "user",
+            "Bing": "bing",
+            "Picsum": "picsum"
+        }
+
+        this._loadAuthConfig();
+
 
         const api_providers = {
             'bing': {desc: 'copyright'},
@@ -108,31 +162,14 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             'nasa': {prompt: 'Enter your Nasa API-KEY', key: 'nasa-api-key', desc: 'alt'},
         }
 
-        const page = new Adw.PreferencesPage({
-            title: _('Appearance'),
-            icon_name: 'applications-graphics-symbolic',
-        });
-        window.add(page);
-
-
-        const wpGroup = new Adw.PreferencesGroup({
-            title: _('Wallpaper'),
-        });
-        page.add(wpGroup);
-
-        const wpComboRow = this._addComboBox(wpGroup, settings,
+        const wpComboRow = this._addComboBox(this._wpGroup, this._settings,
             'wp-source',
             'Wallpaper',
             'Select the source of wallpaper',
-            { "Default" : "off", "User": "user", "Bing": "bing", "Picsum": "picsum", "Wikipedia": "wiki", "Nasa": "nasa" },
-            (key, index, value) => {
-                const api = api_providers[value];
-                if (api?.key && !settings.get_string(api.key))
-                    this._promptString(window, api.prompt, (name) => settings.set_string(api.key, name));
-            }
+            this._authProviders
         )
 
-        this._addSpinRow(wpGroup, settings,
+        this._addSpinRow(this._wpGroup, this._settings,
             'wp-index',
             'Bing Wallpaper Index',
             'Select the index of the Bing wallpaper to use.',
@@ -140,16 +177,17 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         );
 
         const updateWpSubtitle = () => {
-            const metadata = JSON.parse(settings.get_string('wp-metadata'));
-            const provider = settings.get_string('wp-source');
-            let d, desc;
-            desc = metadata && (d = api_providers[provider]) && d.desc ? metadata[d.desc] : null;
+            const metadata = JSON.parse(this._settings.get_string('wp-metadata'));
+            const desc = this._settings.get_string('wp-desc');
+            //const provider = this._settings.get_string('wp-source');
+            //let d, desc;
+            //desc = metadata && (d = api_providers[provider]) && d.desc ? metadata[d.desc] : null;
             wpComboRow.subtitle = desc || _('No description provided.');
         };
         updateWpSubtitle();
-        settings.connect('changed::wp-metadata', updateWpSubtitle);
+        this._settings.connect('changed::wp-metadata', updateWpSubtitle);
         
-        this._addSwitch(wpGroup, settings,
+        this._addSwitch(this._wpGroup, this._settings,
             'show-status-icon',
             'Show status icon',
             'Show a Bing icon in the top bar to open preferences.'
@@ -159,7 +197,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         const group = new Adw.PreferencesGroup({
             title: _('Tint Options'),
         });
-        page.add(group);
+        this._wpPage.add(group);
 
         const themeOpts = {
             "Disabled": "off",
@@ -167,42 +205,42 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             "Hue-shift": "shift"
         }
 
-        this._addComboBox(group, settings,
+        this._addComboBox(group, this._settings,
             'icon-theme-src',
             'Tint Icon Theme',
             'Disable, set to wallpaper hue or shift the hue',
             themeOpts
         )
 
-        this._addComboBox(group, settings,
+        this._addComboBox(group, this._settings,
             'accent-color-src',
             'Tint Accent colour source',
             'Choose how the accent colour is selected.',
             themeOpts
         )
 
-        this._addComboBox(group, settings,
+        this._addComboBox(group, this._settings,
             'gtk-theme-src',
             'Tint GTK/Shell Theme',
             'Disable, set to wallpaper hue or shift the hue',
             themeOpts
         )
 
-        this._addSpinRow(group, settings,
+        this._addSpinRow(group, this._settings,
             'saturation',
             'Saturation',
             'Adjust the saturation of the theme colour.',
             0, 100, 1, 10
         );
         
-        this._addSpinRow(group, settings,
+        this._addSpinRow(group, this._settings,
             'hue-shell-shift',
             'Shell hue shift',
             'Adjust the hue of the shell colour.',
             0, 360, 1, 10
         )
 
-        this._addSpinRow(group, settings,
+        this._addSpinRow(group, this._settings,
             'hue-accent-shift',
             'Accent hue shift',
             'Adjust the hue of the accent colour.',
@@ -211,7 +249,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
 
 
 
-        this._addSwitch(group, settings,
+        this._addSwitch(group, this._settings,
             'debug-enable',
             'Debug',
             'Enable debug log and options'
@@ -223,7 +261,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         });
         let debugPageAdded = false;
         const updateDebugPage = () => {
-            const enabled = settings.get_boolean('debug-enable');
+            const enabled = this._settings.get_boolean('debug-enable');
             if (enabled === debugPageAdded)
                 return;
 
@@ -235,7 +273,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             debugPageAdded = enabled;
         };
         updateDebugPage();
-        settings.connect('changed::debug-enable', updateDebugPage);
+        this._settings.connect('changed::debug-enable', updateDebugPage);
 
         const debugGroup = new Adw.PreferencesGroup({
             title: _('Console output'),
@@ -266,24 +304,24 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         debugGroup.add(debugScroll);
 
         const updateDebugLog = () => {
-            debugTextView.buffer.set_text(settings.get_string('debug-log'), -1);
+            debugTextView.buffer.set_text(this._settings.get_string('debug-log'), -1);
         };
         updateDebugLog();
-        settings.connect('changed::debug-log', updateDebugLog);
+        this._settings.connect('changed::debug-log', updateDebugLog);
 
         const debugOptsGroup = new Adw.PreferencesGroup({
             title: _('Debug options'),
         });
         debugPage.add(debugOptsGroup);
 
-        this._addComboBox(debugOptsGroup, settings,
+        this._addComboBox(debugOptsGroup, this._settings,
             'debug-timestamp',
             'Timestamp format',
             'Sets absolute (ISO format) or relative (in ms) timestamp',
             { "Absolute": "abs", "Relative": "rel" }
         )
 
-        this._addComboBox(debugOptsGroup, settings,
+        this._addComboBox(debugOptsGroup, this._settings,
             'debug-level',
             'Log level',
             'Sets log level to verbose, info and error',
@@ -299,7 +337,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             valign: Gtk.Align.CENTER,
         });
         clearDebugLogButton.connect('clicked', () => {
-            settings.set_string('debug-log', '');
+            this._settings.set_string('debug-log', '');
         });
         clearDebugLogRow.add_suffix(clearDebugLogButton);
         debugOptsGroup.add(clearDebugLogRow);

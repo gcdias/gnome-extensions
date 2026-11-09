@@ -2,6 +2,8 @@
     "auth": {
         "DoIt": "Set the auth keys below and save this file as 'user.cfg' in ~/.cache/bing-n-tint",
         "wiki": "<you@example.com>",
-        "nasa": "<YOUR-API-KEY>"
+        "nasa": "<YOUR-API-KEY>",
+        "wall": "<YOUR-API-KEY>"
     }
+
 }

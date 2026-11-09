@@ -8,6 +8,7 @@
         <choice value="picsum"/>
         <choice value="wiki"/>
         <choice value="nasa"/>
+        <choice value="wall"/>
       </choices>
       <default>'bing'</default>
       <summary>Wallpaper source</summary>
@@ -18,12 +19,22 @@
       <summary>Metadata</summary>
       <description>Wallpaper metadata info</description>
     </key>
-    <key name="nasa-api-key" type="s">
+    <key name="wp-desc" type="s">
+      <default>''</default>
+      <summary>Description</summary>
+      <description>Wallpaper description info</description>
+    </key>
+    <key name="nasa-key" type="s">
       <default>''</default>
       <summary>NASA API KEY</summary>
       <description>API key for auth access</description>
     </key>
     <key name="wiki-key" type="s">
+      <default>''</default>
+      <summary>User Agent</summary>
+      <description>Auth email for wikipedia POTD API.</description>
+    </key>
+    <key name="wall-key" type="s">
       <default>''</default>
       <summary>User Agent</summary>
       <description>Auth email for wikipedia POTD API.</description>

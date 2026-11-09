@@ -9,10 +9,12 @@ export class Picsum extends WpEngine {
         this.index = 0;
         this.lang = 'en-US';
         this.res = '1920/1080';
+        this.desc = "No description provided.";
     }
 
-    init(width = this.wallpaper.width, height = this.wallpaper.height) {
-        this.res = `${width}/${height}`;
+    init(settings) {
+        this._settings = settings;
+        this.res = `${this.wallpaper.width}/${this.wallpaper.height}`;
         this.lang = utils.getLangTag();
     }
 
@@ -22,7 +24,8 @@ export class Picsum extends WpEngine {
         log.i(`url: ${this.url}`);
         const bytes = await this._download(this.url);
         const path = this._saveWallpaper(bytes);
-        this._logDownloaded(path, 'Picsum wallpaper downloaded to');
+        log.r(`PicSum wallpaper downloaded to ${path} (${bytes.getData().length} bytes))`);
         return {};
     }
+
 }
