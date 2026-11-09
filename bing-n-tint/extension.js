@@ -174,47 +174,24 @@ const wallpaper = {
 
 }
 
-const BING   = new Bing(wallpaper);
-const PICSUM = new Picsum(wallpaper);
-const WIKI   = new Wiki(wallpaper);
-const NASA   = new Nasa(wallpaper);
+
+
 
 export default class BingNTint extends Extension {
 
-    
-    _saveMetadataAndUpdate(metadata){
-        this._settings.set_string('wp-metadata', JSON.stringify(metadata));
-        this._update();
-    }
-
-    _loadWallpaper() {
-        log.s(`BingNTint._loadWallpaper()`);
-        const src = this._settings.get_string('wp-source');
-        log.i(`from source: ${src}`);
-        if (src === 'bing'){
-            this._bingIndex = this._settings.get_int('wp-index');
-            BING.init();
-            BING.download(this._bingIndex)
-                .then(meta => this._saveMetadataAndUpdate(meta))
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (bing) ${error}`));
-        } else if (src === 'picsum'){
-            PICSUM.init();
-            PICSUM.download()
-                .then(meta => this._saveMetadataAndUpdate(meta))
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (picsum) ${error}`));
-        } else if (src === 'wiki'){
-            WIKI.download()
-                .then(meta => this._saveMetadataAndUpdate(meta))
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (wiki) ${error}`));
-        } else if (src === 'nasa'){
-            NASA.init(this._settings.get_string('nasa-api-key'));
-            NASA.download()
-                .then(meta => this._saveMetadataAndUpdate(meta))
-                .catch(error => log.e(`BingNTint._loadWallpaper.catch (nasa) ${error}`));
-        } else {
-            this._update();
+    _loadWp(){
+        log.s(`BingNTint._loadWp()`);
+        const engine = this._getEngine();
+        if (engine){
+            engine.init();
+            engine.download()
+                .then(meta => {
+                    this._settings.set_string('wp-metadata', JSON.stringify(meta));
+                    this._update();
+                })
+                .catch(error => log.e(`BingNTint._loadWp.catch ${error}`));
         }
-        log.r('end _loadWallpaper');
+        log.r('end _loadWp');
     }
 
     _apply(key, mode, fn, hue){
@@ -255,7 +232,7 @@ export default class BingNTint extends Extension {
             this._bingIndex = this._settings.get_int('wp-index') + 1 % 7;
             this._settings.set_int('wp-index', this._bingIndex);
         } else if (src === 'picsum'){
-            this._loadWallpaper();
+            this._loadWp();
         }
     }
 
@@ -299,9 +276,23 @@ export default class BingNTint extends Extension {
         }
     }
 
+    _getEngine(){
+        const id = this._settings.get_string('wp-source');
+        return this._engines[id];
+    }
+
+
+
 
     enable() {
         this._settings = this.getSettings();
+        this._engines = {
+            'bing': new Bing(wallpaper),
+            'picsum': new Picsum(wallpaper),
+            'wiki': new Wiki(wallpaper),
+            'nasa': new Nasa(wallpaper),
+        }
+
         log.init(this._settings);
         log.s('BingNTint.enable()');
         this._createStatusIcon();
@@ -322,13 +313,14 @@ export default class BingNTint extends Extension {
         this._loadAuthConfig();
 
 
+
         wallpaper.init(this._prefersDark, this._cacheDir);
 
         this._ids = [
             [wallpaper.settings, wallpaper.settings.connect('changed',           () => this._update())],
             [IGnome.settings, IGnome.settings.connect('changed::color-scheme',     () => this._update())],
-            [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWallpaper())],
-            [this._settings, this._settings.connect('changed::wp-index',       () => this._loadWallpaper())],
+            [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWp())],
+            [this._settings, this._settings.connect('changed::wp-index',       () => this._loadWp())],
             [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
             [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],
             [this._settings, this._settings.connect('changed::accent-color-src', () => this._update())],
@@ -345,7 +337,7 @@ export default class BingNTint extends Extension {
         this._bingMetadata = bingMetadata ? JSON.parse(bingMetadata) : null;
 
         this._update();
-        this._loadWallpaper(); 
+        this._loadWp(); 
         log.r('end enable()');
     }
     
@@ -364,6 +356,7 @@ export default class BingNTint extends Extension {
         this._settings = null;
         this._defaultSettings = null;
         this._lastSettings = null;
+        this._engines = null;
         log.r('end disable()');
         log.dismiss();
     }
