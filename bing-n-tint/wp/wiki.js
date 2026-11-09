@@ -11,12 +11,16 @@ export class Wiki extends WpEngine {
     init(settings) {
         this._settings = settings;
         this.api_key = settings.get_string('wiki-key');
+        this.date = new Date().toISOString().slice(0, 10);
+    }
+
+    next(index){
+        this.date = new Date().toISOString.slice(0,10);
     }
 
     async download() {
         log.s('wikiPOTD.download()');
-        const date = new Date().toISOString().slice(0, 10);
-        const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/${date}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+        const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=images&titles=Template:POTD/${this.date}&prop=imageinfo&iiprop=url&format=json&origin=*`;
         const meta = await this._download(metaUrl, this.userAgent);
         const metaStr = new TextDecoder().decode(meta.get_data());
         let url;
