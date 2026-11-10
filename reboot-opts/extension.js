@@ -33,10 +33,14 @@ export default class RebootOptsExtension extends Extension {
     _modifySystemItem(){
         this.menu = panel.statusArea.quickSettings?._system?.quickSettingsItems[0].menu;
 
-        this.proxy = Manager(Gio.DBus.system, 'org.freedesktop.login1', '/org/freedesktop/login1',);
+        this.proxy = Manager(
+          Gio.DBus.system,
+          'org.freedesktop.login1',
+          '/org/freedesktop/login1',
+        );
 
         this.rebootToUefiItem = new PopupMenu.PopupMenuItem(
-            `${_('Restart to UEFI')}...`,
+          `${_('Restart to UEFI')}...`,
         );
 
         this.rebootToUefiItem.connect('activate', () => {
@@ -45,13 +49,20 @@ export default class RebootOptsExtension extends Extension {
 
             const dialog = this._buildDialog();
             dialog.open();
-
-            this.counterIntervalId = setInterval(() => {
+            /*this.counterIntervalId = setInterval(() => {
                 if (this.counter > 0) {
                     this.counter--;
                     if (this.counter % 10 === 0) {
                         this.seconds = this.counter;
                     }
+                } else {
+                    this._clearIntervals();
+                    this._reboot();
+                }
+            }, 1000);*/
+            this.counterIntervalId = setInterval(() => {
+                if (this.seconds > 0) {
+                    this.seconds--;
                 } else {
                     this._clearIntervals();
                     this._reboot();
@@ -94,31 +105,32 @@ export default class RebootOptsExtension extends Extension {
     this.proxy?.SetRebootToFirmwareSetupRemote(true);
     this.proxy?.RebootRemote(false);
   }
-
-  _dialogGetButton(label, action, def=false){
-    return { label: _(label), action: action(), key: Clutter.KEY_Escape, default: def };
-  }
-
-  _doCancel(){
-    this._clearIntervals();
-    dialog.close();
-  }
-
-  _doRestart(){
-    this._clearIntervals();
-    this._reboot();
-  }
-
+  
   _buildDialog(){
     const dialog = new ModalDialog.ModalDialog({ styleClass: 'modal-dialog' });
     dialog.setButtons([
-      this._dialogGetButton('Cancel',this._doCancel),
-      this._dialogGetButton('Restart', this._doRestart)]);
+      {
+        label: _('Cancel'),
+        action: () => {
+          this._clearIntervals();
+          dialog.close();
+        },
+        key: Clutter.KEY_Escape,
+        default: false,
+      },
+      {
+        label: _('Restart'),
+        action: () => {
+          this._clearIntervals();
+          this.reboot();
+        },
+        default: false,
+      },
+    ]);
     
     const dialogTitle = new St.Label({
       text: _('Restart to UEFI'),
-       //style_class: 'dialog-title' // TODO investigate why css classes are not working
-       style: 'font-weight: bold;font-size:18px',
+      style: 'font-weight: bold;font-size:18px',
     });
 
     let dialogMessage = new St.Label({

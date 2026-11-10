@@ -100,7 +100,7 @@ const IGnome = {
         };
         const h = [ hue, 0, 90, 30, 240, 300, 180 ];
         const s = [ sat/8, sat/4, sat ];
-        const l = [ 0.13, 0.50, 0.90, 0.50, 0.60, 0.30, 0.50 ];
+        const l = [ 0.14, 0.50, 0.90, 0.50, 0.60, 0.30, 0.50 ];
         
         let i = utils.loadText(app_path, 'ptyxis.palette');
         i = i.replaceAll('(','${hsl2hex(').replaceAll(')',')}');
@@ -310,12 +310,24 @@ export default class BingNTint extends Extension {
         if (auth_config && (auth_config = JSON.parse(auth_config))){
             const wiki_auth = auth_config.auth?.wiki;
             const nasa_auth = auth_config.auth?.nasa;
+            const wall_auth = auth_config.auth?.wall;
             log.i(`found auth-config: wiki=${wiki_auth}, nasa=${nasa_auth}`);
             this._settings.set_string('wiki-key', wiki_auth);
             this._settings.set_string('nasa-key', nasa_auth);
+            this._settings.set_string('wall-key', wall_auth);
         } else {
             const cfg_file = utils.loadText(this.path,'user.src');
+            console.log(cfg_file);
             utils.saveText(this._cacheDir, 'user.cfg', cfg_file);
+            
+            const configPath = GLib.build_filenamev([this._cacheDir, 'user.cfg']);
+            const configFile = Gio.File.new_for_path(configPath);
+
+            try {
+                Gio.AppInfo.launch_default_for_uri(configFile.get_uri(), null);
+            } catch (error) {
+                log.e(`Could not open user.cfg: ${error.message}`);
+            }
         }
     }
 

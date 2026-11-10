@@ -78,12 +78,17 @@ export class Utils {
     static loadText(dir, filename) {
         log.s(`Utils.loadText(dir:${dir}, filename:${filename})`);
         const path = GLib.build_filenamev([dir, filename]);
-        const [ok, contents] = Gio.File.new_for_path(path).load_contents(null);
-        if (!ok)
+        const file = Gio.File.new_for_path(path);
+        if (!file.query_exists(null))
             return null;
-        const out = new TextDecoder().decode(contents);
-        log.r(`read ${out.length} chars`);
-        return out;
+        const [ok, contents] = file.load_contents(null);
+        if (ok && contents){
+            const out = new TextDecoder().decode(contents);
+            log.r(`read ${out.length} chars`);
+            return out;
+        }
+        log.r(`could not read ok:${ok} contents:${contents}`);
+        return null;  
     }
 
     static saveText(dir, filename, contents){
