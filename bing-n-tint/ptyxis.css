@@ -32,23 +32,23 @@
         TitlebarBackground: #88F;
         Cursor: #EEEEEE;
         /* Standard ANSI Colors (0-7) */
-        Color0: #2E3436;
-        Color1: #CC0000;
-        Color2: #4E9A06;
-        Color3: #C4A000;
-        Color4: #729FCF;
-        Color5: #75507B;
-        Color6: #06989A;
-        Color7: #D3D7CF;
+        Color0: #2E3436;   /*B*/
+        Color1: #CC0000;   /*R*/
+        Color2: #4E9A06;   /*G*/
+        Color3: #C4A000;   /*Y*/
+        Color4: #729FCF;   /*B*/
+        Color5: #75507B;   /*M*/
+        Color6: #06989A;   /*C*/
+        Color7: #D3D7CF;   /*W*/
         /* Bright ANSI Colors (8-15) */
-        Color8: #555753;
-        Color9: #EF2929;
-        Color10: #8AE234;
-        Color11: #FCE94F;
-        Color12: #34E2E2;
-        Color13: #AD7FA8;
-        Color14: #4E9A06;
-        Color15: #EEEEEC;
+        Color8: #555753;   /*B*/
+        Color9: #EF2929;   /*R*/
+        Color10: #8AE234;  /*G*/
+        Color11: #FCE94F;  /*Y*/
+        Color12: #34E2E2;  /*B*/
+        Color13: #AD7FA8;  /*M*/
+        Color14: #4E9A06;  /*C*/
+        Color15: #EEEEEC;  /*W*/
     }
 
 }

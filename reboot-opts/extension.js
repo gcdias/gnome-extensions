@@ -96,7 +96,7 @@ export default class RebootOptsExtension extends Extension {
   }
 
   _dialogGetButton(label, action, def=false){
-    return { label: _(label), action: action, key: Clutter.KEY_Escape, default: def };
+    return { label: _(label), action: action(), key: Clutter.KEY_Escape, default: def };
   }
 
   _doCancel(){
@@ -115,12 +115,10 @@ export default class RebootOptsExtension extends Extension {
       this._dialogGetButton('Cancel',this._doCancel),
       this._dialogGetButton('Restart', this._doRestart)]);
     
-    dialog.setTitle('Restart to UEFI', 'dialog-title')
     const dialogTitle = new St.Label({
       text: _('Restart to UEFI'),
-      style_class: 'dialog-title',
-      // style_class: 'dialog-title' // TODO investigate why css classes are not working
-      // style: 'font-weight: bold;font-size:18px',
+       //style_class: 'dialog-title' // TODO investigate why css classes are not working
+       style: 'font-weight: bold;font-size:18px',
     });
 
     let dialogMessage = new St.Label({

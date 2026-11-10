@@ -1,7 +1,7 @@
 EXTNAME = bing-n-tint
 EXTENSION_UUID = $(EXTNAME)@gcdias
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
-FILES = extension.js utils/logger.js utils/utils.js wp/wp-engine.js wp/bing.js wp/picsum.js wp/wiki.js wp/nasa.js wp/wall.js metadata.json stylesheet.src gtk.css prefs.js bing-symbolic.svg
+FILES = extension.js utils/logger.js utils/utils.js wp/wp-engine.js wp/bing.js wp/picsum.js wp/wiki.js wp/nasa.js wp/wall.js metadata.json stylesheet.src gtk.css prefs.js bing-symbolic.svg ptyxis.palette
 SCHEMA = schemas/org.gnome.shell.extensions.$(EXTNAME).gschema.xml
 
 install:

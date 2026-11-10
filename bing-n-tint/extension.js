@@ -61,6 +61,7 @@ const IGnome = {
             fn();
         })];
     },
+
     isDarkMode: function() {
         log.s('gnome.isDarkMode()');
         IGnome.prefersDark = IGnome.settings.get_string('color-scheme') === 'prefer-dark';
@@ -75,6 +76,7 @@ const IGnome = {
         log.r(`set ${setting} to ${value}`);
         return value;
     },
+
     setColor: function(setting, hue){
         log.s(`gnome.setColor(setting:${setting}, hue:${hue}`);
         const value = IGnome.getColorName(hue);
@@ -83,18 +85,38 @@ const IGnome = {
         return value;
     },
     
-    setPtyxis: function(hue){
-        log.s(`gnome.setPtyxis(hue:${hue}`);
-        const len = IGnome.CIDX.length;
-        const colors = Object.entries(IGnome.PTYXIS);
-        const i = Math.max(0, Math.floor(utils.normHue(hue + 180 / len) / 360 * len) % len);
-        const index = IGnome.CIDX[i];
-        const out = this.PTYXIS[index];
+    setPtyxisPal: function(name){
         const a = new Gio.Settings({schema_id: 'org.gnome.Ptyxis'});
         const b = a.get_string('default-profile-uuid');
         const c = new Gio.Settings({ schema_id: 'org.gnome.Ptyxis.Profile', path: `/org/gnome/Ptyxis/Profiles/${b}/`,});
-        const d = c.set_string('palette', out);
-        log.r(`ptyxis theme: ${out}`);
+        c.set_string('palette', name);
+    },
+
+    genPtyxisPalette: function(app_path, hue, sat){
+        
+        const hsl2hex = (h,s,l) => {
+            const c = utils.hsl2rgb(h,s,l);
+            return utils.rgbToHex(c[0],c[1],c[2]);
+        };
+        const h = [ hue, 0, 90, 30, 240, 300, 180 ];
+        const s = [ sat/8, sat/4, sat ];
+        const l = [ 0.13, 0.50, 0.90, 0.50, 0.60, 0.30, 0.50 ];
+        
+        let i = utils.loadText(app_path, 'ptyxis.palette');
+        i = i.replaceAll('(','${hsl2hex(').replaceAll(')',')}');
+        i = eval("`" + i + "`");
+        
+        console.log(i);
+        const palettesDir = GLib.build_filenamev([
+            GLib.get_user_data_dir(),
+            'org.gnome.Ptyxis',
+            'palettes',
+        ]);
+        GLib.mkdir_with_parents(palettesDir, 0o755);
+
+        const path = GLib.build_filenamev([palettesDir, 'Bing-N-Tint.palette']);
+        GLib.file_set_contents(path, i);
+        IGnome.setPtyxisPal('Bing-N-Tint');
     },
 
     getDefaultSettings: function(){
@@ -438,8 +460,11 @@ export default class BingNTint extends Extension {
         const gtkcss = this._replace(utils.loadText(this.path,'gtk.css'), gtkPalette);
         utils.saveText(this._gtkDir, 'gtk.css', gtkcss);
 
-        if (config.ptyxisMode !== 'user')
-            IGnome.setPtyxis(hue_shell);
+        if (config.ptyxisMode !== 'user'){
+            //IGnome.setPtyxis(hue_shell);
+            IGnome.genPtyxisPalette(this.path,hue_shell,sat);
+        }
+            
         
         log.r('end _update()');
     }

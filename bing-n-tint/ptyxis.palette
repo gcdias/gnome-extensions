@@ -1,0 +1,52 @@
+[Palette]
+Name=Bing-N-Tint
+
+[Dark]
+Foreground=(h[0],s[1],l[2])
+Background=(h[0],s[1],l[0])
+TitlebarForeground=(h[0],s[1],l[2])
+TitlebarBackground=(h[0],s[1],l[0])
+Cursor=(h[0],s[1],l[2])
+# Standard ANSI Colors 0 to 7 BRGYBMCW
+Color0=(h[1],s[0],l[0])
+Color1=(h[1],s[2],l[3])
+Color2=(h[2],s[2],l[3])
+Color3=(h[3],s[2],l[3])
+Color4=(h[4],s[2],l[3])
+Color5=(h[5],s[2],l[3])
+Color6=(h[6],s[2],l[3])
+Color7=(h[1],s[0],l[2])
+# Bright ANSI Colors 8 to 15 BRGYBMCW
+Color8=(h[1],s[0],0.2)
+Color9=(h[1],s[2],l[4])
+Color10=(h[2],s[2],l[4])
+Color11=(h[3],s[2],l[4])
+Color12=(h[4],s[2],l[4])
+Color13=(h[5],s[2],l[4])
+Color14=(h[6],s[2],l[4])
+Color15=(h[1],s[0],l[2])
+
+[Light]
+Foreground=(h[0],s[1],l[0])
+Background=(h[0],s[1],l[2])
+TitlebarForeground=(h[0],s[1],l[0])
+TitlebarBackground=(h[0],s[1],l[2])
+Cursor=(h[0],s[1],l[0])
+# Standard ANSI Colors 0 to 7 BRGYBMCW
+Color0=(h[1],s[0],l[0])
+Color1=(h[1],s[2],l[5])
+Color2=(h[2],s[2],l[5])
+Color3=( 30,s[2],l[5])
+Color4=(240,s[2],l[5])
+Color5=(300,s[2],l[5])
+Color6=(150,s[2],l[5])
+Color7=(h[1],s[0],l[2])
+# Bright ANSI Colors 8 to 15 BRGYBMCW
+Color8=(h[1],s[0],0.2)
+Color9=(h[1],s[2],l[6])
+Color10=(h[2],s[2],l[6])
+Color11=( 30,s[2],l[6])
+Color12=(240,s[2],l[6])
+Color13=(300,s[2],l[6])
+Color14=(150,s[2],l[6])
+Color15=(h[1],s[0],l[2])
