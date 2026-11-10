@@ -43,7 +43,7 @@ export default class RebootOptsExtension extends Extension {
             this.counter = 60;
             this.seconds = this.counter;
 
-            const dialog = this.buildDialog();
+            const dialog = this._buildDialog();
             dialog.open();
 
             this.counterIntervalId = setInterval(() => {
@@ -95,36 +95,36 @@ export default class RebootOptsExtension extends Extension {
     this.proxy?.RebootRemote(false);
   }
 
+  _dialogGetButton(label, action, def=false){
+    return { label: _(label), action: action, key: Clutter.KEY_Escape, default: def };
+  }
+
+  _doCancel(){
+    this._clearIntervals();
+    dialog.close();
+  }
+
+  _doRestart(){
+    this._clearIntervals();
+    this._reboot();
+  }
+
   _buildDialog(){
     const dialog = new ModalDialog.ModalDialog({ styleClass: 'modal-dialog' });
     dialog.setButtons([
-      {
-        label: _('Cancel'),
-        action: () => {
-          this.clearIntervals();
-          dialog.close();
-        },
-        key: Clutter.KEY_Escape,
-        default: false,
-      },
-      {
-        label: _('Restart'),
-        action: () => {
-          this.clearIntervals();
-          this.reboot();
-        },
-        default: false,
-      },
-    ]);
-
+      this._dialogGetButton('Cancel',this._doCancel),
+      this._dialogGetButton('Restart', this._doRestart)]);
+    
+    dialog.setTitle('Restart to UEFI', 'dialog-title')
     const dialogTitle = new St.Label({
       text: _('Restart to UEFI'),
+      style_class: 'dialog-title',
       // style_class: 'dialog-title' // TODO investigate why css classes are not working
-      style: 'font-weight: bold;font-size:18px',
+      // style: 'font-weight: bold;font-size:18px',
     });
 
     let dialogMessage = new St.Label({
-      text: this.getDialogMessageText(),
+      text: this._getDialogMessageText(),
     });
     dialogMessage.clutterText.ellipsize = Pango.EllipsizeMode.NONE;
     dialogMessage.clutterText.lineWrap = true;
@@ -141,7 +141,7 @@ export default class RebootOptsExtension extends Extension {
     box.add_child(dialogMessage);
 
     this.messageIntervalId = setInterval(() => {
-      dialogMessage?.set_text(this.getDialogMessageText());
+      dialogMessage?.set_text(this._getDialogMessageText());
     }, 500);
 
     dialog.contentLayout.add_child(box);

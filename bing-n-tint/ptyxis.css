@@ -1,0 +1,54 @@
+@media (prefers-color-scheme: light) {
+    @define-color Foreground #EEEEEE;
+    @define-color Background #020240;
+    @define-color TitlebarForeground #111;
+    @define-color TitlebarBackground #88F;
+    @define-color Cursor #EEEEEE;
+/* Standard ANSI Colors (0-7) */
+    @define-color Color0 #2E3436;
+    @define-color Color1 #CC0000;
+    @define-color Color2 #4E9A06;
+    @define-color Color3 #C4A000;
+    @define-color Color4 #729FCF;
+    @define-color Color5 #75507B;
+    @define-color Color6 #06989A;
+    @define-color Color7 #D3D7CF;
+/* Bright ANSI Colors (8-15) */
+    @define-color Color8 #555753;
+    @define-color Color9 #EF2929;
+    @define-color Color10 #8AE234;
+    @define-color Color11 #FCE94F;
+    @define-color Color12 #34E2E2;
+    @define-color Color13 #AD7FA8;
+    @define-color Color14 #4E9A06;
+    @define-color Color15 #EEEEEC;
+}
+
+.root {
+    @media (prefers-color-scheme: light) {
+        Foreground: #EEEEEE;
+        Background: #020240;
+        TitlebarForeground: #111;
+        TitlebarBackground: #88F;
+        Cursor: #EEEEEE;
+        /* Standard ANSI Colors (0-7) */
+        Color0: #2E3436;
+        Color1: #CC0000;
+        Color2: #4E9A06;
+        Color3: #C4A000;
+        Color4: #729FCF;
+        Color5: #75507B;
+        Color6: #06989A;
+        Color7: #D3D7CF;
+        /* Bright ANSI Colors (8-15) */
+        Color8: #555753;
+        Color9: #EF2929;
+        Color10: #8AE234;
+        Color11: #FCE94F;
+        Color12: #34E2E2;
+        Color13: #AD7FA8;
+        Color14: #4E9A06;
+        Color15: #EEEEEC;
+    }
+
+}
