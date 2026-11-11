@@ -1,0 +1,61 @@
+{
+    "Ubuntu": {
+        "recent": {
+            "label": "Recent Items",
+            "icon": "document-open-recent-symbolic",
+            "type": "recents"
+        },
+        "sep2": { "type": "separator" },
+        "app": {
+            "label": "App grid",
+            "icon": "view-app-grid-symbolic",
+            "type": "appgrid"
+        },
+        "sep3": { "type": "separator" },
+        "software": {
+            "label": "Software Center",
+            "icon": "org.gnome.Software-symbolic",
+            "type": "app",
+            "command": "gnome-software"
+        },
+        "monitor": {
+            "label": "System Monitor",
+            "icon": "org.gnome.SystemMonitor-symbolic",
+            "type": "app",
+            "command": "gnome-system-monitor"
+        },
+        "terminal": {
+            "label": "Terminal",
+            "icon": "utilities-terminal-symbolic",
+            "type": "app",
+            "link": "ptyxis"
+        },
+        "extensions": {
+            "label": "Extensions",
+            "icon": "org.gnome.Extensions-symbolic",
+            "type": "app",
+            "link": "extension-manager"
+        },
+        "sep1": { "type": "separator" },
+        "about": {
+            "label": "About this system",
+            "icon": "help-about-symbolic",
+            "type": "app",
+            "command": "gnome-control-center system"
+        }
+    },
+    "Devices": {
+        "disks": {
+            "label": "Gnome Disks",
+            "icon": "org.gnome.DiskUtility-symbolic",
+            "type": "app",
+            "link": "gnome-disks"
+        },
+        "gparted": {
+            "label": "GParted",
+            "icon": "gparted-symbolic",
+            "type": "app",
+            "link": "gparted"
+        }
+    }
+}
