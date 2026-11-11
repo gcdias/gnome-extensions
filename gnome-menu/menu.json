@@ -89,7 +89,7 @@
             "command": "gnome-session-quit"
         }
     },
-    "Devices": {
+    "Disks": {
         "disks": {
             "label": "Gnome Disks",
             "icon": "org.gnome.DiskUtility-symbolic",
@@ -102,5 +102,6 @@
             "type": "app",
             "link": "gparted"
         }
+
     }
 }
