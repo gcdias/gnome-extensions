@@ -85,7 +85,7 @@
             "type": "app",
             "countdown": "60",
             "dmsg":  "The system will shutdown automatically",
-            "command": "shutdown",
+            "command": "shutdown now",
             "break": true
         },
         "logout": {
