@@ -1,28 +1,48 @@
 {
-    "Ubuntu": {
-        "recent": {
-            "label": "Recent Items",
-            "icon": "document-open-recent-symbolic",
-            "type": "recents"
+    "&Ubuntu": {
+        "about": {
+            "label": "About this system",
+            "icon": "help-about-symbolic",
+            "type": "app",
+            "command": "gnome-control-center system",
+            "break": true
         },
-        "sep2": { "type": "separator" },
+        "software": {
+            "label": "Snap Store",
+            "icon": "org.gnome.Software-symbolic",
+            "type": "app",
+            "command": "snap-store"
+        },
         "app": {
             "label": "App grid",
             "icon": "view-app-grid-symbolic",
             "type": "appgrid"
         },
-        "sep3": { "type": "separator" },
-        "software": {
-            "label": "Software Center",
-            "icon": "org.gnome.Software-symbolic",
-            "type": "app",
-            "command": "gnome-software"
+        "reload": {
+            "label": "Refresh Menu",
+            "icon": "view-refresh-symbolic",
+            "type": "built_in",
+            "link": "reloadExtension",
+            "break": true
         },
+        "recent": {
+            "label": "Recent Items",
+            "icon": "document-open-recent-symbolic",
+            "type": "recents",
+            "break": true
+        },
+
         "monitor": {
             "label": "System Monitor",
             "icon": "org.gnome.SystemMonitor-symbolic",
             "type": "app",
             "command": "gnome-system-monitor"
+        },
+        "nautilus": {
+            "label": "Nautilus",
+            "icon": "org.gnome.Nautilus-symbolic",
+            "type": "app",
+            "link": "nautilus"
         },
         "terminal": {
             "label": "Terminal",
@@ -34,14 +54,39 @@
             "label": "Extensions",
             "icon": "org.gnome.Extensions-symbolic",
             "type": "app",
-            "link": "extension-manager"
+            "link": "extension-manager",
+            "break": true
         },
-        "sep1": { "type": "separator" },
-        "about": {
-            "label": "About this system",
-            "icon": "help-about-symbolic",
+        "suspend": {
+            "label": "Sleep",
+            "icon": "media-playback-pause-symbolic",
             "type": "app",
-            "command": "gnome-control-center system"
+            "command": "systemctl sleep"
+        },
+        "reboot": {
+            "label": "Restart...",
+            "icon": "system-reboot-symbolic",
+            "type": "app",
+            "command": "systemctl reboot"
+        },
+        "rebootuefi": {
+            "label": "Reboot to UEFI...",
+            "icon": "application-x-firmware-symbolic",
+            "type": "app",
+            "command": "systemctl reboot --firmware-setup"
+        },
+        "shutdown": {
+            "label": "Shutdown...",
+            "icon": "system-shutdown-symbolic",
+            "type": "app",
+            "command": "shutdown",
+            "break": true
+        },
+        "logout": {
+            "label": "Logout",
+            "icon": "system-log-out-symbolic",
+            "type": "app",
+            "command": "gnome-session-quit"
         }
     },
     "Devices": {
