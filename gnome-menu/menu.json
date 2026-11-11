@@ -64,21 +64,27 @@
             "command": "systemctl sleep"
         },
         "reboot": {
-            "label": "Restart...",
+            "label": "Restart",
             "icon": "system-reboot-symbolic",
             "type": "app",
+            "countdown": "60",
+            "dmsg":  "The system will restart automatically",
             "command": "systemctl reboot"
         },
         "rebootuefi": {
-            "label": "Reboot to UEFI...",
+            "label": "Reboot to UEFI",
             "icon": "application-x-firmware-symbolic",
             "type": "app",
+            "countdown": "60",
+            "dmsg":  "The system will restart UEFI automatically",
             "command": "systemctl reboot --firmware-setup"
         },
         "shutdown": {
-            "label": "Shutdown...",
+            "label": "Shutdown",
             "icon": "system-shutdown-symbolic",
             "type": "app",
+            "countdown": "60",
+            "dmsg":  "The system will shutdown automatically",
             "command": "shutdown",
             "break": true
         },

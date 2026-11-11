@@ -1,9 +1,11 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Pango from 'gi://Pango';
 import Soup from 'gi://Soup?version=3.0';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {
@@ -298,9 +300,20 @@ export default class GnomeMenuExtension extends Extension {
 
   _activateItem(item) {
     switch (item.type) {
-    case 'app':
-      this._launchCommand(item.command ?? item.link);
+    case 'app': {
+      const command = item.command ?? item.link;
+      if (item.countdown !== undefined && item.dmsg !== undefined) {
+        this._countDown(
+          item.label,
+          item.dmsg,
+          () => this._launchCommand(command),
+          Number(item.countdown),
+        );
+      } else {
+        this._launchCommand(command);
+      }
       break;
+    }
     case 'appgrid':
       this._showAppGrid();
       break;
@@ -354,5 +367,79 @@ export default class GnomeMenuExtension extends Extension {
 
   _showAppGrid() {
     Main.overview.showApps();
+  }
+
+
+  _countDown(title, message, action, seconds = 60) {
+    const dialog = new ModalDialog.ModalDialog({ styleClass: 'modal-dialog' });
+    let dialogMessage;
+    let counterIntervalId;
+    let messageIntervalId;
+
+    const getDialogMessageText = () =>
+      _(`${message} in ${seconds} seconds.`);
+
+    const clearIntervals = () => {
+      clearInterval(counterIntervalId);
+      clearInterval(messageIntervalId);
+    };
+
+    dialog.setButtons([
+      {
+        label: _('Cancel'),
+        action: () => {
+          clearIntervals();
+          dialog.close();
+        },
+        key: Clutter.KEY_Escape,
+        default: false,
+      },
+      {
+        label: _(title),
+        action: () => {
+          clearIntervals();
+          dialog.close();
+          action();
+        },
+        default: false,
+      },
+    ]);
+
+    const dialogTitle = new St.Label({
+      text: _(title),
+      style: 'font-weight: bold;font-size:18px',
+    });
+
+    dialogMessage = new St.Label({ text: getDialogMessageText() });
+    dialogMessage.clutterText.ellipsize = Pango.EllipsizeMode.NONE;
+    dialogMessage.clutterText.lineWrap = true;
+
+    const titleBox = new St.BoxLayout({
+      xAlign: Clutter.ActorAlign.CENTER,
+    });
+    titleBox.add_child(new St.Label({ text: '  ' }));
+    titleBox.add_child(dialogTitle);
+
+    const box = new St.BoxLayout({ yExpand: true, vertical: true });
+    box.add_child(titleBox);
+    box.add_child(new St.Label({ text: '  ' }));
+    box.add_child(dialogMessage);
+
+    messageIntervalId = setInterval(() => {
+      dialogMessage.set_text(getDialogMessageText());
+    }, 500);
+
+    dialog.contentLayout.add_child(box);
+
+    dialog.open();
+    counterIntervalId = setInterval(() => {
+      if (seconds > 0) {
+        seconds--;
+      } else {
+        clearIntervals();
+        dialog.close();
+        action();
+      }
+    }, 1000);
   }
 }
