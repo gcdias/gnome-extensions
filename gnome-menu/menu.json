@@ -53,7 +53,7 @@
         },
         "gparted": {
             "label": "GParted",
-            "icon": "gparted-symbolic",
+            "icon": "org.gnome.DiskUtility-symbolic",
             "type": "app",
             "link": "gparted"
         }
