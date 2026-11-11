@@ -93,7 +93,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
                 this._authProviders["Wallhaven"] = 'wall';
             }
         } else {
-            const cfg_file = utils.loadText(this.path,'user.src');
+            const cfg_file = utils.loadText(this.path,'res/user.src');
             utils.saveText(this._cacheDir, 'user.cfg', cfg_file);
             log.i('prefs._loadAuthConfig: user config not found. Create new user.cfg in cachedir');
         }

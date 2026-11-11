@@ -102,7 +102,7 @@ const IGnome = {
         const s = [ sat/8, sat/4, sat ];
         const l = [ 0.14, 0.50, 0.90, 0.50, 0.60, 0.30, 0.50 ];
         
-        let i = utils.loadText(app_path, 'ptyxis.palette');
+        let i = utils.loadText(app_path, 'res/ptyxis.palette');
         i = i.replaceAll('(','${hsl2hex(').replaceAll(')',')}');
         i = eval("`" + i + "`");
         
@@ -280,7 +280,7 @@ export default class BingNTint extends Extension {
     }
 
     _createStatusIcon() {
-        const iconPath = GLib.build_filenamev([this.path, 'bing-symbolic.svg']);
+        const iconPath = GLib.build_filenamev([this.path, 'res', 'bing-symbolic.svg']);
         const icon = new St.Icon({
             gicon: new Gio.FileIcon({ file: Gio.File.new_for_path(iconPath) }),
             style_class: 'system-status-icon',
@@ -316,7 +316,7 @@ export default class BingNTint extends Extension {
             this._settings.set_string('nasa-key', nasa_auth);
             this._settings.set_string('wall-key', wall_auth);
         } else {
-            const cfg_file = utils.loadText(this.path,'user.src');
+            const cfg_file = utils.loadText(this.path,'res/user.src');
             console.log(cfg_file);
             utils.saveText(this._cacheDir, 'user.cfg', cfg_file);
             
@@ -465,11 +465,11 @@ export default class BingNTint extends Extension {
             '@base-sat'  : gtkSat
         }
 
-        const stylesheet = this._replace(utils.loadText(this.path,'stylesheet.src'), styleSheetPalette);
+        const stylesheet = this._replace(utils.loadText(this.path,'res/stylesheet.src'), styleSheetPalette);
         this._unloadStylesheet();
         this._loadStylesheet(stylesheet);
 
-        const gtkcss = this._replace(utils.loadText(this.path,'gtk.css'), gtkPalette);
+        const gtkcss = this._replace(utils.loadText(this.path,'res/gtk.css'), gtkPalette);
         utils.saveText(this._gtkDir, 'gtk.css', gtkcss);
 
         if (config.ptyxisMode !== 'user'){

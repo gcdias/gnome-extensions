@@ -3,12 +3,12 @@ EXTENSION_UUID = $(EXTNAME)@gcdias
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
 FILES = extension.js \
 		metadata.json \
-		stylesheet.src \
-		gtk.css \
-		prefs.js \
-		bing-symbolic.svg \
-		ptyxis.palette \
-		user.src
+		prefs.js
+RES   = res/bing-symbolic.svg \
+		res/stylesheet.src \
+		res/gtk.css \
+		res/ptyxis.palette \
+		res/user.src
 UTILS = utils/logger.js \
 		utils/utils.js
 WALLP = wp/wp-engine.js \
@@ -21,8 +21,9 @@ SCHEMA = schemas/org.gnome.shell.extensions.$(EXTNAME).gschema.xml
 
 install:
 	rm -rf $(INSTALL_PATH)
-	mkdir -p $(INSTALL_PATH)/schemas $(INSTALL_PATH)/utils $(INSTALL_PATH)/wp
+	mkdir -p $(INSTALL_PATH)/schemas $(INSTALL_PATH)/utils $(INSTALL_PATH)/wp $(INSTALL_PATH)/res
 	cp $(FILES) $(INSTALL_PATH)
+	cp $(RES) $(INSTALL_PATH)/res
 	cp $(UTILS) $(INSTALL_PATH)/utils
 	cp $(WALLP) $(INSTALL_PATH)/wp
 	cp $(SCHEMA) $(INSTALL_PATH)/schemas
@@ -31,7 +32,7 @@ install:
 	@echo "Please restart GNOME Shell (logout/login) to apply changes."
 
 zip:
-	zip -r -FS $(EXTNAME).zip $(FILES) schemas
+	zip -r -FS $(EXTNAME).zip $(FILES) $(RES) schemas
 
 uninstall:
 	rm -rf $(INSTALL_PATH)
