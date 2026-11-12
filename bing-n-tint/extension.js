@@ -100,7 +100,7 @@ const IGnome = {
         };
         const h = [ hue, 0, 90, 30, 240, 300, 180 ];
         const s = [ sat/8, sat/4, sat ];
-        const l = [ 0.14, 0.50, 0.90, 0.50, 0.60, 0.30, 0.50 ];
+        const l = [ 0.15, 0.50, 0.90, 0.50, 0.60, 0.30, 0.50 ];
         
         let i = utils.loadText(app_path, 'res/ptyxis.palette');
         i = i.replaceAll('(','${hsl2hex(').replaceAll(')',')}');

@@ -89,11 +89,7 @@ placessidebar {
   background-color: @sidebar_bg_color;
 }
 
-placesheaderbar {
-  background-color: @headerbar_bg_color;
-}
-
-headerbar {
+placesheaderbar, headerbar {
   background-color: @headerbar_bg_color;
 }
 
@@ -115,12 +111,7 @@ columnview row:selected:focus-within, listview > row:selected:focus-within {
   background-color: alpha(@window_fg_color, @base-sat);
 }
 
-window.nautilus-window {
-  font-family: 'Ubuntu Sans';
-  font-weight: 700;
-  font-size: 10pt;
-}
-
+window.nautilus-window,
 window.nautilus-window popover.menu {
   font-family: 'Ubuntu Sans';
   font-weight: 700;

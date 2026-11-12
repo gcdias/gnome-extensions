@@ -137,7 +137,8 @@
             "label": "Videos",
             "icon": "folder-videos-symbolic",
             "type": "uri",
-            "link": "~/Videos"
+            "link": "~/Videos",
+            "break": true
         },
         "boot-grub": {
             "label": "Boot/Grub",
