@@ -106,6 +106,15 @@ popover.menu > contents {
   background-color: @popover_bg_color;
 }
 
+/* Selected file/folder row (list view) */
+/* Hover on an already-selected row */
+/* Selected + focused (e.g. while navigating with the keyboard) */
+columnview row:selected, listview > row:selected,
+columnview row:selected:hover, listview > row:selected:hover,
+columnview row:selected:focus-within, listview > row:selected:focus-within {
+  background-color: alpha(@window_fg_color, @base-sat);
+}
+
 window.nautilus-window {
   font-family: 'Ubuntu Sans';
   font-weight: 700;

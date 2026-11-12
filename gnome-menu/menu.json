@@ -31,13 +31,6 @@
             "type": "recents",
             "break": true
         },
-
-        "monitor": {
-            "label": "System Monitor",
-            "icon": "org.gnome.SystemMonitor-symbolic",
-            "type": "app",
-            "command": "gnome-system-monitor"
-        },
         "nautilus": {
             "label": "Nautilus",
             "icon": "org.gnome.Nautilus-symbolic",
@@ -93,6 +86,12 @@
             "icon": "system-log-out-symbolic",
             "type": "app",
             "command": "gnome-session-quit"
+        },
+        "logout-gnome": {
+            "label": "Restart Gnome",
+            "icon": "system-log-out-symbolic",
+            "type": "app",
+            "command": "systemctl --user restart xdg-desktop-portal-gnome"
         }
     },
     "Disks": {
@@ -108,6 +107,43 @@
             "type": "app",
             "link": "gparted"
         }
-
+    },
+    "Places": {
+        "documents": {
+            "label": "Documents",
+            "icon": "folder-documents-symbolic",
+            "type": "uri",
+            "link": "~/Documents"
+        },
+        "downloads": {
+            "label": "Downloads",
+            "icon": "folder-download-symbolic",
+            "type": "uri",
+            "link": "~/Downloads"
+        },
+        "music": {
+            "label": "Music",
+            "icon": "folder-music-symbolic",
+            "type": "uri",
+            "link": "~/Music"
+        },
+        "pictures": {
+            "label": "Pictures",
+            "icon": "folder-pictures-symbolic",
+            "type": "uri",
+            "link": "~/Pictures"
+        },
+        "videos": {
+            "label": "Videos",
+            "icon": "folder-videos-symbolic",
+            "type": "uri",
+            "link": "~/Videos"
+        },
+        "boot-grub": {
+            "label": "Boot/Grub",
+            "icon": "drive-harddisk-symbolic",
+            "type": "uri",
+            "link": "admin:///boot/grub"
+        }
     }
 }

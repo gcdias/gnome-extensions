@@ -41,6 +41,8 @@ Supported item types:
   `reloadExtension` restarts the extension and reloads `menu.json`.
 - `appgrid`: opens the GNOME app grid.
 - `recents`: opens the recent-items location.
+- `uri`: opens `link` in Nautilus. Links beginning with `~/` are resolved
+  relative to the user's home directory.
 - `break: true` on an item inserts a separator after that item.
 
 `icon` is an icon name from the active icon theme. The extension and

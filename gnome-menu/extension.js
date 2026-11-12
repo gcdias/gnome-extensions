@@ -18,6 +18,7 @@ const ITEM_TYPES = new Set([
   'appgrid',
   'built_in',
   'recents',
+  'uri',
 ]);
 
 export default class GnomeMenuExtension extends Extension {
@@ -266,6 +267,9 @@ export default class GnomeMenuExtension extends Extension {
           !this._builtInActions.has(item.link)) {
         throw new Error(`${location} has an unknown built-in action`);
       }
+    } else if (item.type === 'uri') {
+      if (typeof item.link !== 'string' || item.link.trim().length === 0)
+        throw new Error(`${location} must have a link`);
     } else if (item.type === 'app') {
       const command = item.command ?? item.link;
       if (typeof command !== 'string' || command.trim().length === 0)
@@ -323,9 +327,19 @@ export default class GnomeMenuExtension extends Extension {
     case 'recents':
       this._openRecentItems();
       break;
+    case 'uri':
+      this._openUriInNautilus(item.link);
+      break;
     default:
       throw new Error(`Unsupported action type: ${item.type}`);
     }
+  }
+
+  _openUriInNautilus(uri) {
+    const target = uri.startsWith('~/')
+      ? GLib.build_filenamev([GLib.get_home_dir(), uri.slice(2)])
+      : uri;
+    Gio.Subprocess.new(['nautilus', target], Gio.SubprocessFlags.NONE);
   }
 
   _launchCommand(command) {
