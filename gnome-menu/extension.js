@@ -1,6 +1,7 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Meta from 'gi://Meta';
 import Pango from 'gi://Pango';
 import Soup from 'gi://Soup?version=3.0';
 import St from 'gi://St';
@@ -21,6 +22,15 @@ const ITEM_TYPES = new Set([
   'uri',
 ]);
 
+const APPLICATION_WINDOW_TYPES = new Set([
+  Meta.WindowType.NORMAL,
+  Meta.WindowType.DIALOG,
+  Meta.WindowType.MODAL_DIALOG,
+  Meta.WindowType.TOOLBAR,
+  Meta.WindowType.UTILITY,
+  Meta.WindowType.SPLASHSCREEN,
+]);
+
 export default class GnomeMenuExtension extends Extension {
   
   constructor(metadata) {
@@ -36,6 +46,8 @@ export default class GnomeMenuExtension extends Extension {
       ['reloadExtension', () => this._reloadExtension()],
       ['showAbout', () => this._showAbout()],
       ['showAppGrid', () => this._showAppGrid()],
+      ['minimizeWindows', () => this._minimizeWindows()],
+      ['closeWindows', () => this._closeWindows()],
     ]);
   }
 
@@ -381,6 +393,23 @@ export default class GnomeMenuExtension extends Extension {
 
   _showAppGrid() {
     Main.overview.showApps();
+  }
+
+  _minimizeWindows() {
+    for (const window of this._getApplicationWindows())
+      window.minimize();
+  }
+
+  _closeWindows() {
+    const timestamp = global.get_current_time();
+    for (const window of this._getApplicationWindows())
+      window.delete(timestamp);
+  }
+
+  _getApplicationWindows() {
+    return global.get_window_actors()
+      .map(actor => actor.get_meta_window())
+      .filter(window => APPLICATION_WINDOW_TYPES.has(window.get_window_type()));
   }
 
 

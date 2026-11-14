@@ -146,5 +146,21 @@
             "type": "uri",
             "link": "admin:///boot/grub"
         }
+    },
+    "Windows": {
+        "minimize_all": {
+            "label": "Minimize all",
+            "icon": "window-minimize-symbolic",
+            "type": "built_in",
+            "link": "minimizeWindows"
+        },
+        "close_all": {
+            "label": "Close all",
+            "icon": "window-close-symbolic",
+            "type": "built_in",
+            "countdown": "10",
+            "dmsg":  "All windows will close automatically",
+            "link": "closeWindows"
+        }
     }
 }

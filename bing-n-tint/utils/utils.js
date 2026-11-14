@@ -7,29 +7,29 @@ import { Logger as log } from './logger.js';
 export class Utils {
     
     static rgbToHex(r, g, b) {
-        log.s(`utils.rgbToHex(r:${r}, g:${g}, b:${b})`);
+        //log.s(`utils.rgbToHex(r:${r}, g:${g}, b:${b})`);
         const out = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-        log.r(`Hex color: ${out}`);
+        //log.r(`Hex color: ${out}`);
         return out;
     }
 
     static hexToRgb(hex) {
-        log.s(`utils.hexToRgb(hex:${hex})`);
+        //log.s(`utils.hexToRgb(hex:${hex})`);
         const [r, g, b] = hex.slice(1).match(/../g).map(x => parseInt(x, 16));
-        log.r(`RGB color: rgb(${r}, ${g}, ${b})`);
+        //log.r(`RGB color: rgb(${r}, ${g}, ${b})`);
         return [r, g, b];
     }
 
     static normHue(h, round = true) {
-        log.s(`utils.normHue(hue:${h}, round? ${round})`);
+        //log.s(`utils.normHue(hue:${h}, round? ${round})`);
         const hue = ((h % 360) + 360) % 360;
         const out = round ? Math.round(hue) : hue;
-        log.r(`Normalized hue: ${out}`);
+        //log.r(`Normalized hue: ${out}`);
         return out;
     }
 
     static rgb2hsl(r, g, b) {
-        log.s(`utils.rgb2hsl(r:${r}, g:${g}, b:${b})`);
+        //log.s(`utils.rgb2hsl(r:${r}, g:${g}, b:${b})`);
         r /= 255; g /= 255; b /= 255;
         const max = Math.max(r, g, b);
         const min = Math.min(r, g, b);
@@ -42,12 +42,12 @@ export class Utils {
                 : (r - g) / d + 4;
         const s = d / (1 - Math.abs(2 * l - 1));
         const out = [Utils.normHue(h * 60, true), s.toFixed(2), l.toFixed(2)];
-        log.r(`HSL color: hsl(${out[0]}, ${out[1]}, ${out[2]})`);
+        //log.r(`HSL color: hsl(${out[0]}, ${out[1]}, ${out[2]})`);
         return out;
     }
 
     static hsl2rgb(h, s, l) {
-        log.s(`utils.hsl2rgb(h:${h}, s:${s}, l:${l})`);
+        //log.s(`utils.hsl2rgb(h:${h}, s:${s}, l:${l})`);
         const invalidHue = isNaN(h);
         const a = invalidHue ? 0 : s * Math.min(l, 1 - l);
         const hue = invalidHue ? 0 : Utils.normHue(h, false) / 30;
@@ -56,7 +56,7 @@ export class Utils {
             return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
         };
         const out = [channel(0), channel(8), channel(4)];
-        log.r(`RGB color: rgb(${out[0]}, ${out[1]}, ${out[2]})`);
+        //log.r(`RGB color: rgb(${out[0]}, ${out[1]}, ${out[2]})`);
         return out;
     }
 
@@ -76,7 +76,7 @@ export class Utils {
     }
 
     static loadText(dir, filename) {
-        log.s(`Utils.loadText(dir:${dir}, filename:${filename})`);
+        //log.s(`Utils.loadText(dir:${dir}, filename:${filename})`);
         const path = GLib.build_filenamev([dir, filename]);
         const file = Gio.File.new_for_path(path);
         if (!file.query_exists(null))
@@ -84,32 +84,32 @@ export class Utils {
         const [ok, contents] = file.load_contents(null);
         if (ok && contents){
             const out = new TextDecoder().decode(contents);
-            log.r(`read ${out.length} chars`);
+            //log.r(`read ${out.length} chars`);
             return out;
         }
-        log.r(`could not read ok:${ok} contents:${contents}`);
+        //log.r(`could not read ok:${ok} contents:${contents}`);
         return null;  
     }
 
     static saveText(dir, filename, contents){
-        log.s(`Utils.saveText(dir:${dir}, filename:${filename}, contents:(${contents.length} chars))`);
+        //log.s(`Utils.saveText(dir:${dir}, filename:${filename}, contents:(${contents.length} chars))`);
         const path = GLib.build_filenamev([dir, filename]);
         GLib.file_set_contents(path, contents);
-        log.r('done')
+        //log.r('done')
     }
 
     static getLangTag() {
-        log.s('utils.getLangTag()');
+        //log.s('utils.getLangTag()');
         const locale = GLib.get_language_names()[0];
         const languageTag = locale.split(/[.@]/, 1)[0].replace(/_/g, '-');
-        log.r(languageTag);
+        //log.r(languageTag);
         return languageTag;
     }
 
     static pct(value) {
-        log.s(`utils.pct(value:${value})`);
+        //log.s(`utils.pct(value:${value})`);
         const out = (value * 100).toFixed(0) + '%';
-        log.r(`${out}`);
+        //log.r(`${out}`);
         return out;
     }
 

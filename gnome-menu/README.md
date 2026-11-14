@@ -37,7 +37,9 @@ Supported item types:
 - `app`: launches `command` (or `link` for compatibility) as a program and
   arguments, without invoking a shell.
 - `built_in`: calls a supported extension action named by `link`:
-  `showAbout`, `showAppGrid`, `openRecentItems`, or `reloadExtension`.
+  `showAbout`, `showAppGrid`, `openRecentItems`, `reloadExtension`,
+  `minimizeWindows`, or `closeWindows`. The window actions apply to application
+  windows (including dialogs) on all workspaces.
   `reloadExtension` restarts the extension and reloads `menu.json`.
 - `appgrid`: opens the GNOME app grid.
 - `recents`: opens the recent-items location.
