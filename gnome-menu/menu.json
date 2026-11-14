@@ -13,7 +13,7 @@
             "type": "app",
             "link": "snap-store"
         },
-        "app": {
+        "appgird": {
             "label": "App grid",
             "icon": "view-app-grid-symbolic",
             "type": "built_in",

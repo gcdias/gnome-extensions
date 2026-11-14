@@ -16,9 +16,7 @@ import {
 
 const ITEM_TYPES = new Set([
   'app',
-  'appgrid',
   'built_in',
-  'recents',
   'uri',
 ]);
 
@@ -314,36 +312,28 @@ export default class GnomeMenuExtension extends Extension {
       button.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
   }
 
+
   _activateItem(item) {
     switch (item.type) {
-    case 'app': {
-      const command = item.command ?? item.link;
-      if (item.countdown !== undefined && item.dmsg !== undefined) {
-        this._countDown(
-          item.label,
-          item.dmsg,
-          () => this._launchCommand(command),
-          Number(item.countdown),
-        );
-      } else {
-        this._launchCommand(command);
-      }
-      break;
-    }
-    case 'appgrid':
-      this._showAppGrid();
-      break;
-    case 'built_in':
-      this._builtInActions.get(item.link)();
-      break;
-    case 'recents':
-      this._openRecentItems();
-      break;
-    case 'uri':
-      this._openUriInNautilus(item.link);
-      break;
-    default:
-      throw new Error(`Unsupported action type: ${item.type}`);
+      case 'app':
+        if (item.countdown && item.dmsg){
+          this._countDown(item.label, item.dmsg, () => this._launchCommand(item.link), Number(item.countdown),);
+        } else {
+          this._launchCommand(item.link)
+        }
+        break;
+      case 'built_in':
+        if (item.countdown && item.dmsg){
+          this._countDown(item.label, item.dmsg, () => this._builtInActions.get(item.link)(), Number(item.countdown),);
+        } else {
+          this._builtInActions.get(item.link)();
+        }
+        break;
+      case 'uri':
+        this._openUriInNautilus(item.link);
+        break;
+      default:
+        console.log(`Unsupported action type: ${item.type}`);
     }
   }
 
