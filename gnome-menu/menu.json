@@ -13,7 +13,7 @@
             "type": "app",
             "command": "snap-store"
         },
-        "app": {
+        "appgrid": {
             "label": "App grid",
             "icon": "view-app-grid-symbolic",
             "type": "appgrid"
@@ -86,12 +86,6 @@
             "icon": "system-log-out-symbolic",
             "type": "app",
             "command": "gnome-session-quit"
-        },
-        "logout-gnome": {
-            "label": "Restart Gnome",
-            "icon": "system-log-out-symbolic",
-            "type": "app",
-            "command": "systemctl --user restart xdg-desktop-portal-gnome"
         }
     },
     "Disks": {
