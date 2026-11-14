@@ -235,7 +235,8 @@ export default class GnomeMenuExtension extends Extension {
   }
 
   _loadMenuConfig() {
-    const configPath = GLib.build_filenamev([this.path, 'menu.json']);
+    const configPath = this.getSettings().get_string('menu-file') ||
+      GLib.build_filenamev([this.path, 'menu.json']);
     const [success, contents] = Gio.File.new_for_path(configPath).load_contents(null);
     if (!success)
       throw new Error(`Could not read ${configPath}`);
@@ -244,51 +245,62 @@ export default class GnomeMenuExtension extends Extension {
     if (!config || typeof config !== 'object' || Array.isArray(config))
       throw new Error('menu.json must contain an object of menus');
 
+    const validatedMenus = [];
     for (const [menuName, items] of Object.entries(config)) {
       if (!items || typeof items !== 'object' || Array.isArray(items))
         throw new Error(`Menu "${menuName}" must contain an object of items`);
 
-      for (const [itemId, item] of Object.entries(items))
-        this._validateItem(menuName, itemId, item);
+      const validatedItems = [];
+      for (const [itemId, item] of Object.entries(items)) {
+        const error = this._validateItem(menuName, itemId, item);
+        if (error) {
+          logError(error, `GNOME Menu: skipping invalid item "${menuName}.${itemId}"`);
+          continue;
+        }
+        validatedItems.push([itemId, item]);
+      }
+      validatedMenus.push([menuName, Object.fromEntries(validatedItems)]);
     }
 
-    return config;
+    return Object.fromEntries(validatedMenus);
   }
 
   _validateItem(menuName, itemId, item) {
     const location = `Menu "${menuName}", item "${itemId}"`;
     if (!item || typeof item !== 'object' || Array.isArray(item))
-      throw new Error(`${location} must be an object`);
+      return new Error(`${location} must be an object`);
 
     if (typeof item.type !== 'string' || !ITEM_TYPES.has(item.type))
-      throw new Error(`${location} has an unsupported type`);
+      return new Error(`${location} has an unsupported type`);
 
     if (typeof item.label !== 'string' || item.label.length === 0)
-      throw new Error(`${location} must have a non-empty label`);
+      return new Error(`${location} must have a non-empty label`);
 
     if (item.icon !== undefined && typeof item.icon !== 'string')
-      throw new Error(`${location} icon must be a string`);
+      return new Error(`${location} icon must be a string`);
 
     if (item.break !== undefined && typeof item.break !== 'boolean')
-      throw new Error(`${location} break must be a boolean`);
+      return new Error(`${location} break must be a boolean`);
 
     if (item.type === 'built_in') {
       if (typeof item.link !== 'string' ||
           !this._builtInActions.has(item.link)) {
-        throw new Error(`${location} has an unknown built-in action`);
+        return new Error(`${location} has an unknown built-in action`);
       }
     } else if (item.type === 'uri') {
       if (typeof item.link !== 'string' || item.link.trim().length === 0)
-        throw new Error(`${location} must have a link`);
+        return new Error(`${location} must have a link`);
     } else if (item.type === 'app') {
       const command = item.command ?? item.link;
       if (typeof command !== 'string' || command.trim().length === 0)
-        throw new Error(`${location} must have a command or link`);
+        return new Error(`${location} must have a command or link`);
 
       const [success] = GLib.shell_parse_argv(command);
       if (!success)
-        throw new Error(`${location} has an invalid command`);
+        return new Error(`${location} has an invalid command`);
     }
+
+    return null;
   }
 
   _addMenuItem(button, menuName, itemId, item) {
@@ -314,27 +326,26 @@ export default class GnomeMenuExtension extends Extension {
 
 
   _activateItem(item) {
+    let action;
     switch (item.type) {
       case 'app':
-        if (item.countdown && item.dmsg){
-          this._countDown(item.label, item.dmsg, () => this._launchCommand(item.link), Number(item.countdown),);
-        } else {
-          this._launchCommand(item.link)
-        }
+        action = () => this._launchCommand(item.command ?? item.link);
         break;
       case 'built_in':
-        if (item.countdown && item.dmsg){
-          this._countDown(item.label, item.dmsg, () => this._builtInActions.get(item.link)(), Number(item.countdown),);
-        } else {
-          this._builtInActions.get(item.link)();
-        }
+        action = this._builtInActions.get(item.link);
         break;
       case 'uri':
         this._openUriInNautilus(item.link);
-        break;
+        return;
       default:
         console.log(`Unsupported action type: ${item.type}`);
+        return;
     }
+
+    if (item.countdown && item.dmsg)
+      this._countDown(item.label, item.dmsg, action, Number(item.countdown));
+    else
+      action();
   }
 
   _openUriInNautilus(uri) {

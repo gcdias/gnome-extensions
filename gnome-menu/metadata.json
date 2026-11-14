@@ -3,6 +3,7 @@
   "description": "Configurable top-panel menus defined in menu.json",
   "license": "GPL-3.0-or-later",
   "uuid": "gnome-menu@gcdias",
+  "settings-schema": "org.gnome.shell.extensions.gnome-menu",
   "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
   "gettext-domain": "gnome-menu@gcdias"
 }

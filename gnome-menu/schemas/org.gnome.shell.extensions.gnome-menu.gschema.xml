@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.gnome-menu" path="/org/gnome/shell/extensions/gnome-menu/">
+    <key name="menu-file" type="s">
+      <default>''</default>
+      <summary>Menu configuration file</summary>
+      <description>Path to the menu.json file, or empty to use the bundled file.</description>
+    </key>
+  </schema>
+</schemalist>

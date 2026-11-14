@@ -3,6 +3,10 @@
 GNOME Menu adds one top-panel menu for each top-level object in `menu.json`.
 Edit that file and reload the extension to change the menus.
 
+In the extension preferences, you can select a different `menu.json` file.
+By default, the extension uses the `menu.json` file in its installation
+directory.
+
 Each menu contains item IDs mapped to item objects:
 
 ```json
@@ -47,8 +51,7 @@ Supported item types:
   relative to the user's home directory.
 - `break: true` on an item inserts a separator after that item.
 
-`icon` is an icon name from the active icon theme. The extension and
-`menu.json` must remain in the same directory.
+`icon` is an icon name from the active icon theme.
 
 When creating an installable bundle, include the configuration file:
 
