@@ -4,7 +4,7 @@
             "label": "About this system",
             "icon": "help-about-symbolic",
             "type": "app",
-            "link": "gnome-control-center system",
+            "link": "gnome-control-center system about",
             "break": true
         },
         "software": {
