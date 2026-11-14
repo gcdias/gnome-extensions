@@ -4,19 +4,20 @@
             "label": "About this system",
             "icon": "help-about-symbolic",
             "type": "app",
-            "command": "gnome-control-center system",
+            "link": "gnome-control-center system",
             "break": true
         },
         "software": {
             "label": "Snap Store",
             "icon": "org.gnome.Software-symbolic",
             "type": "app",
-            "command": "snap-store"
+            "link": "snap-store"
         },
-        "appgrid": {
+        "app": {
             "label": "App grid",
             "icon": "view-app-grid-symbolic",
-            "type": "appgrid"
+            "type": "built_in",
+            "link": "showAppGrid"
         },
         "reload": {
             "label": "Refresh Menu",
@@ -28,7 +29,8 @@
         "recent": {
             "label": "Recent Items",
             "icon": "document-open-recent-symbolic",
-            "type": "recents",
+            "type": "built_in",
+            "link": "openRecentItems",
             "break": true
         },
         "nautilus": {
@@ -54,7 +56,7 @@
             "label": "Sleep",
             "icon": "media-playback-pause-symbolic",
             "type": "app",
-            "command": "systemctl sleep"
+            "link": "systemctl sleep"
         },
         "reboot": {
             "label": "Restart",
@@ -62,7 +64,7 @@
             "type": "app",
             "countdown": "60",
             "dmsg":  "The system will restart automatically",
-            "command": "systemctl reboot"
+            "link": "systemctl reboot"
         },
         "rebootuefi": {
             "label": "Reboot to UEFI",
@@ -70,7 +72,7 @@
             "type": "app",
             "countdown": "60",
             "dmsg":  "The system will restart UEFI automatically",
-            "command": "systemctl reboot --firmware-setup"
+            "link": "systemctl reboot --firmware-setup"
         },
         "shutdown": {
             "label": "Shutdown",
@@ -78,14 +80,14 @@
             "type": "app",
             "countdown": "60",
             "dmsg":  "The system will shutdown automatically",
-            "command": "shutdown now",
+            "link": "shutdown now",
             "break": true
         },
         "logout": {
             "label": "Logout",
             "icon": "system-log-out-symbolic",
             "type": "app",
-            "command": "gnome-session-quit"
+            "link": "gnome-session-quit"
         }
     },
     "Disks": {
