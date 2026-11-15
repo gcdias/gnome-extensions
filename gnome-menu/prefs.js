@@ -84,37 +84,14 @@ export default class GnomeMenuPreferences extends ExtensionPreferences {
         showError(error, _('Unable to reset menu.json'));
       }
     };
-    const setExtensionEnabled = (enabled, callback) => {
-      Gio.DBus.session.call(
-        'org.gnome.Shell',
-        '/org/gnome/Shell/Extensions',
-        'org.gnome.Shell.Extensions',
-        enabled ? 'EnableExtension' : 'DisableExtension',
-        new GLib.Variant('(s)', [this.uuid]),
-        new GLib.VariantType('(s)'),
-        Gio.DBusCallFlags.NONE,
-        -1,
-        null,
-        (connection, result) => {
-          try {
-            const [status] = connection.call_finish(result).deep_unpack();
-            if (status !== 'successful')
-              throw new Error(status);
-            callback();
-          } catch (error) {
-            reloadButton.sensitive = true;
-            showError(error, _('Unable to reload menus'));
-          }
-        },
-      );
-    };
     const reloadMenus = () => {
-      reloadButton.sensitive = false;
-      setExtensionEnabled(false, () => {
-        setExtensionEnabled(true, () => {
-          reloadButton.sensitive = true;
-        });
-      });
+      const request = settings.get_uint('reload-request');
+      const nextRequest = request === 0xffffffff ? 0 : request + 1;
+      if (!settings.set_uint('reload-request', nextRequest))
+        showError(
+          new Error(_('Could not request a menu reload.')),
+          _('Unable to reload menus'),
+        );
     };
     const page = new Adw.PreferencesPage({
       title: _('Menus'),

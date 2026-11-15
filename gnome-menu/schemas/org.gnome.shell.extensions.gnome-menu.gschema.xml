@@ -11,5 +11,10 @@
       <summary>Whether the cached menu configuration was initialized</summary>
       <description>Prevents reset menu configurations from being copied again on startup.</description>
     </key>
+    <key name="reload-request" type="u">
+      <default>0</default>
+      <summary>Menu reload request</summary>
+      <description>Incremented by preferences to request that the extension reload.</description>
+    </key>
   </schema>
 </schemalist>

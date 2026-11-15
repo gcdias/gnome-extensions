@@ -40,6 +40,8 @@ export default class GnomeMenuExtension extends Extension {
     this._menuIcons = [];
     this._interfaceSettings = null;
     this._colorSchemeChangedId = 0;
+    this._settings = null;
+    this._reloadRequestChangedId = 0;
     this._soupSession = null;
     this._builtInActions = new Map([
       ['openRecentItems', () => this._openRecentItems()],
@@ -66,6 +68,21 @@ export default class GnomeMenuExtension extends Extension {
 
     this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface',});
     this._colorSchemeChangedId = this._interfaceSettings.connect('changed::color-scheme', this._checkIcons);
+    this._settings = this.getSettings();
+    this._reloadRequestChangedId = this._settings.connect(
+      'changed::reload-request',
+      () => {
+        try {
+          this._reloadExtension();
+        } catch (error) {
+          logError(error, 'GNOME Menu: failed to reload the extension');
+          Main.notifyError(
+            _('Unable to reload the GNOME Menu extension'),
+            error.message,
+          );
+        }
+      },
+    );
 
     let index = 0;
     for (const [menuName, items] of Object.entries(menus)) {
@@ -103,6 +120,11 @@ export default class GnomeMenuExtension extends Extension {
       this._interfaceSettings.disconnect(this._colorSchemeChangedId);
     this._interfaceSettings = null;
     this._colorSchemeChangedId = 0;
+
+    if (this._reloadRequestChangedId)
+      this._settings.disconnect(this._reloadRequestChangedId);
+    this._settings = null;
+    this._reloadRequestChangedId = 0;
 
     for (const button of this._buttons)
       button.destroy();
