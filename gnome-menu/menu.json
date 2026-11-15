@@ -48,8 +48,8 @@
         "suspend": {
             "label": "Sleep",
             "icon": "media-playback-pause-symbolic",
-            "type": "app",
-            "link": "systemctl sleep"
+            "type": "built_in",
+            "link": "systemSuspend"
         },
         "reboot": {
             "label": "Restart",

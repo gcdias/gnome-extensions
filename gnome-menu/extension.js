@@ -1,34 +1,28 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import Meta from 'gi://Meta';
-import Pango from 'gi://Pango';
 import Soup from 'gi://Soup?version=3.0';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {
   Extension,
   gettext as _,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
+import {
+  countDown,
+  getBuiltInActions,
+  reloadExtension,
+} from './builtInActions.js';
 import { getMenuConfigFile } from './menuConfig.js';
+import { recordMenuConfigError } from './menuConfigErrorLog.js';
 import { getWPAConfig } from './wpaConfig.js';
 
 const ITEM_TYPES = new Set([
   'app',
   'built_in',
   'uri',
-]);
-
-const APPLICATION_WINDOW_TYPES = new Set([
-  Meta.WindowType.NORMAL,
-  Meta.WindowType.DIALOG,
-  Meta.WindowType.MODAL_DIALOG,
-  Meta.WindowType.TOOLBAR,
-  Meta.WindowType.UTILITY,
-  Meta.WindowType.SPLASHSCREEN,
 ]);
 
 export default class GnomeMenuExtension extends Extension {
@@ -43,14 +37,7 @@ export default class GnomeMenuExtension extends Extension {
     this._settings = null;
     this._reloadRequestChangedId = 0;
     this._soupSession = null;
-    this._builtInActions = new Map([
-      ['openRecentItems', () => this._openRecentItems()],
-      ['reloadExtension', () => this._reloadExtension()],
-      ['showAbout', () => this._showAbout()],
-      ['showAppGrid', () => this._showAppGrid()],
-      ['minimizeWindows', () => this._minimizeWindows()],
-      ['closeWindows', () => this._closeWindows()],
-    ]);
+    this._builtInActions = getBuiltInActions(this);
   }
 
   enable() {
@@ -68,12 +55,14 @@ export default class GnomeMenuExtension extends Extension {
 
     this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface',});
     this._colorSchemeChangedId = this._interfaceSettings.connect('changed::color-scheme', this._checkIcons);
+    this._updateIconColor();
     this._settings = this.getSettings();
+
     this._reloadRequestChangedId = this._settings.connect(
       'changed::reload-request',
       () => {
         try {
-          this._reloadExtension();
+          reloadExtension(this);
         } catch (error) {
           logError(error, 'GNOME Menu: failed to reload the extension');
           Main.notifyError(
@@ -133,7 +122,12 @@ export default class GnomeMenuExtension extends Extension {
     this._menuIcons = [];
   }
 
+  _updateIconColor(){
+    this._iconColor = this._interfaceSettings.get_string('color-scheme') === 'prefer-dark' ? '#eee' : '#111';
+  }
+
   _checkIcons(){
+    this._updateIconColor();
     for (const menuIcon of this._menuIcons) {
       if (!menuIcon.iconFile.query_exists(null))
         continue;
@@ -224,10 +218,8 @@ export default class GnomeMenuExtension extends Extension {
     if (!success)
       throw new Error(`Could not read ${menuIcon.iconFile.get_path()}`);
 
-    const foreground = this._interfaceSettings.get_string('color-scheme') ===
-      'prefer-dark' ? '#eee' : '#111';
     const svg = new TextDecoder().decode(contents)
-      .replace(/#111\b/gi, foreground);
+      .replace(/#111\b/gi, this._iconColor);
     menuIcon.themedIconFile.replace_contents(
       new TextEncoder().encode(svg),
       null,
@@ -263,6 +255,15 @@ export default class GnomeMenuExtension extends Extension {
   }
 
   _loadMenuConfig() {
+    try {
+      return this._readMenuConfig();
+    } catch (error) {
+      recordMenuConfigError(this.uuid, 'Unable to load menu configuration', error);
+      throw error;
+    }
+  }
+
+  _readMenuConfig() {
     const configFile = getMenuConfigFile(
       this.path,
       this.uuid,
@@ -297,38 +298,46 @@ export default class GnomeMenuExtension extends Extension {
   }
 
   _validateItem(menuName, itemId, item) {
+    
     const location = `Menu "${menuName}", item "${itemId}"`;
+
+    const invalid = message => {
+      const error = new Error(`${location} ${message}`);
+      recordMenuConfigError(this.uuid, 'Invalid menu item', error);
+      return error;
+    };
+
     if (!item || typeof item !== 'object' || Array.isArray(item))
-      return new Error(`${location} must be an object`);
+      return invalid('must be an object');
 
     if (typeof item.type !== 'string' || !ITEM_TYPES.has(item.type))
-      return new Error(`${location} has an unsupported type`);
+      return invalid('has an unsupported type');
 
     if (typeof item.label !== 'string' || item.label.length === 0)
-      return new Error(`${location} must have a non-empty label`);
+      return invalid('must have a non-empty label');
 
     if (item.icon !== undefined && typeof item.icon !== 'string')
-      return new Error(`${location} icon must be a string`);
+      return invalid('icon must be a string');
 
     if (item.break !== undefined && typeof item.break !== 'boolean')
-      return new Error(`${location} break must be a boolean`);
+      return invalid('break must be a boolean');
 
     if (item.type === 'built_in') {
       if (typeof item.link !== 'string' ||
           !this._builtInActions.has(item.link)) {
-        return new Error(`${location} has an unknown built-in action`);
+        return invalid('has an unknown built-in action');
       }
     } else if (item.type === 'uri') {
       if (typeof item.link !== 'string' || item.link.trim().length === 0)
-        return new Error(`${location} must have a link`);
+        return invalid('must have a link');
     } else if (item.type === 'app') {
       const command = item.command ?? item.link;
       if (typeof command !== 'string' || command.trim().length === 0)
-        return new Error(`${location} must have a command or link`);
+        return invalid('must have a command or link');
 
       const [success] = GLib.shell_parse_argv(command);
       if (!success)
-        return new Error(`${location} has an invalid command`);
+        return invalid('has an invalid command');
     }
 
     return null;
@@ -358,6 +367,7 @@ export default class GnomeMenuExtension extends Extension {
 
   _activateItem(item) {
     let action;
+
     switch (item.type) {
       case 'app':
         action = () => this._launchCommand(item.command ?? item.link);
@@ -374,7 +384,7 @@ export default class GnomeMenuExtension extends Extension {
     }
 
     if (item.countdown && item.dmsg)
-      this._countDown(item.label, item.dmsg, action, Number(item.countdown));
+      countDown(item.label, item.dmsg, action, Number(item.countdown));
     else
       action();
   }
@@ -394,127 +404,4 @@ export default class GnomeMenuExtension extends Extension {
     Gio.Subprocess.new(argv, Gio.SubprocessFlags.NONE);
   }
 
-  _openRecentItems() {
-    Gio.AppInfo.launch_default_for_uri('recent:///', null);
-  }
-
-  _reloadExtension() {
-    const manager = Main.extensionManager;
-    if (!manager.disableExtension(this.uuid))
-      throw new Error(_('The extension could not be disabled'));
-
-    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
-      try {
-        if (!manager.enableExtension(this.uuid))
-          throw new Error(_('The extension could not be enabled'));
-      } catch (error) {
-        logError(error, 'GNOME Menu: failed to restart the extension');
-        Main.notifyError(
-          _('Unable to reload the GNOME Menu extension'),
-          error.message,
-        );
-      }
-
-      return GLib.SOURCE_REMOVE;
-    });
-  }
-
-  _showAbout() {
-    this._launchCommand('gnome-control-center system');
-  }
-
-  _showAppGrid() {
-    Main.overview.showApps();
-  }
-
-  _minimizeWindows() {
-    for (const window of this._getApplicationWindows())
-      window.minimize();
-  }
-
-  _closeWindows() {
-    const timestamp = global.get_current_time();
-    for (const window of this._getApplicationWindows())
-      window.delete(timestamp);
-  }
-
-  _getApplicationWindows() {
-    return global.get_window_actors()
-      .map(actor => actor.get_meta_window())
-      .filter(window => APPLICATION_WINDOW_TYPES.has(window.get_window_type()));
-  }
-
-
-  _countDown(title, message, action, seconds = 60) {
-    const dialog = new ModalDialog.ModalDialog({ styleClass: 'modal-dialog' });
-    let dialogMessage;
-    let counterIntervalId;
-    let messageIntervalId;
-
-    const getDialogMessageText = () =>
-      _(`${message} in ${seconds} seconds.`);
-
-    const clearIntervals = () => {
-      clearInterval(counterIntervalId);
-      clearInterval(messageIntervalId);
-    };
-
-    dialog.setButtons([
-      {
-        label: _('Cancel'),
-        action: () => {
-          clearIntervals();
-          dialog.close();
-        },
-        key: Clutter.KEY_Escape,
-        default: false,
-      },
-      {
-        label: _(title),
-        action: () => {
-          clearIntervals();
-          dialog.close();
-          action();
-        },
-        default: false,
-      },
-    ]);
-
-    const dialogTitle = new St.Label({
-      text: _(title),
-      style: 'font-weight: bold;font-size:18px',
-    });
-
-    dialogMessage = new St.Label({ text: getDialogMessageText() });
-    dialogMessage.clutterText.ellipsize = Pango.EllipsizeMode.NONE;
-    dialogMessage.clutterText.lineWrap = true;
-
-    const titleBox = new St.BoxLayout({
-      xAlign: Clutter.ActorAlign.CENTER,
-    });
-    titleBox.add_child(new St.Label({ text: '  ' }));
-    titleBox.add_child(dialogTitle);
-
-    const box = new St.BoxLayout({ yExpand: true, vertical: true });
-    box.add_child(titleBox);
-    box.add_child(new St.Label({ text: '  ' }));
-    box.add_child(dialogMessage);
-
-    messageIntervalId = setInterval(() => {
-      dialogMessage.set_text(getDialogMessageText());
-    }, 500);
-
-    dialog.contentLayout.add_child(box);
-
-    dialog.open();
-    counterIntervalId = setInterval(() => {
-      if (seconds > 0) {
-        seconds--;
-      } else {
-        clearIntervals();
-        dialog.close();
-        action();
-      }
-    }, 1000);
-  }
 }

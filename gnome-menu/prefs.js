@@ -11,6 +11,7 @@ import {
   getEditableMenuConfigFile,
   resetMenuConfigFile,
 } from './menuConfig.js';
+import { getMenuConfigErrorLogFile } from './menuConfigErrorLog.js';
 import { getWPAConfig } from './wpaConfig.js';
 
 export default class GnomeMenuPreferences extends ExtensionPreferences {
@@ -84,6 +85,22 @@ export default class GnomeMenuPreferences extends ExtensionPreferences {
         showError(error, _('Unable to reset menu.json'));
       }
     };
+    const viewMenuConfigErrors = () => {
+      const logFile = getMenuConfigErrorLogFile(this.uuid);
+      if (!logFile.query_exists(null)) {
+        showError(
+          new Error(_('No menu configuration errors have been logged.')),
+          _('No configuration errors'),
+        );
+        return;
+      }
+
+      try {
+        openInTextEditor(logFile);
+      } catch (error) {
+        showError(error, _('Unable to open configuration error log'));
+      }
+    };
     const reloadMenus = () => {
       const request = settings.get_uint('reload-request');
       const nextRequest = request === 0xffffffff ? 0 : request + 1;
@@ -113,6 +130,10 @@ export default class GnomeMenuPreferences extends ExtensionPreferences {
       title: _('Reset menu.json'),
       subtitle: _('Remove the cached file and use the original bundled file after reloading menus.'),
     });
+    const errorsRow = new Adw.ActionRow({
+      title: _('View configuration errors'),
+      subtitle: _('Open the menu configuration error log in the default text editor.'),
+    });
     const exportRow = new Adw.ActionRow({
       title: _('Export web apps'),
       subtitle: _('Save wpa.json from desktop launchers to the extension cache directory.'),
@@ -130,6 +151,10 @@ export default class GnomeMenuPreferences extends ExtensionPreferences {
       label: _('Reset'),
       valign: Gtk.Align.CENTER,
     });
+    const errorsButton = new Gtk.Button({
+      label: _('View log…'),
+      valign: Gtk.Align.CENTER,
+    });
     const exportButton = new Gtk.Button({
       label: _('Generate wpa.json…'),
       valign: Gtk.Align.CENTER,
@@ -138,14 +163,17 @@ export default class GnomeMenuPreferences extends ExtensionPreferences {
     editButton.connect('clicked', editMenuConfig);
     reloadButton.connect('clicked', reloadMenus);
     resetButton.connect('clicked', resetMenuConfig);
+    errorsButton.connect('clicked', viewMenuConfigErrors);
     exportButton.connect('clicked', exportWPAConfig);
 
     reloadRow.add_suffix(reloadButton);
     editRow.add_suffix(editButton);
     resetRow.add_suffix(resetButton);
+    errorsRow.add_suffix(errorsButton);
     group.add(reloadRow);
     group.add(editRow);
     group.add(resetRow);
+    group.add(errorsRow);
     exportRow.add_suffix(exportButton);
     group.add(exportRow);
     page.add(group);

@@ -10,7 +10,8 @@ bundled configuration on the next menu reload.
 Preferences can also generate `wpa.json` from `.desktop` launchers in
 `~/.local/share/applications`. The file is saved to
 `~/.cache/gnome-menu@gcdias/wpa.json` and maps each launcher ID to an `app`
-item.
+item. Menu configuration errors are appended to
+`~/.cache/gnome-menu@gcdias/menu-errors.log` and can be opened from preferences.
 
 Each menu contains item IDs mapped to item objects:
 
@@ -46,11 +47,9 @@ Supported item types:
 - `app`: launches `command` (or `link` for compatibility) as a program and
   arguments, without invoking a shell.
 - `built_in`: calls a supported extension action named by `link`:
-  `showAbout`, `showAppGrid`, `openRecentItems`, `reloadExtension`,
+  `showAbout`, `showAppGrid`, `openRecentItems`, `systemSuspend`,
   `minimizeWindows`, or `closeWindows`. The window actions apply to application
   windows (including dialogs) on all workspaces.
-  `reloadExtension` restarts the extension and reloads `menu.json`.
-- `appgrid`: opens the GNOME app grid.
 - `recents`: opens the recent-items location.
 - `uri`: opens `link` in Nautilus. Links beginning with `~/` are resolved
   relative to the user's home directory.
