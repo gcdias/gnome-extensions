@@ -3,8 +3,13 @@
   <schema id="org.gnome.shell.extensions.gnome-menu" path="/org/gnome/shell/extensions/gnome-menu/">
     <key name="menu-file" type="s">
       <default>''</default>
-      <summary>Menu configuration file</summary>
-      <description>Path to the menu.json file, or empty to use the bundled file.</description>
+      <summary>Legacy menu configuration file</summary>
+      <description>Existing custom paths are copied to the cached menu.json on first startup.</description>
+    </key>
+    <key name="menu-config-initialized" type="b">
+      <default>false</default>
+      <summary>Whether the cached menu configuration was initialized</summary>
+      <description>Prevents reset menu configurations from being copied again on startup.</description>
     </key>
   </schema>
 </schemalist>

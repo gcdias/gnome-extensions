@@ -1,11 +1,16 @@
 # GNOME Menu
 
 GNOME Menu adds one top-panel menu for each top-level object in `menu.json`.
-Edit that file and reload the extension to change the menus.
+Edit that file and use the Reload menus button in preferences to apply changes.
 
-In the extension preferences, you can select a different `menu.json` file.
-By default, the extension uses the `menu.json` file in its installation
-directory.
+The first time the extension starts, it copies the bundled `menu.json` to
+`~/.cache/gnome-menu@gcdias/menu.json` and uses that cached file. Preferences
+can open the cached file in the default text editor or remove it to restore the
+bundled configuration on the next menu reload.
+Preferences can also generate `wpa.json` from `.desktop` launchers in
+`~/.local/share/applications`. The file is saved to
+`~/.cache/gnome-menu@gcdias/wpa.json` and maps each launcher ID to an `app`
+item.
 
 Each menu contains item IDs mapped to item objects:
 

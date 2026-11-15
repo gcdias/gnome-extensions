@@ -13,6 +13,8 @@ import {
   Extension,
   gettext as _,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { getMenuConfigFile } from './menuConfig.js';
+import { getWPAConfig } from './wpaConfig.js';
 
 const ITEM_TYPES = new Set([
   'app',
@@ -234,12 +236,19 @@ export default class GnomeMenuExtension extends Extension {
     menuIcon.button.add_child(menuIcon.iconActor);
   }
 
+  _getWPAConfig() {
+    return getWPAConfig();
+  }
+
   _loadMenuConfig() {
-    const configPath = this.getSettings().get_string('menu-file') ||
-      GLib.build_filenamev([this.path, 'menu.json']);
-    const [success, contents] = Gio.File.new_for_path(configPath).load_contents(null);
+    const configFile = getMenuConfigFile(
+      this.path,
+      this.uuid,
+      this.getSettings(),
+    );
+    const [success, contents] = configFile.load_contents(null);
     if (!success)
-      throw new Error(`Could not read ${configPath}`);
+      throw new Error(`Could not read ${configFile.get_path()}`);
 
     const config = JSON.parse(new TextDecoder().decode(contents));
     if (!config || typeof config !== 'object' || Array.isArray(config))

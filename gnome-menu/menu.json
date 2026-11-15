@@ -19,13 +19,6 @@
             "type": "built_in",
             "link": "showAppGrid"
         },
-        "reload": {
-            "label": "Refresh Menu",
-            "icon": "view-refresh-symbolic",
-            "type": "built_in",
-            "link": "reloadExtension",
-            "break": true
-        },
         "recent": {
             "label": "Recent Items",
             "icon": "document-open-recent-symbolic",

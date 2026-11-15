@@ -1,4 +1,5 @@
 import Adw from 'gi://Adw';
+import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
@@ -6,70 +7,171 @@ import {
   ExtensionPreferences,
   gettext as _,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import {
+  getEditableMenuConfigFile,
+  resetMenuConfigFile,
+} from './menuConfig.js';
+import { getWPAConfig } from './wpaConfig.js';
 
 export default class GnomeMenuPreferences extends ExtensionPreferences {
   fillPreferencesWindow(window) {
     const settings = this.getSettings();
+    const showError = (error, heading = _('Unable to generate WPA configuration')) => {
+      console.error(error);
+      const dialog = new Adw.MessageDialog({
+        transient_for: window,
+        modal: true,
+        heading,
+        body: error.message,
+      });
+      dialog.add_response('close', _('Close'));
+      dialog.present();
+    };
+    const saveWPAConfig = (file, wpa) => {
+      file.replace_contents(
+        new TextEncoder().encode(`${JSON.stringify(wpa, null, 2)}\n`),
+        null,
+        false,
+        Gio.FileCreateFlags.REPLACE_DESTINATION,
+        null,
+      );
+    };
+    const openInTextEditor = file => {
+      const textEditor = Gio.AppInfo.get_default_for_type('text/plain', false);
+      if (!textEditor)
+        throw new Error(_('No default text editor is configured.'));
+      if (!textEditor.launch([file], null))
+        throw new Error(_('Could not launch the default text editor.'));
+    };
+    const exportWPAConfig = () => {
+      let configFile;
+      try {
+        const wpa = getWPAConfig();
+        const cacheDirectory = Gio.File.new_for_path(GLib.build_filenamev([
+          GLib.get_user_cache_dir(),
+          this.uuid,
+        ]));
+        if (!cacheDirectory.query_exists(null))
+          cacheDirectory.make_directory_with_parents(null);
+        configFile = cacheDirectory.get_child('wpa.json');
+        saveWPAConfig(configFile, wpa);
+      } catch (error) {
+        showError(error);
+        return;
+      }
+
+      try {
+        openInTextEditor(configFile);
+      } catch (error) {
+        showError(error, _('Unable to open WPA configuration'));
+      }
+    };
+    const editMenuConfig = () => {
+      try {
+        openInTextEditor(getEditableMenuConfigFile(
+          this.path,
+          this.uuid,
+          settings,
+        ));
+      } catch (error) {
+        showError(error, _('Unable to edit menu.json'));
+      }
+    };
+    const resetMenuConfig = () => {
+      try {
+        resetMenuConfigFile(this.uuid, settings);
+      } catch (error) {
+        showError(error, _('Unable to reset menu.json'));
+      }
+    };
+    const setExtensionEnabled = (enabled, callback) => {
+      Gio.DBus.session.call(
+        'org.gnome.Shell',
+        '/org/gnome/Shell/Extensions',
+        'org.gnome.Shell.Extensions',
+        enabled ? 'EnableExtension' : 'DisableExtension',
+        new GLib.Variant('(s)', [this.uuid]),
+        new GLib.VariantType('(s)'),
+        Gio.DBusCallFlags.NONE,
+        -1,
+        null,
+        (connection, result) => {
+          try {
+            const [status] = connection.call_finish(result).deep_unpack();
+            if (status !== 'successful')
+              throw new Error(status);
+            callback();
+          } catch (error) {
+            reloadButton.sensitive = true;
+            showError(error, _('Unable to reload menus'));
+          }
+        },
+      );
+    };
+    const reloadMenus = () => {
+      reloadButton.sensitive = false;
+      setExtensionEnabled(false, () => {
+        setExtensionEnabled(true, () => {
+          reloadButton.sensitive = true;
+        });
+      });
+    };
     const page = new Adw.PreferencesPage({
       title: _('Menus'),
       icon_name: 'view-list-symbolic',
     });
     const group = new Adw.PreferencesGroup({
       title: _('Menu configuration'),
-      description: _('Reload the extension after changing this setting.'),
+      description: _('Reload menus after changing menu.json.'),
     });
-    const row = new Adw.ActionRow({
-      title: _('Configuration file'),
+    const reloadRow = new Adw.ActionRow({
+      title: _('Reload menus'),
+      subtitle: _('Reload menu.json and rebuild the menus.'),
     });
-    const updatePath = () => {
-      const path = settings.get_string('menu-file') ||
-        GLib.build_filenamev([this.path, 'menu.json']);
-      row.subtitle = path;
-      resetButton.sensitive = settings.get_string('menu-file') !== '';
-    };
+    const editRow = new Adw.ActionRow({
+      title: _('Edit menu.json'),
+      subtitle: _('Open the cached file in the default text editor.'),
+    });
+    const resetRow = new Adw.ActionRow({
+      title: _('Reset menu.json'),
+      subtitle: _('Remove the cached file and use the original bundled file after reloading menus.'),
+    });
+    const exportRow = new Adw.ActionRow({
+      title: _('Export web apps'),
+      subtitle: _('Save wpa.json from desktop launchers to the extension cache directory.'),
+    });
 
-    const chooseButton = new Gtk.Button({
-      label: _('Choose…'),
+    const editButton = new Gtk.Button({
+      label: _('Edit…'),
+      valign: Gtk.Align.CENTER,
+    });
+    const reloadButton = new Gtk.Button({
+      label: _('Reload'),
       valign: Gtk.Align.CENTER,
     });
     const resetButton = new Gtk.Button({
-      label: _('Use bundled file'),
+      label: _('Reset'),
       valign: Gtk.Align.CENTER,
     });
-    const filter = new Gtk.FileFilter();
-    filter.set_name(_('JSON files'));
-    filter.add_mime_type('application/json');
-    filter.add_pattern('*.json');
-
-    chooseButton.connect('clicked', () => {
-      const chooser = Gtk.FileChooserNative.new(
-        _('Select menu.json'),
-        window,
-        Gtk.FileChooserAction.OPEN,
-        _('Select'),
-        _('Cancel'),
-      );
-      chooser.set_local_only(true);
-      chooser.add_filter(filter);
-      chooser.connect('response', (dialog, response) => {
-        if (response === Gtk.ResponseType.ACCEPT) {
-          const file = dialog.get_file();
-          const path = file?.get_path();
-          if (path)
-            settings.set_string('menu-file', path);
-        }
-        dialog.destroy();
-      });
-      chooser.show();
+    const exportButton = new Gtk.Button({
+      label: _('Generate wpa.json…'),
+      valign: Gtk.Align.CENTER,
     });
-    resetButton.connect('clicked', () => settings.reset('menu-file'));
-    settings.connect('changed::menu-file', updatePath);
 
-    row.add_suffix(chooseButton);
-    row.add_suffix(resetButton);
-    group.add(row);
+    editButton.connect('clicked', editMenuConfig);
+    reloadButton.connect('clicked', reloadMenus);
+    resetButton.connect('clicked', resetMenuConfig);
+    exportButton.connect('clicked', exportWPAConfig);
+
+    reloadRow.add_suffix(reloadButton);
+    editRow.add_suffix(editButton);
+    resetRow.add_suffix(resetButton);
+    group.add(reloadRow);
+    group.add(editRow);
+    group.add(resetRow);
+    exportRow.add_suffix(exportButton);
+    group.add(exportRow);
     page.add(group);
     window.add(page);
-    updatePath();
   }
 }
