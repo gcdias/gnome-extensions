@@ -298,11 +298,9 @@ export default class GnomeMenuExtension extends Extension {
   }
 
   _validateItem(menuName, itemId, item) {
-    
-    const location = `Menu "${menuName}", item "${itemId}"`;
 
     const invalid = message => {
-      const error = new Error(`${location} ${message}`);
+      const error = new Error(`Menu "${menuName}", item "${itemId}" ${message}`);
       recordMenuConfigError(this.uuid, 'Invalid menu item', error);
       return error;
     };
@@ -310,35 +308,28 @@ export default class GnomeMenuExtension extends Extension {
     if (!item || typeof item !== 'object' || Array.isArray(item))
       return invalid('must be an object');
 
-    if (typeof item.type !== 'string' || !ITEM_TYPES.has(item.type))
-      return invalid('has an unsupported type');
-
     if (typeof item.label !== 'string' || item.label.length === 0)
       return invalid('must have a non-empty label');
 
-    if (item.icon !== undefined && typeof item.icon !== 'string')
-      return invalid('icon must be a string');
-
-    if (item.break !== undefined && typeof item.break !== 'boolean')
-      return invalid('break must be a boolean');
-
-    if (item.type === 'built_in') {
-      if (typeof item.link !== 'string' ||
-          !this._builtInActions.has(item.link)) {
-        return invalid('has an unknown built-in action');
-      }
-    } else if (item.type === 'uri') {
-      if (typeof item.link !== 'string' || item.link.trim().length === 0)
+    if (item.type){
+      if (!ITEM_TYPES.has(item.type))
+        return invalid('has an unsupported type');
+      if (!item.link || item.link.trim().length === 0)
         return invalid('must have a link');
-    } else if (item.type === 'app') {
-      const command = item.command ?? item.link;
-      if (typeof command !== 'string' || command.trim().length === 0)
-        return invalid('must have a command or link');
-
-      const [success] = GLib.shell_parse_argv(command);
-      if (!success)
-        return invalid('has an invalid command');
+      if (item.type === 'built_in' && !this._builtInActions.has(item.link))
+        return invalid('has an unknown built-in action');
+      if (item.type === 'app'){
+        const [success] = GLib.shell_parse_argv(item.link);
+        if (!success)
+          return invalid('has an invalid link');
+      }
     }
+
+    if (item.icon && item.icon.length === 0)
+      return invalid('icon must be a non-empty string');
+
+    if (item.break && typeof item.break !== 'boolean')
+      return invalid('break must be a boolean');
 
     return null;
   }
