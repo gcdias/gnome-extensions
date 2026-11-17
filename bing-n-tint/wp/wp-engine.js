@@ -17,6 +17,9 @@ export class WpEngine {
     }
 
     _saveWallpaper(bytes) {
+        if (this._settings?.get_string('wp-source') !== this.id)
+            return null;
+
         this.lastUpdated = Date.now();
         const path = GLib.build_filenamev([this.wallpaper.cacheDir, this.filename]);
         GLib.file_set_contents(path, bytes.get_data());

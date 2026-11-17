@@ -113,7 +113,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
         GLib.mkdir_with_parents(this._cacheDir, 0o755);
 
         this._authProviders = {
-            "Default": "off",
+            "Off": "off",
             "User": "user",
             "Bing": "bing",
             "Picsum": "picsum"

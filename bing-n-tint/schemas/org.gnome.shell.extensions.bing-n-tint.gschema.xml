@@ -3,6 +3,7 @@
   <schema id="org.gnome.shell.extensions.bing-n-tint" path="/org/gnome/shell/extensions/bing-n-tint/">
     <key name="wp-source" type="s">
       <choices>
+        <choice value="off"/>
         <choice value="user"/>
         <choice value="bing"/>
         <choice value="picsum"/>

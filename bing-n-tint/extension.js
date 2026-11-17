@@ -260,6 +260,11 @@ export default class BingNTint extends Extension {
 
     _loadWp(){
         log.s(`BingNTint._loadWp()`);
+        if (this._settings.get_string('wp-source') === 'off') {
+            log.r('BingNTint._loadWp: wallpaper source is off');
+            return;
+        }
+
         if (this._settings.get_string('wp-source') === 'user') {
             try {
                 const folderPath = this._settings.get_string('wp-user-folder');
@@ -323,6 +328,8 @@ export default class BingNTint extends Extension {
 
     _nextWallpaper() {
         const engine = this._getEngine();
+        if (!engine)
+            return;
         engine.next();
         this._loadWp();
     }
