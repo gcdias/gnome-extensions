@@ -1,7 +1,7 @@
 EXTNAME = gnome-menu
 EXTENSION_UUID = $(EXTNAME)@gcdias
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
-FILES = builtInActions.js extension.js metadata.json menu.json menuConfig.js menuConfigErrorLog.js prefs.js wpaConfig.js
+FILES = builtInActions.js extension.js metadata.json menu.json menuConfig.js prefs.js wpaConfig.js
 SCHEMA = schemas/org.gnome.shell.extensions.gnome-menu.gschema.xml
 
 install:

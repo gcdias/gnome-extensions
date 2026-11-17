@@ -9,9 +9,9 @@ import {
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 import {
   getEditableMenuConfigFile,
+  getMenuConfigErrorLogFile,
   resetMenuConfigFile,
 } from './menuConfig.js';
-import { getMenuConfigErrorLogFile } from './menuConfigErrorLog.js';
 import { getWPAConfig } from './wpaConfig.js';
 
 export default class GnomeMenuPreferences extends ExtensionPreferences {

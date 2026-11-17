@@ -15,8 +15,10 @@ import {
   getBuiltInActions,
   reloadExtension,
 } from './builtInActions.js';
-import { getMenuConfigFile } from './menuConfig.js';
-import { recordMenuConfigError } from './menuConfigErrorLog.js';
+import {
+  getMenuConfigFile,
+  recordMenuConfigError,
+} from './menuConfig.js';
 import { getWPAConfig } from './wpaConfig.js';
 
 const ITEM_TYPES = new Set([
