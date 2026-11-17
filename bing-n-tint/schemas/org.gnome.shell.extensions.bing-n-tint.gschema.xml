@@ -14,6 +14,11 @@
       <summary>Wallpaper source</summary>
       <description>Choose between the current wallpaper and a Bing wallpaper.</description>
     </key>
+    <key name="wp-user-folder" type="s">
+      <default>''</default>
+      <summary>User wallpaper folder</summary>
+      <description>Folder containing images to use as wallpapers when the user source is selected.</description>
+    </key>
     <key name="wp-metadata" type="s">
       <default>''</default>
       <summary>Metadata</summary>

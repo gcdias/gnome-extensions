@@ -25,6 +25,34 @@ Gio._promisify(Soup.Session.prototype, 'send_and_read_async', 'send_and_read_fin
 
 const EXTNAME = 'bing-n-tint';
 
+function getUserImageFiles(folderPath) {
+    const folder = Gio.File.new_for_path(folderPath);
+    const enumerator = folder.enumerate_children(
+        'standard::name,standard::type,standard::content-type',
+        Gio.FileQueryInfoFlags.NONE,
+        null,
+    );
+    const files = [];
+    try {
+        let info;
+        while ((info = enumerator.next_file(null)) !== null) {
+            if (info.get_file_type() !== Gio.FileType.REGULAR)
+                continue;
+
+            const contentType = info.get_content_type();
+            const mimeType = contentType
+                ? Gio.content_type_get_mime_type(contentType)
+                : null;
+            if (mimeType?.startsWith('image/'))
+                files.push(folder.get_child(info.get_name()).get_path());
+        }
+    } finally {
+        enumerator.close(null);
+    }
+
+    return files.sort();
+}
+
 const IGnome = {
     
     settings: new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}),
@@ -188,7 +216,8 @@ const wallpaper = {
     },
 
     setBackground: function(filePath){
-        wallpaper.settings.set_string(wallpaper.wpUriKey, `file://${filePath}`);
+        const uri = Gio.File.new_for_path(filePath).get_uri();
+        wallpaper.settings.set_string(wallpaper.wpUriKey, uri);
     },
 
     getPath: function() {
@@ -231,6 +260,25 @@ export default class BingNTint extends Extension {
 
     _loadWp(){
         log.s(`BingNTint._loadWp()`);
+        if (this._settings.get_string('wp-source') === 'user') {
+            try {
+                const folderPath = this._settings.get_string('wp-user-folder');
+                if (!folderPath)
+                    throw new Error('No user wallpaper folder is configured');
+
+                const files = getUserImageFiles(folderPath);
+                if (files.length === 0)
+                    throw new Error(`No image files found in ${folderPath}`);
+
+                const dayOfYear = GLib.DateTime.new_now_local().get_day_of_year();
+                wallpaper.setBackground(files[dayOfYear % files.length]);
+                this._update();
+            } catch (error) {
+                log.e(`BingNTint._loadWp user folder: ${error.message}`);
+            }
+            return;
+        }
+
         const engine = this._getEngine();
         if (engine){
             engine.init(this._settings);
@@ -375,6 +423,10 @@ export default class BingNTint extends Extension {
             [wallpaper.settings, wallpaper.settings.connect('changed',           () => this._update())],
             [IGnome.settings, IGnome.settings.connect('changed::color-scheme',   () => this._update())],
             [this._settings, this._settings.connect('changed::wp-source',        () => this._loadWp())],
+            [this._settings, this._settings.connect('changed::wp-user-folder',   () => {
+                if (this._settings.get_string('wp-source') === 'user')
+                    this._loadWp();
+            })],
             [this._settings, this._settings.connect('changed::wp-index',         () => this._loadWp())],
             [this._settings, this._settings.connect('changed::icon-theme-src',   () => this._update())],
             [this._settings, this._settings.connect('changed::gtk-theme-src',    () => this._update())],

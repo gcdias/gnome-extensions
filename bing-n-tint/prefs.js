@@ -138,7 +138,54 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             'Wallpaper',
             'Select the source of wallpaper',
             this._authProviders
-        )
+        );
+
+        const wpUserFolderRow = new Adw.ActionRow({
+            title: _('Image folder'),
+            subtitle: _('No folder selected'),
+        });
+        const chooseWpUserFolderButton = new Gtk.Button({
+            label: _('Choose…'),
+            valign: Gtk.Align.CENTER,
+        });
+        chooseWpUserFolderButton.connect('clicked', () => {
+            const chooser = Gtk.FileChooserNative.new(
+                _('Select image folder'),
+                window,
+                Gtk.FileChooserAction.SELECT_FOLDER,
+                _('Select'),
+                _('Cancel'),
+            );
+
+            const folderPath = this._settings.get_string('wp-user-folder');
+            if (folderPath)
+                chooser.set_current_folder(Gio.File.new_for_path(folderPath));
+
+            chooser.connect('response', (dialog, response) => {
+                if (response === Gtk.ResponseType.ACCEPT) {
+                    const folder = dialog.get_file();
+                    const path = folder?.get_path();
+                    if (path)
+                        this._settings.set_string('wp-user-folder', path);
+                    else
+                        wpUserFolderRow.subtitle = _('Please select a local folder.');
+                }
+                dialog.destroy();
+            });
+            chooser.show();
+        });
+        wpUserFolderRow.add_suffix(chooseWpUserFolderButton);
+        this._wpGroup.add(wpUserFolderRow);
+
+        const updateWpUserFolderRow = () => {
+            const folderPath = this._settings.get_string('wp-user-folder');
+            wpUserFolderRow.subtitle = folderPath || _('No folder selected');
+            wpUserFolderRow.visible = this._settings.get_string('wp-source') === 'user';
+        };
+        this._settings.connect('changed::wp-user-folder', updateWpUserFolderRow);
+        this._settings.connect('changed::wp-source', updateWpUserFolderRow);
+        updateWpUserFolderRow();
+
         this._connect('changed::wp-metadata', () => {
             const desc = this._settings.get_string('wp-desc');
             wpComboRow.subtitle = desc || _('No description provided.');
