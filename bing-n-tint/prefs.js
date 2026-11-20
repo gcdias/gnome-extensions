@@ -84,7 +84,7 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             }
             if (auth_config.auth.nasa){
                 log.i('prefs._loadAuthConfig: found nasa-key');
-                this._settings.set_string('nasa-key', auth_config.auth.wiki);
+                this._settings.set_string('nasa-key', auth_config.auth.nasa);
                 this._authProviders["Nasa"] = 'nasa';
             }
             if (auth_config.auth.wall){
@@ -190,15 +190,6 @@ export default class BingNTintPreferences extends ExtensionPreferences {
             const desc = this._settings.get_string('wp-desc');
             wpComboRow.subtitle = desc || _('No description provided.');
         })
-
-        /*
-        this._addSpinRow(this._wpGroup, this._settings,
-            'wp-index',
-            'Bing Wallpaper Index',
-            'Select the index of the Bing wallpaper to use.',
-             0, 10, 1, 2
-        );
-        */
         
         this._addSwitch(this._wpGroup, this._settings,
             'show-status-icon',
