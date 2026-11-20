@@ -79,8 +79,6 @@ const IGnome = {
         'Elemental'
     ],
 
-    ptyxis_key: "org.gnome.Ptyxis.Profiles.cfa43bfa4955e5b9ba3abc556ac39d35.palette",
-
     CIDX: [ 0, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7 ],
 
     connect: function(fn){
@@ -114,10 +112,14 @@ const IGnome = {
     },
     
     setPtyxisPal: function(name){
-        const a = new Gio.Settings({schema_id: 'org.gnome.Ptyxis'});
-        const b = a.get_string('default-profile-uuid');
-        const c = new Gio.Settings({ schema_id: 'org.gnome.Ptyxis.Profile', path: `/org/gnome/Ptyxis/Profiles/${b}/`,});
-        c.set_string('palette', name);
+        try {
+            const a = new Gio.Settings({schema_id: 'org.gnome.Ptyxis'});
+            const b = a.get_string('default-profile-uuid');
+            const c = new Gio.Settings({ schema_id: 'org.gnome.Ptyxis.Profile', path: `/org/gnome/Ptyxis/Profiles/${b}/`,});
+            c.set_string('palette', name);
+        } catch (error) {
+            log.e(`IGnome.setPtyxisPal: ${error.message}`);
+        }
     },
 
     genPtyxisPalette: function(app_path, hue, sat){
