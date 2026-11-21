@@ -1,0 +1,9 @@
+{
+  "name": "Gnome-Tint",
+  "description": "Change wallpaper from multiple picture-of-the-day providers and tint the gnome shell with its average tone",
+  "uuid": "gnome-tint@gcdias",
+  "shell-version": [ "48", "49", "50", "51" ],
+  "settings-schema": "org.gnome.shell.extensions.gnome-tint",
+  "url": "https://github.com/gcdias/gnome-extensions/gnome-tint",
+  "version": 1
+}

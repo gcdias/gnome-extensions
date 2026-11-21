@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.Gnome-Tint" path="/org/gnome/shell/extensions/Gnome-Tint/">
+    <key name="wp-source" type="s">
+      <choices>
+        <choice value="off"/>
+        <choice value="user"/>
+        <choice value="bing"/>
+        <choice value="picsum"/>
+        <choice value="wiki"/>
+        <choice value="nasa"/>
+        <choice value="wall"/>
+      </choices>
+      <default>'bing'</default>
+      <summary>Wallpaper source</summary>
+      <description>Choose between the current wallpaper and a Bing wallpaper.</description>
+    </key>
+    <key name="wp-user-folder" type="s">
+      <default>''</default>
+      <summary>User wallpaper folder</summary>
+      <description>Folder containing images to use as wallpapers when the user source is selected.</description>
+    </key>
+    <key name="wp-metadata" type="s">
+      <default>''</default>
+      <summary>Metadata</summary>
+      <description>Wallpaper metadata info</description>
+    </key>
+    <key name="wp-desc" type="s">
+      <default>''</default>
+      <summary>Description</summary>
+      <description>Wallpaper description info</description>
+    </key>
+    <key name="nasa-key" type="s">
+      <default>''</default>
+      <summary>NASA API KEY</summary>
+      <description>API key for auth access</description>
+    </key>
+    <key name="wiki-key" type="s">
+      <default>''</default>
+      <summary>User Agent</summary>
+      <description>Auth email for wikipedia POTD API.</description>
+    </key>
+    <key name="wall-key" type="s">
+      <default>''</default>
+      <summary>User Agent</summary>
+      <description>Auth email for wikipedia POTD API.</description>
+    </key>
+    <key name="wp-index" type="i">
+      <range min="0" max="10"/>
+      <default>0</default>
+      <summary>Bing Wallpaper Index</summary>
+      <description>Select the index of the Bing wallpaper to use.</description>
+    </key>
+    <key name="show-status-icon" type="b">
+      <default>true</default>
+      <summary>Show status icon</summary>
+      <description>Show a Bing icon in the top bar to open preferences.</description>
+    </key>
+    <key name="icon-theme-src" type="s">
+      <choices>
+        <choice value="user"/>
+        <choice value="hue"/>
+        <choice value="shift"/>
+      </choices>
+      <default>'hue'</default>
+      <summary>Icon theme source</summary>
+      <description>Choose whether to use the user's icon theme, the wallpaper hue, or the shifted wallpaper hue.</description>
+    </key>
+    <key name="gtk-theme-src" type="s">
+      <choices>
+        <choice value="user"/>
+        <choice value="hue"/>
+        <choice value="shift"/>
+      </choices>
+      <default>'hue'</default>
+      <summary>GTK theme source</summary>
+      <description>Choose whether to use the user's GTK theme, the wallpaper hue, or the shifted wallpaper hue.</description>
+    </key>
+    <key name="accent-color-src" type="s">
+      <choices>
+        <choice value="user"/>
+        <choice value="hue"/>
+        <choice value="shift"/>
+      </choices>
+      <default>'hue'</default>
+      <summary>Accent colour source</summary>
+      <description>Choose whether to use the user's accent colour, the wallpaper hue, or the shifted wallpaper hue.</description>
+    </key>
+    <key name="ptyxis-theme-src" type="s">
+      <choices>
+        <choice value="user"/>
+        <choice value="hue"/>
+        <choice value="shift"/>
+      </choices>
+      <default>'hue'</default>
+      <summary>Terminal/Ptyxis colour source</summary>
+      <description>Choose whether to use the user's accent colour, the wallpaper hue, or the shifted wallpaper hue.</description>
+    </key>
+    <key name="saturation" type="i">
+      <range min="0" max="100"/>
+      <default>50</default>
+      <summary>Accent colour saturation</summary>
+      <description>Set the saturation of the wallpaper accent colour.</description>
+    </key>
+    <key name="hue-shell-shift" type="i">
+      <range min="0" max="360"/>
+      <default>0</default>
+      <summary>Shell hue shift</summary>
+      <description>Shift the wallpaper hue used for the shell theme.</description>
+    </key>
+    <key name="hue-accent-shift" type="i">
+      <range min="0" max="360"/>
+      <default>0</default>
+      <summary>Accent hue shift</summary>
+      <description>Shift the wallpaper hue used for the accent colour.</description>
+    </key>
+
+    <key name="debug-enable" type="b">
+      <default>false</default>
+      <summary>Recent extension log messages</summary>
+      <description>Recent console output shown in the preferences debug page.</description>
+    </key>
+    <key name="debug-log" type="s">
+      <default>''</default>
+      <summary>Recent extension log messages</summary>
+      <description>Recent console output shown in the preferences debug page.</description>
+    </key>
+
+    <key name="debug-timestamp" type="s">
+      <default>'rel'</default>
+      <summary>Timestamp format</summary>
+      <description>Sets absolute ISO or relative (in ms) timestamp.</description>
+    </key>
+    <key name="debug-level" type="s">
+      <default>'1'</default>
+      <summary>Log level</summary>
+      <description>Sets log level to verbose, info and error.</description>
+    </key>
+  </schema>
+</schemalist>
