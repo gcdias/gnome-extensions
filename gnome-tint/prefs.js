@@ -14,7 +14,7 @@ import {
 
 export class UI {
 
-    addSwitch(group, settings, key, title, subtitle){
+    static addSwitch(group, settings, key, title, subtitle){
         const switchRow = new Adw.SwitchRow({
             title: _(title),
             subtitle: _(subtitle),
@@ -24,7 +24,7 @@ export class UI {
         return switchRow;
     }
 
-    addSpinRow(group, settings, key, title, subtitle, min, max, step, page){
+    static addSpinRow(group, settings, key, title, subtitle, min, max, step, page){
         const spinRow = new Adw.SpinRow({
             title: _(title),
             subtitle: _(subtitle),
@@ -43,7 +43,7 @@ export class UI {
         return spinRow;
     }
 
-    addComboBox(group, settings, key, title, subtitle, kv, callback) {
+    static addComboBox(group, settings, key, title, subtitle, kv, callback) {
         const values = Object.values(kv);
         const row = new Adw.ComboRow({
             title: _(title),
@@ -72,8 +72,7 @@ export class UI {
         return row;
     }
 
-    addFileChooser(group, settings, key, title, subtitle, chooserAction, callback) {
-
+    static addFileChooser(window, group, settings, key, title, subtitle, chooserAction, callback) {
 
         const row = new Adw.ActionRow({
             title: _(title),
@@ -85,9 +84,9 @@ export class UI {
         });
         button.connect('clicked', () => {
             const chooser = Gtk.FileChooserNative.new(
-                _('Select the folder'),
+                _('Select'),
                 window,
-                chooserAction,//selFolder ? Gtk.FileChooserAction.SELECT_FOLDER : Gtk.FileChooserAction.OPEN,
+                chooserAction,
                 _('Select'),
                 _('Cancel'),
             );
@@ -113,20 +112,18 @@ export class UI {
         if (group)
             group.add(row);
 
-        const updateWpUserFolderRow = (key, folderPath) => {
-            const folderPath = settings.get_string(key);
-            row.subtitle = folderPath || _('No folder selected');
-            row.visible = settings.get_string('wp-source') === 'user';
-        };
-        this._settings.connect('changed::wp-user-folder', updateWpUserFolderRow);
-        this._settings.connect('changed::wp-source', updateWpUserFolderRow);
-        updateWpUserFolderRow();
-
+        if (callback){
+            const updateRow = () => callback(row, settings.get_string(key));
+            settings.connect(`changed::${key}`, updateRow);
+            updateRow();
+        }
+        return row;
     }
 }
 
 export default class GnomeTintPreferences extends ExtensionPreferences {
     
+    /*
     _addSwitch(group, settings, key, title, subtitle){
         const switchRow = new Adw.SwitchRow({
             title: _(title),
@@ -184,6 +181,7 @@ export default class GnomeTintPreferences extends ExtensionPreferences {
         settings.connect(`changed::${key}`, updateSelection);
         return row;
     }
+    */
 
     _loadAuthConfig(){
         let auth_config = utils.loadText(this._cacheDir,'user.cfg');
@@ -251,51 +249,19 @@ export default class GnomeTintPreferences extends ExtensionPreferences {
             this._authProviders
         );
 
-        const wpUserFolderRow = new Adw.ActionRow({
-            title: _('Image folder'),
-            subtitle: _('No folder selected'),
+        const chooser = UI.addFileChooser(window, this._wpGroup, this._settings,
+            'wp-user-folder',
+            'Image folder',
+            'No folder selected',
+            Gtk.FileChooserAction.SELECT_FOLDER,
+            (row, folderPath) => {
+                row.subtitle = folderPath || _('No folder selected');
+                row.visible = this._settings.get_string('wp-source') === 'user';
+            }
+        );
+        this._connect('changed::wp-source', () => {
+            chooser.visible = this._settings.get_string('wp-source') === 'user';
         });
-        const chooseWpUserFolderButton = new Gtk.Button({
-            label: _('Choose…'),
-            valign: Gtk.Align.CENTER,
-        });
-        chooseWpUserFolderButton.connect('clicked', () => {
-            const chooser = Gtk.FileChooserNative.new(
-                _('Select image folder'),
-                window,
-                Gtk.FileChooserAction.SELECT_FOLDER,
-                _('Select'),
-                _('Cancel'),
-            );
-
-            const folderPath = this._settings.get_string('wp-user-folder');
-            if (folderPath)
-                chooser.set_current_folder(Gio.File.new_for_path(folderPath));
-
-            chooser.connect('response', (dialog, response) => {
-                if (response === Gtk.ResponseType.ACCEPT) {
-                    const folder = dialog.get_file();
-                    const path = folder?.get_path();
-                    if (path)
-                        this._settings.set_string('wp-user-folder', path);
-                    else
-                        wpUserFolderRow.subtitle = _('Please select a local folder.');
-                }
-                dialog.destroy();
-            });
-            chooser.show();
-        });
-        wpUserFolderRow.add_suffix(chooseWpUserFolderButton);
-        this._wpGroup.add(wpUserFolderRow);
-
-        const updateWpUserFolderRow = () => {
-            const folderPath = this._settings.get_string('wp-user-folder');
-            wpUserFolderRow.subtitle = folderPath || _('No folder selected');
-            wpUserFolderRow.visible = this._settings.get_string('wp-source') === 'user';
-        };
-        this._settings.connect('changed::wp-user-folder', updateWpUserFolderRow);
-        this._settings.connect('changed::wp-source', updateWpUserFolderRow);
-        updateWpUserFolderRow();
 
         this._connect('changed::wp-metadata', () => {
             const desc = this._settings.get_string('wp-desc');

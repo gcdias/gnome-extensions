@@ -1,10 +1,10 @@
-EXTNAME = Gnome-Tint
+EXTNAME = gnome-tint
 EXTENSION_UUID = $(EXTNAME)@gcdias
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
 FILES = extension.js \
 		metadata.json \
 		prefs.js
-RES   = res/bing-symbolic.svg \
+RES   = res/gnome-tint-color-symbolic.svg \
 		res/stylesheet.src \
 		res/gtk.css \
 		res/ptyxis.palette \

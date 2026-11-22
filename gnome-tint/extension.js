@@ -342,7 +342,7 @@ export default class GnomeTint extends Extension {
         });
         this._statusIcon = new PanelMenu.Button(0.0, 'Gnome-Tint');
         this._statusIcon.add_child(icon);
-        const preferencesItem = new PopupMenu.PopupMenuItem('Preferences');
+        const preferencesItem = new PopupMenu.PopupMenuItem('Settings');
         preferencesItem.connect('activate', () => this.openPreferences());
         this._statusIcon.menu.addMenuItem(preferencesItem);
         const nextItem = new PopupMenu.PopupMenuItem('Next Wallpaper');

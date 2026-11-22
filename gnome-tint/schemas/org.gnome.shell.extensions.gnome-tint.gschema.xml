@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.Gnome-Tint" path="/org/gnome/shell/extensions/Gnome-Tint/">
+  <schema id="org.gnome.shell.extensions.gnome-tint" path="/org/gnome/shell/extensions/gnome-tint/">
     <key name="wp-source" type="s">
       <choices>
         <choice value="off"/>
