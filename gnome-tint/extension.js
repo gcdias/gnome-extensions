@@ -339,6 +339,7 @@ export default class GnomeTint extends Extension {
         const icon = new St.Icon({
             gicon: new Gio.FileIcon({ file: Gio.File.new_for_path(iconPath) }),
             style_class: 'system-status-icon',
+            style: '-st-icon-style: regular;',
         });
         this._statusIcon = new PanelMenu.Button(0.0, 'Gnome-Tint');
         this._statusIcon.add_child(icon);

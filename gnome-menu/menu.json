@@ -98,6 +98,37 @@
         }
     },
     "Places": {
+        "home": {
+            "label": "Home",
+            "icon": "folder-home-symbolic",
+            "type": "uri",
+            "link": "~"
+        },
+        "recent": {
+            "label": "Recent",
+            "icon": "document-open-recent-symbolic",
+            "type": "uri",
+            "link": "recent://"
+        },
+        "starred": {
+            "label": "Starred",
+            "icon": "starred-symbolic",
+            "type": "uri",
+            "link": "starred://"
+        },
+        "network": {
+            "label": "Network",
+            "icon": "network-computer-symbolic",
+            "type": "uri",
+            "link": "network://"
+        },
+        "trash": {
+            "label": "Trash",
+            "icon": "trash-symbolic",
+            "type": "uri",
+            "link": "trash://",
+            "break": true
+        },
         "documents": {
             "label": "Documents",
             "icon": "folder-documents-symbolic",
